@@ -9,8 +9,10 @@ public class AppFrame extends JFrame {
         super();
         this.pack();
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
+
         this.setVisible(true);
+        this.add(new Pan());
     }
     
 }
