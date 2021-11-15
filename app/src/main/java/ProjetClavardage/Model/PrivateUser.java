@@ -1,3 +1,5 @@
+package ProjetClavardage.Model;
+
 import com.modeliosoft.modelio.javadesigner.annotations.objid;
 
 @objid ("522fe6a2-34d6-47dd-aa85-8a9a8745151c")

@@ -3,6 +3,7 @@
  */
 package ProjetClavardage;
 
+import ProjetClavardage.Model.App;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

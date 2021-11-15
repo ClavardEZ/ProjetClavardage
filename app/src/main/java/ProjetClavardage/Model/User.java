@@ -1,3 +1,5 @@
+package ProjetClavardage.Model;
+
 import com.modeliosoft.modelio.javadesigner.annotations.mdl;
 import com.modeliosoft.modelio.javadesigner.annotations.objid;
 
