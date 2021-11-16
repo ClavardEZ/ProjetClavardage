@@ -31,3 +31,9 @@ application {
     // Define the main class for the application.
     mainClass = 'ProjetClavardage.App'
 }
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(15))
+    }
+}
