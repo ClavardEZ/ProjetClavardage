@@ -1,27 +1,29 @@
 package ProjetClavardage.Model;
 
+/**
+ * Classe représentant un utilisateur externe du systeme
+ */
 public class User {
     private String username;
 
     private String login;
 
-    private boolean isConnected;
+    private boolean connected;
 
-    private boolean isIsConnected() {
+    public boolean isConnected() {
         // Automatically generated method. Please do not modify this code.
-        return this.isConnected;
+        return this.connected;
     }
 
-    private void setIsConnected(boolean value) {
+    public void setConnected(boolean value) {
         // Automatically generated method. Please do not modify this code.
-        this.isConnected = value;
+        this.connected = value;
     }
 
-    public User() {
-    }
-
-    public User(String login) {
+    public User(String login, String username) {
         this.login = login;
+        this.username = username;
+        this.connected = true;
     }
 
     public void setUsername(String username) {

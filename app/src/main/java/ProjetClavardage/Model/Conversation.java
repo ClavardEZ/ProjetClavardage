@@ -29,9 +29,9 @@ public class Conversation extends Thread{
 
     }
 
-    public List<User> users = new ArrayList<User> ();
+    private List<User> users = new ArrayList<User> ();
 
-    public List<Message> messages = new ArrayList<Message> ();
+    private List<Message> messages = new ArrayList<Message> ();
 
     public Conversation(List<User> users) {
     }
