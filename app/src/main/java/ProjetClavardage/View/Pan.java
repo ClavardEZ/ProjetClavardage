@@ -15,10 +15,12 @@ public class Pan extends JPanel {
         BufferedImage logoutImage = null;
         BufferedImage settingsImage = null;
         BufferedImage userImage = null;
+        BufferedImage sendImage = null;
         try {
             logoutImage = ImageIO.read(this.getClass().getResource("/logout.png"));
             settingsImage = ImageIO.read(this.getClass().getResource("/settings.png"));
             userImage = ImageIO.read(this.getClass().getResource("/user.png"));
+            sendImage = ImageIO.read(this.getClass().getResource("/send.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -128,7 +130,7 @@ public class Pan extends JPanel {
         mainGbc.weighty = 1.0;
         mainGbc.fill = GridBagConstraints.BOTH;
         this.add(messagePanel, mainGbc);
-
+        //messagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         messagePanel.setLayout(new GridBagLayout());
         GridBagConstraints msgGbc = new GridBagConstraints();
 
@@ -160,25 +162,27 @@ public class Pan extends JPanel {
         writingPanel.setLayout(new GridBagLayout());
         GridBagConstraints wrtGbc = new GridBagConstraints();
         JTextField textField = new JTextField("Message");
+        textField.setMargin(new Insets(0, 10, 0, 0));
         wrtGbc.gridx = 0;
         wrtGbc.gridy = 0;
-        wrtGbc.weightx = 15.0;
+        wrtGbc.weightx = 20.0;
         wrtGbc.weighty = 1.0;
         wrtGbc.fill = GridBagConstraints.BOTH;
-        wrtGbc.insets = new Insets(0, 15, 0, 15);
+        wrtGbc.insets = new Insets(0, 5, 0, 5);
         wrtGbc.ipady = 15;
         wrtGbc.ipadx = 15;
         writingPanel.add(textField, wrtGbc);
 
-        JButton sendButton = new JButton("Send");
+        JButton sendButton = new JButton(new ImageIcon(sendImage));
+        sendButton.setPreferredSize(new Dimension(30, 30));
         wrtGbc.gridx = 1;
         wrtGbc.gridy = 0;
         wrtGbc.weightx = 1.0;
         wrtGbc.weighty = 1.0;
         wrtGbc.fill = GridBagConstraints.BOTH;
-        wrtGbc.insets = new Insets(0, 15, 0, 15);
+        wrtGbc.insets = new Insets(0, 5, 0, 15);
         wrtGbc.ipady = 15;
-        wrtGbc.ipadx = 15;
+        wrtGbc.ipadx = 0;
         writingPanel.add(sendButton, wrtGbc);
     }
 }

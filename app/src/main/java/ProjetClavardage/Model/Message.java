@@ -5,7 +5,7 @@ import java.util.Date;
 public abstract class Message {
     private Date sentDate;
 
-    public User user;
+    private User user;
 
     public Message() {
     }

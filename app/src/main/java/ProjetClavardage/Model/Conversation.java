@@ -31,8 +31,6 @@ public class Conversation extends Thread{
 
     private List<User> users = new ArrayList<User> ();
 
-    private List<Message> messages = new ArrayList<Message> ();
-
     public Conversation(List<User> users) {
     }
 

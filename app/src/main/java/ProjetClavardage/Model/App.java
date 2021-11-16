@@ -3,12 +3,12 @@
  */
 package ProjetClavardage.Model;
 
+import java.sql.Connection;
+
 public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        DatabaseManager.createTables();
+        DatabaseManager.addUser("user1", "MonsieurSinge");
     }
 }
