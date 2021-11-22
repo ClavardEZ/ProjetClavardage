@@ -148,7 +148,7 @@ public class Pan extends JPanel {
         for (int i = 0; i < 5; i++) {
             panels[i] = new JPanel();
             chatPanel.addTab("Onglet " + i, panels[i]);
-            chatPanel.setTabComponentAt(i, new TabPanel(chatPanel.getTitleAt(i), this));
+            chatPanel.setTabComponentAt(i, new TabPanel(chatPanel.getTitleAt(i), chatPanel));
         }
 
         /* writing panel */
@@ -174,6 +174,7 @@ public class Pan extends JPanel {
         writingPanel.add(textField, wrtGbc);
 
         JButton sendButton = new JButton(new ImageIcon(sendImage));
+        //sendButton.addActionListener(new CloseButtonListener());
         sendButton.setPreferredSize(new Dimension(30, 30));
         wrtGbc.gridx = 1;
         wrtGbc.gridy = 0;

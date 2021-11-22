@@ -10,9 +10,10 @@ import java.io.IOException;
 
 public class TabPanel extends JPanel {
     private JButton closeButton;
-    private JPanel parent;
+    private JTabbedPane parent;
 
-    public TabPanel(String title, JPanel parent) {
+    public TabPanel(String title, JTabbedPane parent) {
+        super();
         this.parent = parent;
         JLabel titleLabel = new JLabel(title);
         this.setLayout(new GridBagLayout());
@@ -26,7 +27,8 @@ public class TabPanel extends JPanel {
 
         this.closeButton = new JButton(new ImageIcon(closeImage.getScaledInstance(10, 10, Image.SCALE_SMOOTH)));
         this.closeButton.setMargin(new Insets(0, 0, 0, 0));
-        this.closeButton.addActionListener(new CloseButtonListener(this));
+        //this.closeButton.addActionListener(new CloseButtonListener());
+        this.closeButton.setEnabled(true);
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -42,8 +44,15 @@ public class TabPanel extends JPanel {
         this.add(this.closeButton, gbc);
     }
 
+    public void actionPerformed(ActionEvent e) {
+        int i = this.parent.indexOfTabComponent(TabPanel.this);
+        if (i != -1) {
+            this.parent.remove(i);
+        }
+    }
+
     @Override
-    public JPanel getParent() {
+    public JTabbedPane getParent() {
         return parent;
     }
 }
