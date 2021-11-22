@@ -148,7 +148,7 @@ public class Pan extends JPanel {
         for (int i = 0; i < 5; i++) {
             panels[i] = new JPanel();
             chatPanel.addTab("Onglet " + i, panels[i]);
-            chatPanel.setTabComponentAt(i, new TabPanel(chatPanel.getTitleAt(i)));
+            chatPanel.setTabComponentAt(i, new TabPanel(chatPanel.getTitleAt(i), this));
         }
 
         /* writing panel */
