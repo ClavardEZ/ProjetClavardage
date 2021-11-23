@@ -16,11 +16,13 @@ public class Pan extends JPanel {
         BufferedImage settingsImage = null;
         BufferedImage userImage = null;
         BufferedImage sendImage = null;
+        BufferedImage closeImage = null;
         try {
             logoutImage = ImageIO.read(this.getClass().getResource("/logout.png"));
             settingsImage = ImageIO.read(this.getClass().getResource("/settings.png"));
             userImage = ImageIO.read(this.getClass().getResource("/user.png"));
             sendImage = ImageIO.read(this.getClass().getResource("/send.png"));
+            closeImage = ImageIO.read(this.getClass().getResource("/close.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -135,21 +137,17 @@ public class Pan extends JPanel {
         GridBagConstraints msgGbc = new GridBagConstraints();
 
         /* chat panel */
-        JTabbedPane chatPanel = new JTabbedPane();
+        JTabbedPane tabs = new JTabbedPane();
         msgGbc.gridx = 0;
         msgGbc.gridy = 0;
         msgGbc.weightx = 1.0;
         msgGbc.weighty = 20.0;
         msgGbc.fill = GridBagConstraints.BOTH;
-        messagePanel.add(chatPanel, msgGbc);
+        messagePanel.add(tabs, msgGbc);
 
-        // placeholder panels
-        JPanel[] panels = new JPanel[5];
-        for (int i = 0; i < 5; i++) {
-            panels[i] = new JPanel();
-            chatPanel.addTab("Onglet " + i, panels[i]);
-            chatPanel.setTabComponentAt(i, new TabPanel(chatPanel.getTitleAt(i), chatPanel));
-        }
+        // JTabbed panes
+        tabs.addTab("message 1", new JPanel());
+        tabs.setTabComponentAt(0, new ButtonTabComponent(tabs, closeImage, 0));
 
         /* writing panel */
         JPanel writingPanel = new JPanel();
