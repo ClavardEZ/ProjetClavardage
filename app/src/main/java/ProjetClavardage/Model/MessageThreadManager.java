@@ -27,12 +27,9 @@ public class MessageThreadManager extends Thread {
         this.panel = panel;
         this.conversations = new ArrayList<>();
         this.userInConvs = new ArrayList<>();
-        /*for (int i = 0; i < NB_CONV_MAX; i++) {
-            this.conversations = null;
-        }*/
     }
 
-    // initie une connexion (d'nvoi de message) du cote de l'utilisateur
+    // initie une connexion (d'envoi de message) du cote de l'utilisateur
     public int openConnection(InetAddress IPaddress) {
         if (this.conversations.size()==this.NB_CONV_MAX) {
             //Message erreur
@@ -78,5 +75,21 @@ public class MessageThreadManager extends Thread {
             e.printStackTrace();
         }
     }
-    public void close(int conv_id) {}
+    public void close_conversation(int conv_id) {
+        try {
+            this.conversations.get(conv_id).close_connection();
+            this.conversations.get(conv_id).join();
+            this.conversations.remove(conv_id);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Conversation getConversationsAt(int index) {
+        return this.conversations.get(index);
+    }
+
+    public void received(Message msg, Conversation conv) {
+        this.panel.addTextToTab(this.conversations.indexOf(conv), msg.getContent());
+    }
 }
