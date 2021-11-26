@@ -15,7 +15,6 @@ public class ControllerSendMessage implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        System.out.println("sent message");
         this.parent.sendMessage();
     }
 }

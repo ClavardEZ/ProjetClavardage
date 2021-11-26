@@ -48,21 +48,22 @@ public class Conversation extends Thread{
 
     public void run(){
         try {
-            while (true) {
-                byte[] data= new byte[MSG_LENGTH];
-                System.out.println("run conv");
+            while (!this.sock.isConnected()) {
+                byte[] data = new byte[MSG_LENGTH];
+                System.out.println("run conv ip: "+InetAddress.getLocalHost().toString());
                 this.iStream.read(data);
                 String received_msg = new String(data);
                 Date date = new Date();
                 // remontee du msg recu
-                Message message = new TextMessage(date,this,received_msg);
+                Message message = new TextMessage(date, this, received_msg);
                 System.out.println("received : " + received_msg);
                 this.msgThMng.received(message, this);
             }
+            System.out.println("socket closed");
+            this.msgThMng.close_conversation_conv(this);
         } catch (IOException el) {
             el.printStackTrace();
         }
-
     }
 
     private List<User> users = new ArrayList<User> ();

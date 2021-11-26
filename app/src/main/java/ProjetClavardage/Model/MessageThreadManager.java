@@ -85,6 +85,12 @@ public class MessageThreadManager extends Thread {
         }
     }
 
+    public void close_conversation_conv(Conversation conv) {
+        this.conversations.remove(conv);
+        conv.close_connection();
+        this.panel.closeConversation(this.conversations.indexOf(conv));
+    }
+
     public Conversation getConversationsAt(int index) {
         return this.conversations.get(index);
     }

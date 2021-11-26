@@ -218,6 +218,10 @@ public class Pan extends JPanel {
         // TODO add reveived conv to contacts tab
     }
 
+    public void removeConversationTab(int index) {
+        this.tabs.remove(index);
+    }
+
     public void closeConversation(int tabIndex) {
         this.msgManager.close_conversation(tabIndex);
     }
@@ -233,5 +237,6 @@ public class Pan extends JPanel {
         this.addTextToTab(this.tabs.getSelectedIndex(), this.textField.getText());
         Message msg = new TextMessage(new Date(), this.msgManager.getConversationsAt(this.tabs.getSelectedIndex()), this.textField.getText());
         this.msgManager.send(msg, this.tabs.getSelectedIndex());
+        this.textField.setText("");
     }
 }
