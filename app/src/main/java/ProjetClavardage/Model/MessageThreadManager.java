@@ -1,4 +1,6 @@
 package ProjetClavardage.Model;
+import ProjetClavardage.View.Pan;
+
 import java.io.*;
 import java.net.*;
 import java.sql.Connection;
@@ -13,11 +15,16 @@ public class MessageThreadManager extends Thread {
 
     public static final int NB_CONV_MAX = 50;
     public static final int NUM_PORT = 9000;
+    // temporary for tests
+    public static final int NUM_PORT_ECOUTE = 9001;
+    public static final int NUM_PORT_ENVOI = 9000;
 
     private ArrayList<UserInConv> userInConvs;
     private ArrayList<Conversation> conversations;
+    private Pan panel;
 
-    public MessageThreadManager() {
+    public MessageThreadManager(Pan panel) {
+        this.panel = panel;
         this.conversations = new ArrayList<>();
         this.userInConvs = new ArrayList<>();
         /*for (int i = 0; i < NB_CONV_MAX; i++) {
@@ -32,8 +39,9 @@ public class MessageThreadManager extends Thread {
             return -1;
         }
         try {
-            Socket sock = new Socket(IPaddress, NUM_PORT);
-            this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock));
+            Socket sock = new Socket(IPaddress, NUM_PORT_ENVOI);
+            this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
+            this.conversations.get(this.conversations.size() - 1).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -42,15 +50,18 @@ public class MessageThreadManager extends Thread {
     }
 
 
-    public void Send(Message msg) {
+    public void send(Message msg, int index) {
+        System.out.println("msg manager sent message");
+        this.conversations.get(index).send_message(msg);
     }
 
     public void run(){
         Socket sock;
 
         ServerSocket servsock = null;
+
         try {
-            servsock = new ServerSocket(NUM_PORT,2, InetAddress.getLocalHost());
+            servsock = new ServerSocket(NUM_PORT_ECOUTE,2, InetAddress.getLocalHost());
 
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
@@ -59,7 +70,9 @@ public class MessageThreadManager extends Thread {
                     i++;
                 }*/
                 //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
-                this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock));
+                this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
+                this.conversations.get(this.conversations.size() - 1).start();
+                this.panel.addConversationTab(InetAddress.getLocalHost().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

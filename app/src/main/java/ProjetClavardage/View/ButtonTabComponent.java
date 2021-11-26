@@ -8,9 +8,11 @@ import java.awt.image.BufferedImage;
 
 public class ButtonTabComponent extends JPanel {
     private JTabbedPane pane;
+    private Pan parentPane;
 
-    public ButtonTabComponent(JTabbedPane pane, BufferedImage image, int i) {
+    public ButtonTabComponent(JTabbedPane pane, BufferedImage image, int i, Pan parentPane) {
         this.pane = pane;
+        this.parentPane = parentPane;
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         String text = pane.getTitleAt(i);
@@ -36,6 +38,7 @@ public class ButtonTabComponent extends JPanel {
 
         public TabButton(ImageIcon icon) {
             super(icon);
+            //super("Bouton");
             this.addActionListener(this);
             this.setPreferredSize(new Dimension(17, 17));
         }
@@ -45,6 +48,7 @@ public class ButtonTabComponent extends JPanel {
             int i = pane.indexOfTabComponent(ButtonTabComponent.this);
             if (i != -1) {
                 pane.remove(i);
+                parentPane.closeConversation(i);
             }
         }
     }

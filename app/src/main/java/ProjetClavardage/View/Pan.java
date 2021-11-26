@@ -2,7 +2,10 @@ package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.ControllerAddConversation;
 import ProjetClavardage.Controller.ControllerContactList;
+import ProjetClavardage.Controller.ControllerSendMessage;
+import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
+import ProjetClavardage.Model.TextMessage;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -13,19 +16,28 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.nio.Buffer;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Pan extends JPanel {
 
     private DefaultListModel<String> contacts;
-    private JList<String[]> listeContacts;
+    private JList<String> listeContacts;
     private JButton addConvButton;
     private MessageThreadManager msgManager;
+    private JTabbedPane tabs;
+    private JButton sendButton;
+    private JTextField textField;
+    private ArrayList<ChatPanel> chatPanels;
+
+    private BufferedImage closeImage;
 
     public Pan() {
         super();
 
-        this.msgManager = new MessageThreadManager();
+        this.chatPanels = new ArrayList<>();
+        this.msgManager = new MessageThreadManager(this);
         this.msgManager.start();
 
         // loading resources
@@ -33,13 +45,13 @@ public class Pan extends JPanel {
         BufferedImage settingsImage = null;
         BufferedImage userImage = null;
         BufferedImage sendImage = null;
-        BufferedImage closeImage = null;
+        this.closeImage = null;
         try {
             logoutImage = ImageIO.read(this.getClass().getResource("/logout.png"));
             settingsImage = ImageIO.read(this.getClass().getResource("/settings.png"));
             userImage = ImageIO.read(this.getClass().getResource("/user.png"));
             sendImage = ImageIO.read(this.getClass().getResource("/send.png"));
-            closeImage = ImageIO.read(this.getClass().getResource("/close.png"));
+            this.closeImage = ImageIO.read(this.getClass().getResource("/close.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,17 +143,17 @@ public class Pan extends JPanel {
         GridBagConstraints msgGbc = new GridBagConstraints();
 
         /* chat panel */
-        JTabbedPane tabs = new JTabbedPane();
+        this.tabs = new JTabbedPane();
         msgGbc.gridx = 0;
         msgGbc.gridy = 0;
         msgGbc.weightx = 1.0;
         msgGbc.weighty = 20.0;
         msgGbc.fill = GridBagConstraints.BOTH;
-        messagePanel.add(tabs, msgGbc);
+        messagePanel.add(this.tabs, msgGbc);
 
         // JTabbed panes
-        tabs.addTab("message 1", new JPanel());
-        tabs.setTabComponentAt(0, new ButtonTabComponent(tabs, closeImage, 0));
+        //tabs.addTab("message 1", new JPanel());
+        //tabs.setTabComponentAt(0, new ButtonTabComponent(tabs, closeImage, 0));
 
         /* writing panel */
         JPanel writingPanel = new JPanel();
@@ -155,10 +167,10 @@ public class Pan extends JPanel {
         GridBagConstraints wrtGbc = new GridBagConstraints();
 
         String placeholderMessage = "Entrez votre message";
-        JTextField textField = new JTextField(placeholderMessage);
-        textField.setMargin(new Insets(0, 10, 0, 0));
-        textField.setForeground(Color.GRAY);
-        textField.addFocusListener(new TextPlaceholderListener(textField, placeholderMessage));
+        this.textField = new JTextField(placeholderMessage);
+        this.textField.setMargin(new Insets(0, 10, 0, 0));
+        this.textField.setForeground(Color.GRAY);
+        this.textField.addFocusListener(new TextPlaceholderListener(this.textField, placeholderMessage));
 
         wrtGbc.gridx = 0;
         wrtGbc.gridy = 0;
@@ -168,9 +180,10 @@ public class Pan extends JPanel {
         wrtGbc.insets = new Insets(0, 5, 0, 5);
         wrtGbc.ipady = 15;
         wrtGbc.ipadx = 15;
-        writingPanel.add(textField, wrtGbc);
+        writingPanel.add(this.textField, wrtGbc);
 
-        JButton sendButton = new JButton(new ImageIcon(sendImage));
+        this.sendButton = new JButton(new ImageIcon(sendImage));
+        this.sendButton.addActionListener(new ControllerSendMessage(this));
         //sendButton.addActionListener(new CloseButtonListener());
         sendButton.setPreferredSize(new Dimension(30, 30));
         wrtGbc.gridx = 1;
@@ -186,14 +199,39 @@ public class Pan extends JPanel {
 
     public void addContact(String username) {
         this.contacts.addElement(username);
-        System.out.println("added" + this.contacts.toString());
     }
 
     public void openConversation(int index) {
         try {
-            this.msgManager.openConnection(InetAddress.getByName(this.listeContacts.getModel().getElementAt(index)[0]));
+            //this.msgManager.openConnection(InetAddress.getByName(this.listeContacts.getModel().getElementAt(index)));
+            this.msgManager.openConnection(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+        this.addConversationTab(this.listeContacts.getModel().getElementAt(index));
+    }
+
+    public void addConversationTab(String title) {
+        this.chatPanels.add(new ChatPanel(this));
+        tabs.addTab(title, this.chatPanels.get(this.chatPanels.size() - 1));
+        tabs.setTabComponentAt(this.tabs.getTabCount() - 1, new ButtonTabComponent(tabs, this.closeImage, this.tabs.getTabCount() - 1, this));
+        // TODO add reveived conv to contacts tab
+    }
+
+    public void closeConversation(int tabIndex) {
+        this.msgManager.close_conversation(tabIndex);
+    }
+
+    public void addTextToTab(int tabIndex, String text) {
+        // TODO refactor to not use index
+        ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
+        chatPanel.addText(text);
+    }
+
+    public void sendMessage() {
+        System.out.println("parent sent message");
+        this.addTextToTab(this.tabs.getSelectedIndex(), this.textField.getText());
+        Message msg = new TextMessage(new Date(), this.msgManager.getConversationsAt(this.tabs.getSelectedIndex()), this.textField.getText());
+        this.msgManager.send(msg, this.tabs.getSelectedIndex());
     }
 }

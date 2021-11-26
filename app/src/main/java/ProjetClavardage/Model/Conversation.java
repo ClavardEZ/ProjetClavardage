@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conversation extends Thread{
-    Socket sock;
+    private Socket sock;
     public static final int MSG_LENGTH = 280;
 
-    public Conversation (String str, Socket s) {
+    public Conversation (String str, Socket s, MessageThreadManager msgThMng) {
         super(str);
         sock = s;
     }
