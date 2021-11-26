@@ -3,6 +3,7 @@
  */
 package ProjetClavardage;
 
+import ProjetClavardage.Model.PopupNewConv;
 import ProjetClavardage.View.AppFrame;
 
 import java.sql.Connection;
@@ -10,6 +11,6 @@ import java.sql.Connection;
 public class App {
 
     public static void main(String[] args) {
-        new AppFrame();
+        AppFrame appFrame = new AppFrame();
     }
 }

@@ -1,15 +1,32 @@
 package ProjetClavardage.View;
 
+import ProjetClavardage.Controller.ControllerAddConversation;
+import ProjetClavardage.Controller.ControllerContactList;
+import ProjetClavardage.Model.MessageThreadManager;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 public class Pan extends JPanel {
 
+    private DefaultListModel<String> contacts;
+    private JList<String[]> listeContacts;
+    private JButton addConvButton;
+    private MessageThreadManager msgManager;
+
     public Pan() {
         super();
+
+        this.msgManager = new MessageThreadManager();
+        this.msgManager.start();
 
         // loading resources
         BufferedImage logoutImage = null;
@@ -79,37 +96,8 @@ public class Pan extends JPanel {
         sidePanel.add(conversationsPanel, sideGbc);
         conversationsPanel.setLayout(new BorderLayout());
         conversationsPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 30 ,0));
-        String[] contacts = {"Camille Wagner",
-                "Renee de Guyon",
-                "Christine Begue",
-                "Jules Lesage",
-                "Noel Lebrun",
-                "William du Guillon",
-                "Xavier-Jacques Courtois",
-                "Victor de Morvan",
-                "Antoine Vincent-Rousset",
-                "Lucy-Michelle Teixeira",
-                "Camille Wagner",
-                "Renee de Guyon",
-                "Christine Begue",
-                "Jules Lesage",
-                "Noel Lebrun",
-                "William du Guillon",
-                "Xavier-Jacques Courtois",
-                "Victor de Morvan",
-                "Antoine Vincent-Rousset",
-                "Lucy-Michelle Teixeira",
-                "Camille Wagner",
-                "Renee de Guyon",
-                "Christine Begue",
-                "Jules Lesage",
-                "Noel Lebrun",
-                "William du Guillon",
-                "Xavier-Jacques Courtois",
-                "Victor de Morvan",
-                "Antoine Vincent-Rousset",
-                "Lucy-Michelle Teixeira"};
-        JList<String[]> listeContacts = new JList(contacts);
+        this.contacts = new DefaultListModel<>();
+        this.listeContacts = new JList(this.contacts);
         listeContacts.setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
         listeContacts.setLayoutOrientation(JList.VERTICAL);
         listeContacts.setVisibleRowCount(12);
@@ -120,9 +108,15 @@ public class Pan extends JPanel {
         JPanel conversationButtonsPanel = new JPanel();
         conversationsPanel.add(conversationButtonsPanel, BorderLayout.SOUTH);
         conversationButtonsPanel.setLayout(new BorderLayout());
-        conversationButtonsPanel.add(new JButton("+"), BorderLayout.EAST);
-        conversationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
+        this.listeContacts.addMouseListener(new ControllerContactList(this));
+
+        this.addConvButton = new JButton("+");
+        conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);
+        ControllerAddConversation ctrlAddConv = new ControllerAddConversation(this, this.contacts);
+        addConvButton.addActionListener(ctrlAddConv);
+
+        conversationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
         /* message panel */
         JPanel messagePanel = new JPanel();
@@ -159,8 +153,13 @@ public class Pan extends JPanel {
         messagePanel.add(writingPanel, msgGbc);
         writingPanel.setLayout(new GridBagLayout());
         GridBagConstraints wrtGbc = new GridBagConstraints();
-        JTextField textField = new JTextField("Message");
+
+        String placeholderMessage = "Entrez votre message";
+        JTextField textField = new JTextField(placeholderMessage);
         textField.setMargin(new Insets(0, 10, 0, 0));
+        textField.setForeground(Color.GRAY);
+        textField.addFocusListener(new TextPlaceholderListener(textField, placeholderMessage));
+
         wrtGbc.gridx = 0;
         wrtGbc.gridy = 0;
         wrtGbc.weightx = 20.0;
@@ -183,5 +182,18 @@ public class Pan extends JPanel {
         wrtGbc.ipady = 15;
         wrtGbc.ipadx = 0;
         writingPanel.add(sendButton, wrtGbc);
+    }
+
+    public void addContact(String username) {
+        this.contacts.addElement(username);
+        System.out.println("added" + this.contacts.toString());
+    }
+
+    public void openConversation(int index) {
+        try {
+            this.msgManager.openConnection(InetAddress.getByName(this.listeContacts.getModel().getElementAt(index)[0]));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 }

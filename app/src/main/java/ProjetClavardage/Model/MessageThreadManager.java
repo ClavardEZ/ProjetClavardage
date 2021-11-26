@@ -26,7 +26,7 @@ public class MessageThreadManager extends Thread {
     }
 
     // initie une connexion (d'nvoi de message) du cote de l'utilisateur
-    public int OpenConnection(InetAddress IPaddress) {
+    public int openConnection(InetAddress IPaddress) {
         if (this.conversations.size()==this.NB_CONV_MAX) {
             //Message erreur
             return -1;
