@@ -52,10 +52,10 @@ public class MessageThreadManager extends Thread {
         try {
             servsock = new ServerSocket(NUM_PORT,2, InetAddress.getLocalHost());
 
-            while (nb_connection<=nb_conv_max) {
+            while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
-                int i = 0;
-                while (conversations[i] != null) {  //On cherche le premier élément libre de conversations
+                //int i = 0;
+                /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
                     i++;
                 }*/
                 //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
@@ -65,4 +65,5 @@ public class MessageThreadManager extends Thread {
             e.printStackTrace();
         }
     }
+    public void close(int conv_id) {}
 }
