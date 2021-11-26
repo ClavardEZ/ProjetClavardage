@@ -7,12 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conversation extends Thread{
-    ServerSocket servsock;
     Socket sock;
 
-    public Conversation (String str, ServerSocket ss, Socket s) {
+    public Conversation (String str, Socket s) {
         super(str);
-        servsock = ss;
         sock = s;
     }
 

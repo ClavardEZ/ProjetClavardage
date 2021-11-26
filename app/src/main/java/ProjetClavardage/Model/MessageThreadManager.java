@@ -11,39 +11,55 @@ import java.util.ArrayList;
  */
 public class MessageThreadManager extends Thread {
 
+    public static final int NB_CONV_MAX = 50;
+    public static final int NUM_PORT = 9000;
+
     private ArrayList<UserInConv> userInConvs;
+    private ArrayList<Conversation> conversations;
 
     public MessageThreadManager() {
+        this.conversations = new ArrayList<>();
         this.userInConvs = new ArrayList<>();
+        /*for (int i = 0; i < NB_CONV_MAX; i++) {
+            this.conversations = null;
+        }*/
     }
 
-    public void OpenConnection() {
+    // initie une connexion (d'nvoi de message) du cote de l'utilisateur
+    public int OpenConnection(InetAddress IPaddress) {
+        if (this.conversations.size()==this.NB_CONV_MAX) {
+            //Message erreur
+            return -1;
+        }
+        try {
+            Socket sock = new Socket(IPaddress, NUM_PORT);
+            this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
     }
+
 
     public void Send(Message msg) {
     }
 
     public void run(){
-        int nb_conv_max = 50;
-        int nb_connection = 0;
         Socket sock;
-        Conversation[] conversations = new Conversation[50];
-        for (int i = 0; i < nb_conv_max; i++) {
-            conversations[i] = null;
-        }
 
         ServerSocket servsock = null;
         try {
-            servsock = new ServerSocket(9000,2, InetAddress.getLocalHost());
+            servsock = new ServerSocket(NUM_PORT,2, InetAddress.getLocalHost());
 
             while (nb_connection<=nb_conv_max) {
                 sock = servsock.accept();
                 int i = 0;
                 while (conversations[i] != null) {  //On cherche le premier élément libre de conversations
                     i++;
-                }
-                conversations[i] = new Conversation("Coversation #" + i, servsock, sock);
-                nb_connection++;
+                }*/
+                //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
+                this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock));
             }
         } catch (IOException e) {
             e.printStackTrace();
