@@ -22,6 +22,7 @@ public class DatabaseManager {
         String reqAppUser = "CREATE TABLE IF NOT EXISTS AppUser (\n" +
                 "   login VARCHAR(50),\n" +
                 "   username VARCHAR(50),\n" +
+                "   ipaddress VARCHAR(15),\n" +
                 "   PRIMARY KEY(login)\n" +
                 ");";
         String reqConversation = "CREATE TABLE IF NOT EXISTS Conversation(\n" +
@@ -30,7 +31,7 @@ public class DatabaseManager {
                 ");\n";
         String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
                 "   sent_date DATETIME,\n" +
-                "   content VARCHAR(50),\n" +
+                "   content VARCHAR(280),\n" +
                 "   login VARCHAR(50) NOT NULL,\n" +
                 "   PRIMARY KEY(sent_date),\n" +
                 "   FOREIGN KEY(login) REFERENCES AppUser(login)\n" +
@@ -63,14 +64,15 @@ public class DatabaseManager {
         }
     }
 
-    public static void addUser(String login, String username) {
-        String req = "INSERT INTO AppUser (login, username)" +
-                "VALUES(?, ?);";
+    public static void addUser(String login, String username, String ipaddress) {
+        String req = "INSERT INTO AppUser (login, username, ipaddress)" +
+                "VALUES(?, ?, ?);";
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(req);
-            pstmt.setString(1, "user1");
-            pstmt.setString(2, "MonsieurSinge");
+            pstmt.setString(1, login);
+            pstmt.setString(2, username);
+            pstmt.setString(3, ipaddress);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

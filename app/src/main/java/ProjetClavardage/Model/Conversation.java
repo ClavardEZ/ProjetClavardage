@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conversation extends Thread{
+    private byte[] err =                                                                                                                                                                                                                                                                                        ;
     private Socket sock;
     public static final int MSG_LENGTH = 280;
     private InputStream iStream;
