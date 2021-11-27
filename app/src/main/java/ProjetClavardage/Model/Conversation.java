@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Conversation extends Thread{
-    private byte[] err =                                                                                                                                                                                                                                                                                        ;
+    //private byte[] err =                                                                                                                                                                                                                                                                                        ;
     private Socket sock;
     public static final int MSG_LENGTH = 280;
     private InputStream iStream;
@@ -48,20 +48,24 @@ public class Conversation extends Thread{
     }
 
     public void run(){
+        int ret = 0;
         try {
-            while (!this.sock.isConnected()) {
+            while (ret != -1) {
                 byte[] data = new byte[MSG_LENGTH];
-                System.out.println("run conv ip: "+InetAddress.getLocalHost().toString());
-                this.iStream.read(data);
-                String received_msg = new String(data);
+                //System.out.println("run conv ip: "+InetAddress.getLocalHost().toString());
+                ret = this.iStream.read(data);
+                String received_msg = new String(data, StandardCharsets.UTF_8).trim();
                 Date date = new Date();
-                // remontee du msg recu
                 Message message = new TextMessage(date, this, received_msg);
+                System.out.println("received byte : " + data.toString());
                 System.out.println("received : " + received_msg);
                 this.msgThMng.received(message, this);
+                System.out.println("sock connected : " + this.sock.isConnected());
             }
             System.out.println("socket closed");
             this.msgThMng.close_conversation_conv(this);
+        } catch (SocketException se) {
+            System.out.println("socket exception closed");
         } catch (IOException el) {
             el.printStackTrace();
         }

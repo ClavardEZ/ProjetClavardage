@@ -7,13 +7,19 @@ import java.awt.*;
 
 public class AppFrame extends JFrame {
 
-    public AppFrame() throws HeadlessException {
+    public AppFrame(String title, int servPort, int clientPort, boolean maximised) throws HeadlessException {
         super();
+        this.setTitle(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-        this.add(new Pan());
+        this.add(new Pan(servPort, clientPort));
         this.pack();
-        this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        if (maximised) {
+            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } else {
+            this.setPreferredSize(new Dimension(900, 600));
+        }
+
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

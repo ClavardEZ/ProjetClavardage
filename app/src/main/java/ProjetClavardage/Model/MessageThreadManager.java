@@ -22,11 +22,15 @@ public class MessageThreadManager extends Thread {
     private ArrayList<UserInConv> userInConvs;
     private ArrayList<Conversation> conversations;
     private Pan panel;
+    private int servPort;
+    private int clientPort;
 
-    public MessageThreadManager(Pan panel) {
+    public MessageThreadManager(Pan panel, int servPort, int clientPort) {
         this.panel = panel;
         this.conversations = new ArrayList<>();
         this.userInConvs = new ArrayList<>();
+        this.servPort = servPort;
+        this.clientPort = clientPort;
     }
 
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
@@ -36,13 +40,12 @@ public class MessageThreadManager extends Thread {
             return -1;
         }
         try {
-            Socket sock = new Socket(IPaddress, NUM_PORT_ENVOI);
+            Socket sock = new Socket(IPaddress, this.clientPort);
             this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
             this.conversations.get(this.conversations.size() - 1).start();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return 0;
     }
 
@@ -58,7 +61,7 @@ public class MessageThreadManager extends Thread {
         ServerSocket servsock = null;
 
         try {
-            servsock = new ServerSocket(NUM_PORT_ECOUTE,2, InetAddress.getLocalHost());
+            servsock = new ServerSocket(this.servPort,2, InetAddress.getLocalHost());
 
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
@@ -68,27 +71,32 @@ public class MessageThreadManager extends Thread {
                 }*/
                 //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
                 this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
+                System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
                 this.panel.addConversationTab(InetAddress.getLocalHost().toString());
+                // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
+                this.panel.addContact(InetAddress.getLocalHost().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void close_conversation(int conv_id) {
-        try {
-            this.conversations.get(conv_id).close_connection();
-            this.conversations.get(conv_id).join();
-            this.conversations.remove(conv_id);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.conversations.get(conv_id).close_connection();
+        System.out.println("conv closed");
+        //this.conversations.get(conv_id).join();
+        this.conversations.remove(conv_id);
+        System.out.println("conv removed");
     }
 
     public void close_conversation_conv(Conversation conv) {
-        this.conversations.remove(conv);
+        System.out.println("conv closed from distant");
         conv.close_connection();
-        this.panel.closeConversation(this.conversations.indexOf(conv));
+        if (this.conversations.indexOf(conv) != -1) {
+            System.out.println("removed from pan");
+            this.panel.removeConversationTab(this.conversations.indexOf(conv));
+        }
+        this.conversations.remove(conv);
     }
 
     public Conversation getConversationsAt(int index) {

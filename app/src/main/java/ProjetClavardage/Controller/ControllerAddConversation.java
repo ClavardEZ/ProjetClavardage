@@ -1,12 +1,11 @@
 package ProjetClavardage.Controller;
 
-import ProjetClavardage.Model.PopupNewConv;
+import ProjetClavardage.View.PopupNewConv;
 import ProjetClavardage.View.Pan;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 
 public class ControllerAddConversation implements ActionListener {
 

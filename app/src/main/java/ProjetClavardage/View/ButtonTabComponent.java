@@ -38,7 +38,6 @@ public class ButtonTabComponent extends JPanel {
 
         public TabButton(ImageIcon icon) {
             super(icon);
-            //super("Bouton");
             this.addActionListener(this);
             this.setPreferredSize(new Dimension(17, 17));
         }
@@ -47,6 +46,7 @@ public class ButtonTabComponent extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int i = pane.indexOfTabComponent(ButtonTabComponent.this);
             if (i != -1) {
+                System.out.println("valeur de i=" + i);
                 pane.remove(i);
                 parentPane.closeConversation(i);
             }

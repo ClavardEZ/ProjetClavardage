@@ -3,14 +3,12 @@
  */
 package ProjetClavardage;
 
-import ProjetClavardage.Model.PopupNewConv;
 import ProjetClavardage.View.AppFrame;
-
-import java.sql.Connection;
 
 public class App {
 
     public static void main(String[] args) {
-        AppFrame appFrame = new AppFrame();
+        AppFrame appFrame;
+        appFrame = new AppFrame(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Boolean.parseBoolean(args[3]));
     }
 }

@@ -1,7 +1,4 @@
-package ProjetClavardage.Model;
-
-import ProjetClavardage.View.Pan;
-import ProjetClavardage.View.TextPlaceholderListener;
+package ProjetClavardage.View;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,21 +26,45 @@ public class PopupNewConv extends JFrame {
         JPanel pan = new JPanel();
 
         /* JPanel */
-        pan.setLayout(new BorderLayout());
-        pan.add(new JLabel("Adresse IP (temporaire pour test)"), BorderLayout.NORTH);
+        pan.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(10, 10, 5, 10);
+        pan.add(new JLabel("Adresse IP (temporaire pour test)"), gbc);
         JTextField input = new JTextField();
         String placeholdermsg = "Entrez l'adresse IP";
         input.addFocusListener(new TextPlaceholderListener(input, placeholdermsg));
-        pan.add(input, BorderLayout.CENTER);
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 10, 5, 10);
+        pan.add(input, gbc);
 
         JButton validate = new JButton("OK");
-        pan.add(validate, BorderLayout.SOUTH);
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 10, 5, 10);
+        pan.add(validate, gbc);
         validate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO do not add if placeholder
-                PopupNewConv.this.parent.addContact(input.getText());
-                PopupNewConv.this.dispose();
+                if (!input.getText().equals(placeholdermsg)) {
+                    PopupNewConv.this.parent.addContact(input.getText());
+                    PopupNewConv.this.dispose();
+                }
+            }
+        });
+
+        input.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (!input.getText().equals(placeholdermsg)) {
+                    PopupNewConv.this.parent.addContact(input.getText());
+                    PopupNewConv.this.dispose();
+                }
             }
         });
 
