@@ -23,6 +23,9 @@ import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Date;
 
+/**
+ * Classe principale de la vue
+ */
 public class Pan extends JPanel {
 
     private DefaultListModel<String> contacts;
