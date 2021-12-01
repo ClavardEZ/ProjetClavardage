@@ -51,7 +51,10 @@ public class MessageThreadManager extends Thread {
         }
         try {
             System.out.println("Connect ip adress:" + IPaddress.toString());
-            Socket sock = new Socket(IPaddress, this.clientPort);
+            //Socket sock = new Socket(IPaddress, this.clientPort);
+            SocketAddress sa = new InetSocketAddress(IPaddress, this.clientPort);
+            Socket sock = new Socket();
+            sock.connect(sa);
             System.out.println("HERE conversation added");
             this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
             this.conversations.get(this.conversations.size() - 1).start();
