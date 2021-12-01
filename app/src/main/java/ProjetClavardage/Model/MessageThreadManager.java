@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 
 /*
 TODO
@@ -71,8 +72,9 @@ public class MessageThreadManager extends Thread {
         ServerSocket servsock = null;
 
         try {
-            servsock = new ServerSocket(this.servPort,2, InetAddress.getLocalHost());
-            System.out.println("server listening on " + InetAddress.getLocalHost() + " and port " + this.servPort);
+
+            servsock = new ServerSocket(this.servPort,2, getLocalAdress());
+            System.out.println("server listening on " + getLocalAdress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
                 //int i = 0;
@@ -115,5 +117,25 @@ public class MessageThreadManager extends Thread {
 
     public void received(Message msg, Conversation conv) {
         this.mc.addTextToTab(this.conversations.indexOf(conv), msg.getContent());
+    }
+
+    private static InetAddress getLocalAdress() {
+        try {
+            Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+            while (nis.hasMoreElements()) {
+                NetworkInterface ni = (NetworkInterface) nis.nextElement();
+                Enumeration<InetAddress> ias = ni.getInetAddresses();
+                while (ias.hasMoreElements()) {
+                    InetAddress ia = (InetAddress) ias.nextElement();
+                    if (!ia.isLoopbackAddress() &&
+                    ia instanceof Inet4Address) {
+                        return ia;
+                    }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
