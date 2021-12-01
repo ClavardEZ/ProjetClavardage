@@ -49,6 +49,7 @@ public class MessageThreadManager extends Thread {
             return -1;
         }
         try {
+            System.out.println("Connect ip adress:" + IPaddress.toString());
             Socket sock = new Socket(IPaddress, this.clientPort);
             System.out.println("HERE conversation added");
             this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
@@ -71,7 +72,7 @@ public class MessageThreadManager extends Thread {
 
         try {
             servsock = new ServerSocket(this.servPort,2, InetAddress.getLocalHost());
-
+            System.out.println("server listening on " + InetAddress.getLocalHost() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
                 //int i = 0;

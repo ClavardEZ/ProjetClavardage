@@ -24,6 +24,7 @@ public class MainController {
 
     public void openConversation(int index) {
         try {
+            System.out.println("IP adress:" + InetAddress.getByName(this.pan.getUsername(index)));
             this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
