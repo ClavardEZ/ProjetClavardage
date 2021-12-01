@@ -1,5 +1,7 @@
 package ProjetClavardage.View;
 
+import ProjetClavardage.Controller.MainController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -9,8 +11,10 @@ import java.awt.image.BufferedImage;
 public class ButtonTabComponent extends JPanel {
     private JTabbedPane pane;
     private Pan parentPane;
+    private MainController mc;
 
-    public ButtonTabComponent(JTabbedPane pane, BufferedImage image, int i, Pan parentPane) {
+    public ButtonTabComponent(MainController mc, JTabbedPane pane, BufferedImage image, int i, Pan parentPane) {
+        this.mc = mc;
         this.pane = pane;
         this.parentPane = parentPane;
         this.setLayout(new GridBagLayout());
@@ -34,6 +38,7 @@ public class ButtonTabComponent extends JPanel {
         this.add(closeButton, gbc);
     }
 
+    // TODO maybe external class ???
     private class TabButton extends JButton implements ActionListener {
 
         public TabButton(ImageIcon icon) {
@@ -48,7 +53,7 @@ public class ButtonTabComponent extends JPanel {
             if (i != -1) {
                 System.out.println("valeur de i=" + i);
                 pane.remove(i);
-                parentPane.closeConversation(i);
+                mc.closeConversation(i);
             }
         }
     }

@@ -3,6 +3,8 @@
  */
 package ProjetClavardage;
 
+import ProjetClavardage.Controller.MainController;
+import ProjetClavardage.Model.MessageThreadManager;
 import ProjetClavardage.View.AppFrame;
 
 public class App {

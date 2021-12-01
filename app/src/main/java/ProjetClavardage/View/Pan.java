@@ -3,9 +3,10 @@ package ProjetClavardage.View;
 import ProjetClavardage.Controller.ControllerAddConversation;
 import ProjetClavardage.Controller.ControllerContactList;
 import ProjetClavardage.Controller.ControllerSendMessage;
-import ProjetClavardage.Model.Message;
+import ProjetClavardage.Controller.MainController;
+/*import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
-import ProjetClavardage.Model.TextMessage;
+import ProjetClavardage.Model.TextMessage;*/
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -27,20 +28,19 @@ public class Pan extends JPanel {
     private DefaultListModel<String> contacts;
     private JList<String> listeContacts;
     private JButton addConvButton;
-    private MessageThreadManager msgManager;
     private JTabbedPane tabs;
     private JButton sendButton;
     private JTextField textField;
     private ArrayList<ChatPanel> chatPanels;
+    private MainController mc;
 
     private BufferedImage closeImage;
 
-    public Pan(int servPort, int clientPort) {
+    public Pan(MainController mc) {
         super();
 
+        this.mc = mc;
         this.chatPanels = new ArrayList<>();
-        this.msgManager = new MessageThreadManager(this, servPort, clientPort);
-        this.msgManager.start();
 
         // loading resources
         BufferedImage logoutImage = null;
@@ -126,7 +126,7 @@ public class Pan extends JPanel {
         conversationsPanel.add(conversationButtonsPanel, BorderLayout.SOUTH);
         conversationButtonsPanel.setLayout(new BorderLayout());
 
-        this.listeContacts.addMouseListener(new ControllerContactList(this));
+        this.listeContacts.addMouseListener(new ControllerContactList(this.mc, this));
 
         this.addConvButton = new JButton("+");
         conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);
@@ -172,12 +172,13 @@ public class Pan extends JPanel {
         this.textField.setMargin(new Insets(0, 10, 0, 0));
         this.textField.setForeground(Color.GRAY);
         this.textField.addFocusListener(new TextPlaceholderListener(this.textField, placeholderMessage));
-        this.textField.addActionListener(new ActionListener() {
+        /*this.textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Pan.this.sendMessage();
             }
-        });
+        });*/
+        this.textField.addActionListener(new ControllerSendMessage(this, this.mc));
 
         wrtGbc.gridx = 0;
         wrtGbc.gridy = 0;
@@ -190,7 +191,7 @@ public class Pan extends JPanel {
         writingPanel.add(this.textField, wrtGbc);
 
         this.sendButton = new JButton(new ImageIcon(sendImage));
-        this.sendButton.addActionListener(new ControllerSendMessage(this));
+        this.sendButton.addActionListener(new ControllerSendMessage(this, this.mc));
         //sendButton.addActionListener(new CloseButtonListener());
         sendButton.setPreferredSize(new Dimension(30, 30));
         wrtGbc.gridx = 1;
@@ -208,29 +209,15 @@ public class Pan extends JPanel {
         this.contacts.addElement(username);
     }
 
-    public void openConversation(int index) {
-        try {
-            this.msgManager.openConnection(InetAddress.getByName(this.listeContacts.getModel().getElementAt(index)));
-            //this.msgManager.openConnection(InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        this.addConversationTab(this.listeContacts.getModel().getElementAt(index));
-    }
-
     public void addConversationTab(String title) {
         this.chatPanels.add(new ChatPanel(this));
         tabs.addTab(title, this.chatPanels.get(this.chatPanels.size() - 1));
-        tabs.setTabComponentAt(this.tabs.getTabCount() - 1, new ButtonTabComponent(tabs, this.closeImage, this.tabs.getTabCount() - 1, this));
+        tabs.setTabComponentAt(this.tabs.getTabCount() - 1, new ButtonTabComponent(this.mc, tabs, this.closeImage, this.tabs.getTabCount() - 1, this));
         // TODO add reveived conv to contacts tab
     }
 
     public void removeConversationTab(int index) {
         this.tabs.remove(index);
-    }
-
-    public void closeConversation(int tabIndex) {
-        this.msgManager.close_conversation(tabIndex);
     }
 
     public void addTextToTab(int tabIndex, String text) {
@@ -239,16 +226,21 @@ public class Pan extends JPanel {
         chatPanel.addText(this.contacts.get(tabIndex) + ">" + text, false);
     }
 
-    public void addTextToTabAsSender(int tabIndex, String text) {
+    public void addTextToTabAsSender() {
+        int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
-        chatPanel.addText(this.contacts.get(tabIndex) + ">" + text, true);
+        chatPanel.addText(this.contacts.get(tabIndex) + ">" + this.textField.getText(), true);
     }
 
-    public void sendMessage() {
-        System.out.println("parent sent message");
-        this.addTextToTabAsSender(this.tabs.getSelectedIndex(), this.textField.getText());
-        Message msg = new TextMessage(new Date(), this.msgManager.getConversationsAt(this.tabs.getSelectedIndex()), this.textField.getText());
-        this.msgManager.send(msg, this.tabs.getSelectedIndex());
+    public int getSelectedIndex() {
+        return this.tabs.getSelectedIndex();
+    }
+
+    public String getTextfieldText() {
+        return this.textField.getText();
+    }
+
+    public void emptyTextField() {
         this.textField.setText("");
     }
 }

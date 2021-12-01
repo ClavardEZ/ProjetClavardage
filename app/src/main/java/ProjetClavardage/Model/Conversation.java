@@ -36,12 +36,10 @@ public class Conversation extends Thread{
 
     public void send_message(Message msg) {
         try {
-
             byte[] data = new byte[280];
             data = msg.getContent().getBytes(StandardCharsets.UTF_8);
-
             this.oStream.write(data);
-            System.out.println("conv sent message");
+            //System.out.println("conv sent message");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -50,6 +48,7 @@ public class Conversation extends Thread{
     public void run(){
         int ret = 0;
         try {
+            // TODO not use exception, maybe send objects instead of Strings/bytes ?
             while (ret != -1) {
                 byte[] data = new byte[MSG_LENGTH];
                 //System.out.println("run conv ip: "+InetAddress.getLocalHost().toString());
@@ -57,10 +56,10 @@ public class Conversation extends Thread{
                 String received_msg = new String(data, StandardCharsets.UTF_8).trim();
                 Date date = new Date();
                 Message message = new TextMessage(date, this, received_msg);
-                System.out.println("received byte : " + data.toString());
-                System.out.println("received : " + received_msg);
+                //System.out.println("received byte : " + data.toString());
+                //System.out.println("received : " + received_msg);
                 this.msgThMng.received(message, this);
-                System.out.println("sock connected : " + this.sock.isConnected());
+                //System.out.println("sock connected : " + this.sock.isConnected());
             }
             System.out.println("socket closed");
             this.msgThMng.close_conversation_conv(this);

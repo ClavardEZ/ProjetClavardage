@@ -8,7 +8,6 @@ public abstract class Message {
     private User user;
     private Conversation conversation;
 
-
     public Message(Date date, Conversation conv) {
         this.sentDate = date;
         this.conversation = conv;

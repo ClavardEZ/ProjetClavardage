@@ -11,11 +11,12 @@ import java.awt.event.MouseListener;
 public class ControllerContactList implements MouseListener {
 
     private Pan parent;
+    private MainController mc;
 
-    public ControllerContactList(Pan parent) {
+    public ControllerContactList(MainController mc,Pan parent) {
+        this.mc = mc;
         this.parent = parent;
     }
-
 
     @Override
     public void mouseClicked(MouseEvent e) {
@@ -23,7 +24,7 @@ public class ControllerContactList implements MouseListener {
         int index = -1;
         if (e.getClickCount() == 2) {
             index = list.locationToIndex(e.getPoint());
-            this.parent.openConversation(index);
+            this.mc.openConversation(index);
         }
     }
 

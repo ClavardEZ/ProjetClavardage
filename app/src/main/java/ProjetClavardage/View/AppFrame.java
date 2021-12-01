@@ -1,5 +1,6 @@
 package ProjetClavardage.View;
 
+import ProjetClavardage.Controller.MainController;
 import org.checkerframework.checker.guieffect.qual.UI;
 
 import javax.swing.*;
@@ -12,14 +13,14 @@ public class AppFrame extends JFrame {
         this.setTitle(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-        this.add(new Pan(servPort, clientPort));
+        MainController mc = new MainController(servPort, clientPort);
+        this.add(mc.getPan());
         this.pack();
         if (maximised) {
             this.setExtendedState(JFrame.MAXIMIZED_BOTH);
         } else {
             this.setPreferredSize(new Dimension(900, 600));
         }
-
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
