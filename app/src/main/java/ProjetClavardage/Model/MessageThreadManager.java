@@ -72,8 +72,10 @@ public class MessageThreadManager extends Thread {
         ServerSocket servsock = null;
 
         try {
-
-            servsock = new ServerSocket(this.servPort,2, getLocalAdress());
+            //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
+            SocketAddress sa = new InetSocketAddress(getLocalAdress(), this.servPort);
+            servsock = new ServerSocket();
+            servsock.bind(sa);
             System.out.println("server listening on " + getLocalAdress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
