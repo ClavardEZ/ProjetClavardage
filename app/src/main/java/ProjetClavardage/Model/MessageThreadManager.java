@@ -50,6 +50,7 @@ public class MessageThreadManager extends Thread {
         }
         try {
             Socket sock = new Socket(IPaddress, this.clientPort);
+            System.out.println("HERE conversation added");
             this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
             this.conversations.get(this.conversations.size() - 1).start();
         } catch (IOException e) {

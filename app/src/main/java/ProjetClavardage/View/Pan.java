@@ -246,4 +246,8 @@ public class Pan extends JPanel {
     public void emptyTextField() {
         this.textField.setText("");
     }
+
+    public String getUsername(int index) {
+        return this.contacts.get(index);
+    }
 }

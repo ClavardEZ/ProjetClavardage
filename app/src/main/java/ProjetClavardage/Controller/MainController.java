@@ -11,7 +11,7 @@ import java.net.UnknownHostException;
 import java.util.Date;
 
 public class MainController {
-
+    // TODO link users lists with pan through this class
     private ButtonTabComponent btnTabComponent;
     private Pan pan;
     private MessageThreadManager msgThdMngr;
@@ -24,7 +24,8 @@ public class MainController {
 
     public void openConversation(int index) {
         try {
-            this.msgThdMngr.openConnection(InetAddress.getLocalHost());
+            this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));
+            //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
