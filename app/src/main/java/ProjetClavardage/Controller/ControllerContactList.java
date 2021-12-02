@@ -10,12 +10,10 @@ import java.awt.event.MouseListener;
 
 public class ControllerContactList implements MouseListener {
 
-    private Pan parent;
     private MainController mc;
 
-    public ControllerContactList(MainController mc,Pan parent) {
+    public ControllerContactList(MainController mc) {
         this.mc = mc;
-        this.parent = parent;
     }
 
     @Override

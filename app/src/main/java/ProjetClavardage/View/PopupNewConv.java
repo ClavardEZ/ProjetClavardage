@@ -12,7 +12,6 @@ public class PopupNewConv extends JFrame {
     public PopupNewConv(Pan parent, Dimension dimensionParent) {
         super("Ajouter une conversation");
         this.parent = parent;
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         this.setMinimumSize(new Dimension((int) (dimensionParent.getWidth()/4), (int) (dimensionParent.getHeight()/4)));
         Dimension windowSize = this.getSize();

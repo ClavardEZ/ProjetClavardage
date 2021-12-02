@@ -12,6 +12,7 @@ import java.util.Date;
 
 public class MainController {
     // TODO link users lists with pan through this class
+    // and not link other controllers to user, only through main class
     private ButtonTabComponent btnTabComponent;
     private Pan pan;
     private MessageThreadManager msgThdMngr;
@@ -30,7 +31,7 @@ public class MainController {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
+        this.pan.addConversationTab(this.pan.getUsername(index));
     }
 
     public void closeConversation(int index) {

@@ -129,7 +129,7 @@ public class Pan extends JPanel {
         conversationsPanel.add(conversationButtonsPanel, BorderLayout.SOUTH);
         conversationButtonsPanel.setLayout(new BorderLayout());
 
-        this.listeContacts.addMouseListener(new ControllerContactList(this.mc, this));
+        this.listeContacts.addMouseListener(new ControllerContactList(this.mc));
 
         this.addConvButton = new JButton("+");
         conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);

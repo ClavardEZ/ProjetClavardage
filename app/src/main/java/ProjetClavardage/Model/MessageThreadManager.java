@@ -14,8 +14,7 @@ import java.util.Enumeration;
 /*
 TODO
     refactoring :
-    remove two way composition between msgthdmngr and conv (how ?)
-    remove composition from message to conv (have opposite) (
+    remove composition from message to conv (have opposite)
     change comp from msg to user to association (done by adding user as param in constructor)
  */
 
@@ -87,9 +86,9 @@ public class MessageThreadManager extends Thread {
                 this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
                 System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
-                this.mc.addConversationTab(InetAddress.getLocalHost().toString());
+                this.mc.addConversationTab(sock.getInetAddress().toString());
                 // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
-                this.mc.addContact(InetAddress.getLocalHost().toString());
+                this.mc.addContact(sock.getInetAddress().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

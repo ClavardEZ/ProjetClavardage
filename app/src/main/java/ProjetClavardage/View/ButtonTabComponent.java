@@ -12,6 +12,7 @@ public class ButtonTabComponent extends JPanel {
     private JTabbedPane pane;
     private Pan parentPane;
     private MainController mc;
+    private JLabel textLabel;
 
     public ButtonTabComponent(MainController mc, JTabbedPane pane, BufferedImage image, int i, Pan parentPane) {
         this.mc = mc;
@@ -20,12 +21,13 @@ public class ButtonTabComponent extends JPanel {
         this.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         String text = pane.getTitleAt(i);
+        this.textLabel = new JLabel(text);
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 5.0;
         gbc.weighty = 1.0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
-        this.add(new JLabel(text), gbc);
+        this.add(this.textLabel, gbc);
         Image img = image;
         ImageIcon icon = new ImageIcon(img.getScaledInstance(15, 15, Image.SCALE_SMOOTH));
         TabButton closeButton = new TabButton(icon);
