@@ -7,16 +7,16 @@ import java.util.ArrayList;
  */
 public class UserManager {
     private PrivateUser privateUser;
-    private ArrayList<User> users;
+    private ArrayList<User> connected_users;
 
     public UserManager(PrivateUser privateUser) {
         this.privateUser = privateUser;
-        this.users = new ArrayList<>();
+        this.connected_users = new ArrayList<>();
     }
 
     // modifie l'etat de connexion d'un utilisateur ? mettre en private ??
     public void setUserConnected(User user, boolean isConnected) {
-        this.users.get(this.users.indexOf(user)).setConnected(isConnected);
+        this.connected_users.get(this.connected_users.indexOf(user)).setConnected(isConnected);
     }
 
     // notifie aux autres utilisateurs que l'utilisateur courant est connecte

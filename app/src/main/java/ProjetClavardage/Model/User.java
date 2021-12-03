@@ -1,12 +1,14 @@
 package ProjetClavardage.Model;
 
+import java.net.InetAddress;
+
 /**
  * Classe représentant un utilisateur externe du systeme
  */
 public class User {
     private String username;
+    private InetAddress IP;
 
-    private String login;
 
     private boolean connected;
 
@@ -21,11 +23,12 @@ public class User {
     }
 
     public User(String login, String username) {
-        this.login = login;
         this.username = username;
         this.connected = true;
     }
 
+    public void setIP(InetAddress IP) {this.IP = IP;}
+    public InetAddress getIP() {return this.IP;}
     public void setUsername(String username) {
         this.username = username;
     }

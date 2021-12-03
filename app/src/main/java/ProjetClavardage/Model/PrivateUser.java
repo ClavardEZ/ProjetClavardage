@@ -6,7 +6,7 @@ package ProjetClavardage.Model;
 public class PrivateUser extends User {
     private String password;
 
-    public void updateUsername(String pseudo) {
+    public void updateUsername(String username) {
         // broadcast sur le reseau pour voir si le pseudo est dispo
         // si dispo alors maj
     }
@@ -21,10 +21,5 @@ public class PrivateUser extends User {
         this.setConnected(true);
     }
 
-    public PrivateUser(String login, String username, String password) {
-        super(login, username);
-        this.setConnected(true);
-        this.password = password;
-    }
 
 }
