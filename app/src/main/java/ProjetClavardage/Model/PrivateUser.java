@@ -1,5 +1,7 @@
 package ProjetClavardage.Model;
 
+import java.net.InetAddress;
+
 /**
  * Classe representant l'utilisateur courant du systeme
  */
@@ -16,9 +18,8 @@ public class PrivateUser extends User {
         this.password = password;
     }
 
-    public PrivateUser(String login, String username) {
-        super(login, username);
-        this.setConnected(true);
+    public PrivateUser(InetAddress IP,int port, String username) {
+        super(IP, port, username);
     }
 
 

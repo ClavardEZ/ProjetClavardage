@@ -11,6 +11,7 @@ import java.net.InetAddress;
 public class User implements Serializable {
     private String username; //taille >2 char
     private InetAddress IP;
+    private int port;
 
 
     private boolean connected;
@@ -25,9 +26,19 @@ public class User implements Serializable {
         this.connected = value;
     }
 
-    public User(String login, String username) {
+    public User(InetAddress IP, int port, String username) {
         this.username = username;
+        this.IP=IP;
+        this.port=port;
         this.connected = true;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equal(IP, user.IP);
     }
 
     public void setIP(InetAddress IP) {this.IP = IP;}
