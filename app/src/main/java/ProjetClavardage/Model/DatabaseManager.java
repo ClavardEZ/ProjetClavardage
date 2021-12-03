@@ -34,6 +34,7 @@ public class DatabaseManager {
                 "   ipaddress VARCHAR(15) NOT NULL,\n" +
                 "   PRIMARY KEY(sent_date),\n" +
                 "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress)\n" +
+                "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation)\n" +
                 ");\n";
         String reqUserInConv = "CREATE TABLE IF NOT EXISTS User_in_conv(\n" +
                 "   ipaddress VARCHAR(15),\n" +

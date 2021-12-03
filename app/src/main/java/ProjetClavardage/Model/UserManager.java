@@ -7,6 +7,10 @@ import java.util.ArrayList;
  */
 public class UserManager {
     private PrivateUser privateUser;
+    private int NUM_PORT=9002;
+    DatagramSocket dgramSocket;
+
+    //On n'instancie que les utilisateurs connectes, les autres sont trouvables dans la BDD
     private ArrayList<User> connected_users;
 
     public UserManager(PrivateUser privateUser) {

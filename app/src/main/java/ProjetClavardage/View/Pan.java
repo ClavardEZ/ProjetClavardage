@@ -226,13 +226,13 @@ public class Pan extends JPanel {
     public void addTextToTab(int tabIndex, String text) {
         // TODO refactor to not use index
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
-        chatPanel.addText(this.contacts.get(tabIndex) + ">" + text, false);
+        chatPanel.addText(text, false);
     }
 
     public void addTextToTabAsSender() {
         int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
-        chatPanel.addText( "Vous>" + this.textField.getText(), true);
+        chatPanel.addText( this.mc.getPrivateUsername() + ">" + this.textField.getText(), true);
     }
 
     public int getSelectedIndex() {

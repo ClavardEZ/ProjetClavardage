@@ -7,7 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Conversation extends Thread{
+public class Conversation extends Thread {
     //private byte[] err =                                                                                                                                                                                                                                                                                        ;
     private Socket sock;
     public static final int MSG_LENGTH = 280;
@@ -15,19 +15,23 @@ public class Conversation extends Thread{
     private OutputStream oStream;
     private MessageThreadManager msgThMng;
 
+    /*private ObjectInputStream oiStream;
+    private ObjectOutputStream ooStream;*/
+
     public Conversation (String str, Socket s, MessageThreadManager msgThMng) {
         super(str);
-        sock = s;
+        this.sock = s;
         this.msgThMng = msgThMng;
         try {
-            this.iStream = sock.getInputStream();
-            this.oStream = sock.getOutputStream();
+            this.iStream = this.sock.getInputStream();
+            this.oStream = this.sock.getOutputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
     public void close_connection () {
         try {
+            this.send_message(null);
             this.sock.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -36,17 +40,19 @@ public class Conversation extends Thread{
 
     public void send_message(Message msg) {
         try {
-            byte[] data = new byte[280];
-            data = msg.getContent().getBytes(StandardCharsets.UTF_8);
-            this.oStream.write(data);
+            //byte[] data = new byte[280];
+            //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
+            //this.oStream.write(data);
             //System.out.println("conv sent message");
+            ObjectOutputStream ooStream = new ObjectOutputStream(this.oStream);
+            ooStream.writeObject(msg);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void run(){
-        int ret = 0;
+        /*int ret = 0;
         try {
             // TODO not use exception, maybe send objects instead of Strings/bytes ?
             while (ret != -1) {
@@ -67,7 +73,29 @@ public class Conversation extends Thread{
             System.out.println("socket exception closed");
         } catch (IOException el) {
             el.printStackTrace();
-        }
+        }*/
+
+
+        Message msg = null;
+        ObjectInputStream oiStream = null;
+        do {
+            try {
+                oiStream = new ObjectInputStream(this.iStream);
+                msg = (Message) oiStream.readObject();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            if (msg != null) {
+                System.out.println("received msg=" + msg.toString());
+            }
+            if (msg != null) {
+                this.msgThMng.received(msg, this);
+            }
+        } while (msg != null);
+        System.out.println("closed");
+        this.msgThMng.close_conversation_conv(this);
     }
 
     private List<User> users = new ArrayList<User> ();

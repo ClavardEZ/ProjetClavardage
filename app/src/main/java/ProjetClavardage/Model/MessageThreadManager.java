@@ -86,7 +86,7 @@ public class MessageThreadManager extends Thread {
                 this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
                 System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
-                this.mc.addConversationTab(sock.getInetAddress().toString());
+                this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
                 // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
                 this.mc.addContact(sock.getInetAddress().toString());
             }
@@ -117,10 +117,11 @@ public class MessageThreadManager extends Thread {
     }
 
     public void received(Message msg, Conversation conv) {
-        this.mc.addTextToTab(this.conversations.indexOf(conv), msg.getContent());
+        String text = msg.getUser().getUsername() + ">" + msg.getContent();
+        this.mc.addTextToTab(this.conversations.indexOf(conv), text);
     }
 
-    private static InetAddress getLocalAdress() {
+    public static InetAddress getLocalAdress() {
         try {
             Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
             while (nis.hasMoreElements()) {

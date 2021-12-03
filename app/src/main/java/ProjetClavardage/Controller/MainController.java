@@ -1,13 +1,12 @@
 package ProjetClavardage.Controller;
 
-import ProjetClavardage.Model.Message;
-import ProjetClavardage.Model.MessageThreadManager;
-import ProjetClavardage.Model.TextMessage;
+import ProjetClavardage.Model.*;
 import ProjetClavardage.View.ButtonTabComponent;
 import ProjetClavardage.View.Pan;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class MainController {
@@ -16,11 +15,18 @@ public class MainController {
     private ButtonTabComponent btnTabComponent;
     private Pan pan;
     private MessageThreadManager msgThdMngr;
+    private PrivateUser privateUser;
 
-    public MainController(int serverPort, int clientPort) {
+    public MainController(int serverPort, int clientPort, int userPort, String username) {
         this.pan = new Pan(this);
         this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
         this.msgThdMngr.start();
+        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAdress(), userPort, username);
+        // udp
+        UserManager userManager = new UserManager(this.privateUser);
+        userManager.start_listener();
+        userManager.start();
+        userManager.sender(true);
     }
 
     public void openConversation(int index) {
@@ -31,7 +37,7 @@ public class MainController {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-        this.pan.addConversationTab(this.pan.getUsername(index));
+        this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
     }
 
     public void closeConversation(int index) {
@@ -40,7 +46,8 @@ public class MainController {
 
     public void sendMessage() {
         this.pan.addTextToTabAsSender();
-        Message msg = new TextMessage(new Date(), this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
+        //Message msg = new TextMessage(LocalDateTime.now(), this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
+        Message msg = new TextMessage(LocalDateTime.now(), this.privateUser, this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
         this.msgThdMngr.send(msg, this.pan.getSelectedIndex());
         this.pan.emptyTextField();
     }
@@ -67,5 +74,9 @@ public class MainController {
 
     public MessageThreadManager getMsgThdMngr() {
         return msgThdMngr;
+    }
+
+    public String getPrivateUsername() {
+        return this.privateUser.getUsername();
     }
 }
