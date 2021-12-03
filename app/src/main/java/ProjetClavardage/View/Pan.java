@@ -232,7 +232,7 @@ public class Pan extends JPanel {
     public void addTextToTabAsSender() {
         int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
-        chatPanel.addText(this.contacts.get(tabIndex) + ">" + this.textField.getText(), true);
+        chatPanel.addText( "Vous>" + this.textField.getText(), true);
     }
 
     public int getSelectedIndex() {

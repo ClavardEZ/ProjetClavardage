@@ -20,10 +20,9 @@ public class DatabaseManager {
 
     public static void createTables() {
         String reqAppUser = "CREATE TABLE IF NOT EXISTS AppUser (\n" +
-                "   login VARCHAR(50),\n" +
-                "   username VARCHAR(50),\n" +
                 "   ipaddress VARCHAR(15),\n" +
-                "   PRIMARY KEY(login)\n" +
+                "   username VARCHAR(50),\n" +
+                "   PRIMARY KEY(ipaddress)\n" +
                 ");";
         String reqConversation = "CREATE TABLE IF NOT EXISTS Conversation(\n" +
                 "   id_conversation VARCHAR(50),\n" +
@@ -32,16 +31,16 @@ public class DatabaseManager {
         String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
                 "   sent_date DATETIME,\n" +
                 "   content VARCHAR(280),\n" +
-                "   login VARCHAR(50) NOT NULL,\n" +
+                "   ipaddress VARCHAR(15) NOT NULL,\n" +
                 "   PRIMARY KEY(sent_date),\n" +
-                "   FOREIGN KEY(login) REFERENCES AppUser(login)\n" +
+                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress)\n" +
                 ");\n";
         String reqUserInConv = "CREATE TABLE IF NOT EXISTS User_in_conv(\n" +
-                "   login VARCHAR(50),\n" +
+                "   ipaddress VARCHAR(15),\n" +
                 "   id_conversation VARCHAR(50),\n" +
                 "   sent_date DATETIME,\n" +
-                "   PRIMARY KEY(login, id_conversation, sent_date),\n" +
-                "   FOREIGN KEY(login) REFERENCES AppUser(login),\n" +
+                "   PRIMARY KEY(ipaddress, id_conversation, sent_date),\n" +
+                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation),\n" +
                 "   FOREIGN KEY(sent_date) REFERENCES Message(sent_date)\n" +
                 ");";
@@ -64,15 +63,14 @@ public class DatabaseManager {
         }
     }
 
-    public static void addUser(String login, String username, String ipaddress) {
-        String req = "INSERT INTO AppUser (login, username, ipaddress)" +
+    public static void addUser(String ipaddress, String username) {
+        String req = "INSERT INTO AppUser (ipaddress, username)" +
                 "VALUES(?, ?, ?);";
         try {
             Connection conn = connect();
             PreparedStatement pstmt = conn.prepareStatement(req);
-            pstmt.setString(1, login);
+            pstmt.setString(1, ipaddress);
             pstmt.setString(2, username);
-            pstmt.setString(3, ipaddress);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
