@@ -14,12 +14,14 @@ public class Conversation extends Thread {
     private InputStream iStream;
     private OutputStream oStream;
     private MessageThreadManager msgThMng;
+    private String name;
 
     /*private ObjectInputStream oiStream;
     private ObjectOutputStream ooStream;*/
 
     public Conversation (String str, Socket s, MessageThreadManager msgThMng) {
         super(str);
+        this.name = str;
         this.sock = s;
         this.msgThMng = msgThMng;
         try {
@@ -75,27 +77,24 @@ public class Conversation extends Thread {
             el.printStackTrace();
         }*/
 
-
-        Message msg = null;
-        ObjectInputStream oiStream = null;
-        do {
-            try {
+        try {
+            Message msg = null;
+            ObjectInputStream oiStream = null;
+            do {
                 oiStream = new ObjectInputStream(this.iStream);
                 msg = (Message) oiStream.readObject();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            if (msg != null) {
-                System.out.println("received msg=" + msg.toString());
-            }
-            if (msg != null) {
-                this.msgThMng.received(msg, this);
-            }
-        } while (msg != null);
-        System.out.println("closed");
-        this.msgThMng.close_conversation_conv(this);
+                if (msg != null) {
+                    System.out.println("received msg=" + msg.toString());
+                    this.msgThMng.received(msg, this);
+                }
+            } while (msg != null);
+            System.out.println("closed");
+            this.msgThMng.close_conversation_conv(this);
+        } catch (SocketException e) {
+            System.out.println("Client disconnected");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     private List<User> users = new ArrayList<User> ();

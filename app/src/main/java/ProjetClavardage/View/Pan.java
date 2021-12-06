@@ -36,6 +36,7 @@ public class Pan extends JPanel {
     private JTextField textField;
     private ArrayList<ChatPanel> chatPanels;
     private MainController mc;
+    private TextPlaceholderListener txtLstner;
 
     private BufferedImage closeImage;
 
@@ -174,7 +175,8 @@ public class Pan extends JPanel {
         this.textField = new JTextField(placeholderMessage);
         this.textField.setMargin(new Insets(0, 10, 0, 0));
         this.textField.setForeground(Color.GRAY);
-        this.textField.addFocusListener(new TextPlaceholderListener(this.textField, placeholderMessage));
+        this.txtLstner = new TextPlaceholderListener(this.textField, placeholderMessage);
+        this.textField.addFocusListener(txtLstner);
         /*this.textField.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -210,6 +212,11 @@ public class Pan extends JPanel {
 
     public void addContact(String username) {
         this.contacts.addElement(username);
+    }
+
+    public void removeContact(String username) {
+        System.out.println("removed user : " + username);
+        this.contacts.removeElement(username);
     }
 
     public void addConversationTab(String title) {
@@ -249,5 +256,9 @@ public class Pan extends JPanel {
 
     public String getUsername(int index) {
         return this.contacts.get(index);
+    }
+
+    public boolean isPlaceholderText() {
+        return this.txtLstner.isPlaceholder();
     }
 }

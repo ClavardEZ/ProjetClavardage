@@ -1,8 +1,11 @@
 package ProjetClavardage.Model;
+import ProjetClavardage.Controller.MainController;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.net.*;
 import java.util.Enumeration;
+import java.util.HashMap;
 
 /**
  * Classe qui gère les utilisateurs et leur connexions
@@ -11,24 +14,43 @@ public class UserManager extends Thread {
     private PrivateUser privateUser;
     private int listeningPort;
     private int sendingPort;
+    private HashMap<InetAddress, User> usersByIP;
     DatagramSocket dgramSocket;
 
-    //On n'instancie que les utilisateurs connectes, les autres sont trouvables dans la BDD
-    private ArrayList<User> connected_users;
+    private MainController mc;
 
-    public UserManager(PrivateUser privateUser, int listeningPort, int sendingPort) {
+    public UserManager(MainController mc, PrivateUser privateUser, int listeningPort, int sendingPort) {
+        this.mc = mc;
         this.privateUser = privateUser;
         this.connected_users = new ArrayList<>();
         this.listeningPort = listeningPort;
         this.sendingPort = sendingPort;
+        this.usersByIP = new HashMap<>();
+
+        UserSender sender = new UserSender(this);
+        sender.start();
     }
 
-    // modifie l'etat de connexion d'un utilisateur ? mettre en private ??
-    public void setUserConnected(User user) {
-        if (!this.connected_users.contains(user))
-        {
-            DatabaseManager.addUser(user.getIP().toString(),user.getUsername());
-            this.connected_users.add(user);
+    public User getUserByIP(InetAddress ip) {
+        return this.usersByIP.get(ip);
+    }
+
+    public void users_update () {
+
+        for (User user:usersByIP.values()
+             ) {
+            if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
+                //TODO afficher user dans le pannel
+                this.mc.addUser(user);
+                user.setConnected(false);
+                System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
+            }
+            else { // si
+                System.out.println("user disconnected : " + user.getUsername());
+                usersByIP.remove(user.getIP());
+                this.mc.removeUser(user);
+            }
+
         }
     }
 
@@ -56,12 +78,14 @@ public class UserManager extends Thread {
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
                 {
                     InetAddress broadcast = interfaceAddress.getBroadcast();
-                    if (broadcast == null)
+                    // second condition for test only
+                    if (broadcast == null || broadcast.toString().contains("10"))
                         continue;
 
                     DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
                             message.length(),broadcast, this.sendingPort);
                     dgramSocket.send(outPacket);
+                    System.out.println("UDP sent message");
                 }
             }
 

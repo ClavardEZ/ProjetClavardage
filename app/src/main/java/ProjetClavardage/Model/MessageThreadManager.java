@@ -1,13 +1,9 @@
 package ProjetClavardage.Model;
 
 import ProjetClavardage.Controller.MainController;
-import com.sun.tools.javac.Main;
 
 import java.io.*;
 import java.net.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 
@@ -42,7 +38,7 @@ public class MessageThreadManager extends Thread {
     }
 
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
-    public int openConnection(InetAddress IPaddress) {
+    public int openConnection(InetAddress IPaddress, String username) {
         // TODO raise exception instead
         if (this.conversations.size()>=this.NB_CONV_MAX) {
             //Message erreur
@@ -52,7 +48,7 @@ public class MessageThreadManager extends Thread {
             System.out.println("Connect ip adress:" + IPaddress.toString());
             Socket sock = new Socket(IPaddress, this.clientPort);
             System.out.println("HERE conversation added");
-            this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
+            this.conversations.add(new Conversation(username, sock, this));
             this.conversations.get(this.conversations.size() - 1).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,12 +79,13 @@ public class MessageThreadManager extends Thread {
                     i++;
                 }*/
                 //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
-                this.conversations.add(new Conversation("Conversation #" + this.conversations.size(), sock, this));
+                String str = "";
+                this.conversations.add(new Conversation(this.mc.getUsernameByIP(sock.getInetAddress()), sock, this));
                 System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
                 this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
                 // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
-                this.mc.addContact(sock.getInetAddress().toString());
+                //this.mc.addContact(sock.getInetAddress().toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

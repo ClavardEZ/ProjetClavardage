@@ -17,6 +17,8 @@ public class ControllerSendMessage implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        this.mc.sendMessage();
+        if (!this.mc.isPlaceholderText()) {
+            this.mc.sendMessage();
+        }
     }
 }
