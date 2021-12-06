@@ -9,15 +9,18 @@ import java.util.Enumeration;
  */
 public class UserManager extends Thread {
     private PrivateUser privateUser;
-    private int NUM_PORT=9002;
+    private int listeningPort;
+    private int sendingPort;
     DatagramSocket dgramSocket;
 
     //On n'instancie que les utilisateurs connectes, les autres sont trouvables dans la BDD
     private ArrayList<User> connected_users;
 
-    public UserManager(PrivateUser privateUser) {
+    public UserManager(PrivateUser privateUser, int listeningPort, int sendingPort) {
         this.privateUser = privateUser;
         this.connected_users = new ArrayList<>();
+        this.listeningPort = listeningPort;
+        this.sendingPort = sendingPort;
     }
 
     // modifie l'etat de connexion d'un utilisateur ? mettre en private ??
@@ -57,7 +60,7 @@ public class UserManager extends Thread {
                         continue;
 
                     DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
-                            message.length(),broadcast, NUM_PORT);
+                            message.length(),broadcast, this.sendingPort);
                     dgramSocket.send(outPacket);
                 }
             }
@@ -84,7 +87,7 @@ public class UserManager extends Thread {
 
     public void start_listener() {
         try {
-            this.dgramSocket = new DatagramSocket(NUM_PORT);
+            this.dgramSocket = new DatagramSocket(this.listeningPort);
         } catch (SocketException e) {
             e.printStackTrace();
         }

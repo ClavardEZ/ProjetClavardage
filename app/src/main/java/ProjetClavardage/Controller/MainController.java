@@ -17,13 +17,13 @@ public class MainController {
     private MessageThreadManager msgThdMngr;
     private PrivateUser privateUser;
 
-    public MainController(int serverPort, int clientPort, int userPort, String username) {
+    public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
         this.pan = new Pan(this);
         this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
         this.msgThdMngr.start();
-        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAdress(), userPort, username);
+        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAdress(), username);
         // udp
-        UserManager userManager = new UserManager(this.privateUser);
+        UserManager userManager = new UserManager(this.privateUser, listeningPort, sendingPort);
         userManager.start_listener();
         userManager.start();
         userManager.sender(true);

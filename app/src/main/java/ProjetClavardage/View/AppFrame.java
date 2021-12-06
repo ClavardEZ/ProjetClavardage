@@ -8,12 +8,12 @@ import java.awt.*;
 
 public class AppFrame extends JFrame {
 
-    public AppFrame(String title, int servPort, int clientPort, int userPort, boolean maximised) throws HeadlessException {
+    public AppFrame(String title, int servPort, int clientPort, int listeningPort, int sendingPort, boolean maximised) throws HeadlessException {
         super();
         this.setTitle(title);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
-        MainController mc = new MainController(servPort, clientPort, userPort, title);
+        MainController mc = new MainController(servPort, clientPort, listeningPort, sendingPort, title);
         this.add(mc.getPan());
         this.pack();
         if (maximised) {

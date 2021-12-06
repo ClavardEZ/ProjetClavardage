@@ -11,6 +11,6 @@ public class App {
 
     public static void main(String[] args) {
         AppFrame appFrame;
-        appFrame = new AppFrame(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Boolean.parseBoolean(args[4]));
+        appFrame = new AppFrame(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Boolean.parseBoolean(args[5]));
     }
 }

@@ -18,8 +18,8 @@ public class PrivateUser extends User {
         this.password = password;
     }
 
-    public PrivateUser(InetAddress IP,int port, String username) {
-        super(IP, port, username);
+    public PrivateUser(InetAddress IP, String username) {
+        super(IP, -1, username);
     }
 
 
