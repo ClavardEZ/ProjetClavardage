@@ -44,25 +44,39 @@ public class UserManager extends Thread {
             message = this.privateUser.getUsername();
         }
         try {
-        Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-        while (interfaces.hasMoreElements())
-        {
-            NetworkInterface networkInterface = interfaces.nextElement();
-                if (networkInterface.isLoopback())
-                    continue;    // Do not want to use the loopback interface.
-            for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
+            Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
+            while (interfaces.hasMoreElements())
             {
-                InetAddress broadcast = interfaceAddress.getBroadcast();
-                if (broadcast == null)
-                    continue;
+                NetworkInterface networkInterface = interfaces.nextElement();
+                    if (networkInterface.isLoopback())
+                        continue;    // Do not want to use the loopback interface.
+                for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
+                {
+                    InetAddress broadcast = interfaceAddress.getBroadcast();
+                    if (broadcast == null)
+                        continue;
 
-                DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
-                        message.length(),broadcast, NUM_PORT);
+                    DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
+                            message.length(),broadcast, NUM_PORT);
+                    dgramSocket.send(outPacket);
+                }
             }
-        }
+
         } catch (SocketException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+        /*try {
+            DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
+                    message.length(),InetAddress.getLocalHost(), NUM_PORT);
+            dgramSocket.send(outPacket);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
 
         /*DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
                 message.length(),host, port);*/
@@ -84,10 +98,16 @@ public class UserManager extends Thread {
     public void run() {
         try {
             byte[] buffer = new byte[256];
+            InetAddress lastAddress = null;
             while(true) {
                 DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
+                System.out.println("UDP :"+"waiting..." );
                 dgramSocket.receive(inPacket);
                 InetAddress clientAddress = inPacket.getAddress();
+                if (clientAddress == lastAddress) {
+                    continue;
+                }
+                lastAddress = clientAddress;
                 int clientPort = inPacket.getPort();
                 String message = new String(inPacket.getData(), 0, inPacket.getLength());
                 System.out.println("UDP :"+message );
