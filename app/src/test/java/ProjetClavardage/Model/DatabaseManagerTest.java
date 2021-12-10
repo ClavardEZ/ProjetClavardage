@@ -15,17 +15,14 @@ public class DatabaseManagerTest extends TestCase {
 
     @Before
     public void setUp() throws Exception {
-        DatabaseManager.createNewDatabase();
+        DatabaseManager.connect();
+        DatabaseManager.createTables();
     }
 
     @After
     public void tearDown() throws Exception {
+        DatabaseManager.deleteTables();
         DatabaseManager.closeConnection();
-    }
-
-    @Test
-    public void testCreateTables() {
-        DatabaseManager.createTables();
     }
 
     @Test
@@ -40,7 +37,11 @@ public class DatabaseManagerTest extends TestCase {
 
     @Test
     public void testAddMessage() {
-        DatabaseManager.addMessage(new TextMessage(LocalDateTime.now(), new Conversation(), "message"));
+        try {
+            DatabaseManager.addMessage(new TextMessage(LocalDateTime.now(), new User(InetAddress.getLocalHost(), 9000, "user1"), new Conversation("user 1"), "message"));
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
     }
 
 }

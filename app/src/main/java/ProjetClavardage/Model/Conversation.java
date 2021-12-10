@@ -120,7 +120,9 @@ public class Conversation extends Thread {
     public Conversation(List<User> users) {
     }
 
-    public Conversation() {
+    public Conversation(String name) {
+        this.name = name;
+        this.id = UUID.randomUUID();
     }
 
     public void addUser(User user) {

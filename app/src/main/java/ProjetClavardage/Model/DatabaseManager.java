@@ -23,13 +23,13 @@ public class DatabaseManager {
     }*/
 
     // not working
-    public static boolean createNewDatabase() {
+    public static boolean connect() {
         //String dataFolder = System.getProperty("user.home") + "\\Local Settings\\ApplicationData\\ClavardEZ\\database.db";
         // for windows only
-        String dataFolder = System.getenv("APPDATA");
-        String url = "jdbc:sqlite:" + dataFolder + "\\ClavardEZ\\database.db";
-        System.out.println("local database url : " + url);
-
+        //String dataFolder = System.getenv("APPDATA");
+        //String url = "jdbc:sqlite:" + dataFolder + "\\ClavardEZ\\database.db";
+        //System.out.println("local database url : " + url);
+        String url = "jdbc:sqlite:database.db";
         try {
             DatabaseManager.conn = DriverManager.getConnection(url);
             if (conn != null) {
@@ -51,13 +51,15 @@ public class DatabaseManager {
                 "   PRIMARY KEY(ipaddress)\n" +
                 ");";
         String reqConversation = "CREATE TABLE IF NOT EXISTS Conversation(\n" +
-                "   id_conversation VARCHAR(50),\n" +
+                "   id_conversation CHAR(36),\n" +
                 "   conv_name VARCHAR(50), \n" +
                 "   PRIMARY KEY(id_conversation)\n" +
                 ");\n";
         String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
                 "   sent_date DATETIME,\n" +
                 "   content VARCHAR(280),\n" +
+                "   ipaddress VARCHAR(15),\n" +
+                "   id_conversation CHAR(36),\n" +
                 "   PRIMARY KEY(sent_date),\n" +
                 "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress)\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation)\n" +
@@ -91,7 +93,7 @@ public class DatabaseManager {
 
     public static void addUser(InetAddress ipaddress, String username) {
         String req = "INSERT INTO AppUser (ipaddress, username)" +
-                "VALUES(?, ?, ?);";
+                "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
             pstmt.setString(1, ipaddress.toString());
@@ -106,13 +108,14 @@ public class DatabaseManager {
         String req = "INSERT INTO Message (sent_date, content, ipaddress, id_conversation)" +
                 "VALUES(?, ?, ?, ?);";
         try {
-            PreparedStatement pstmt = conn.prepareStatement(req);
+            PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
 
             pstmt.setTimestamp(1, Timestamp.valueOf(message.getDate()));
             pstmt.setString(2, message.getContent());
             pstmt.setString(3, message.getIP().toString());
             pstmt.setString(4, message.getConvId().toString());
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -124,6 +127,22 @@ public class DatabaseManager {
             return true;
         } catch (SQLException e) {
             return false;
+        }
+    }
+
+    // TODO execute multiple queries
+    public static void deleteTables() {
+        try {
+            Statement stmt = DatabaseManager.conn.createStatement();
+            String req = "DROP TABLE IF EXISTS AppUser;" +
+                    "DROP TABLE IF EXISTS Conversation;" +
+                    "DROP TABLE IF EXISTS Message;" +
+                    "DROP TABLE IF EXISTS User_in_conv;";
+            stmt.execute(req);
+            stmt.close();
+            System.out.println("Tables deleted");
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
