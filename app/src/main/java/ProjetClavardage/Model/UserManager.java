@@ -22,7 +22,6 @@ public class UserManager extends Thread {
     public UserManager(MainController mc, PrivateUser privateUser, int listeningPort, int sendingPort) {
         this.mc = mc;
         this.privateUser = privateUser;
-        this.connected_users = new ArrayList<>();
         this.listeningPort = listeningPort;
         this.sendingPort = sendingPort;
         this.usersByIP = new HashMap<>();
@@ -54,9 +53,6 @@ public class UserManager extends Thread {
         }
     }
 
-    public void disconnectUser(User user){
-        this.connected_users.remove(user);
-    }
 
     // notifie aux autres utilisateurs que l'utilisateur courant est connecte
     // et envoie ses informations pour etre contacte
@@ -138,9 +134,9 @@ public class UserManager extends Thread {
                 int clientPort = inPacket.getPort();
                 String message = new String(inPacket.getData(), 0, inPacket.getLength());
                 System.out.println("UDP :"+message );
-                if (message.length()<3) { //un message de moins de 3 caractères correspond à une deconnexion
+                if (message.length()>2) { //un message de moins de 3 caractères correspond à une deconnexion
+
                     User user = new User(clientAddress,clientPort,message);
-                    setUserConnected(user);  //remplissage du tableau connected_users
                     if (message!=user.getUsername()) {user.setUsername(message);}
                 }
                 else{
