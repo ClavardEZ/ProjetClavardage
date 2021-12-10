@@ -44,7 +44,7 @@ public class UserManager extends Thread {
                 user.setConnected(false);
                 System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
             }
-            else { // si
+            else { // si il s'est deco
                 System.out.println("user disconnected : " + user.getUsername());
                 usersByIP.remove(user.getIP());
                 this.mc.removeUser(user);
@@ -132,10 +132,20 @@ public class UserManager extends Thread {
                 int clientPort = inPacket.getPort();
                 String message = new String(inPacket.getData(), 0, inPacket.getLength());
                 System.out.println("UDP :"+message );
-                if (message.length()>2) { //un message de moins de 3 caractères correspond à une deconnexion
-
-                    User user = new User(clientAddress,clientPort,message);
-                    if (message!=user.getUsername()) {user.setUsername(message);}
+                if (message.length()>2) {
+                    System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
+                    if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
+                        this.usersByIP.get(clientAddress).setUsername(message);
+                    }
+                    else {  //cas ou on découvre qu'il est connecte
+                        User user = new User(clientAddress,clientPort,message);
+                        this.usersByIP.put(clientAddress,user);
+                    }
+                    if(this.usersByIP.get(clientAddress).isConnected()){
+                        continue;
+                    }
+                    System.out.println("Info : "+ clientAddress + "is still connected");
+                    this.usersByIP.get(clientAddress).setConnected(true);
                 }
                 else{ //cas d'une deconnexion
                     System.out.println("deco");
