@@ -4,7 +4,7 @@ public class UserSender extends Thread {
 
     private UserManager userManager;
 
-    public static int SLEEP_TIME = 5000;
+    public static int SLEEP_TIME = 2000;
 
     public UserSender(UserManager userManager) {
         this.userManager = userManager;
