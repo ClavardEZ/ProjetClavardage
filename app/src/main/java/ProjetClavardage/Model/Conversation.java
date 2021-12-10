@@ -1,5 +1,6 @@
 package ProjetClavardage.Model;
 
+import java.util.UUID;
 import java.util.Date;
 import java.io.*;
 import java.net.*;
@@ -15,6 +16,7 @@ public class Conversation extends Thread {
     private OutputStream oStream;
     private MessageThreadManager msgThMng;
     private String name;
+    private UUID id;
 
     /*private ObjectInputStream oiStream;
     private ObjectOutputStream ooStream;*/
@@ -24,6 +26,7 @@ public class Conversation extends Thread {
         this.name = str;
         this.sock = s;
         this.msgThMng = msgThMng;
+        this.id = UUID.randomUUID();
         try {
             this.iStream = this.sock.getInputStream();
             this.oStream = this.sock.getOutputStream();
@@ -31,6 +34,21 @@ public class Conversation extends Thread {
             e.printStackTrace();
         }
     }
+    public Conversation (String str, Socket s, MessageThreadManager msgThMng, UUID id) {
+        super(str);
+        this.name = str;
+        this.sock = s;
+        this.msgThMng = msgThMng;
+        this.id = id;
+        try {
+            this.iStream = this.sock.getInputStream();
+            this.oStream = this.sock.getOutputStream();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void close_connection () {
         try {
             this.send_message(null);
@@ -110,6 +128,8 @@ public class Conversation extends Thread {
 
     public void removeUser(User user) {
     }
+
+    public UUID getID() {return this.id;}
 
 
 

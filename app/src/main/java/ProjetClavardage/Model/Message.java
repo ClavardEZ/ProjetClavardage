@@ -1,6 +1,7 @@
 package ProjetClavardage.Model;
-
+import java.util.UUID;
 import java.io.Serializable;
+import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -25,6 +26,9 @@ public abstract class Message implements Serializable {
     public String getContent() {
         return "Il faut implémenter la méthode getContent dans la bonne classe";
     }
+    public LocalDateTime getDate(){return this.sentDate;}
+    public InetAddress getIP(){return this.user.getIP();}
+    public UUID getConvId(){return this.conversation.getID();}
 
     @Override
     public String toString() {
