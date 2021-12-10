@@ -7,6 +7,7 @@ import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.EnumSet;
 
 public class Conversation extends Thread {
     //private byte[] err =                                                                                                                                                                                                                                                                                        ;
@@ -17,6 +18,8 @@ public class Conversation extends Thread {
     private MessageThreadManager msgThMng;
     private String name;
     private UUID id;
+    private ArrayList<InetAddress> usersIP;
+
 
     /*private ObjectInputStream oiStream;
     private ObjectOutputStream ooStream;*/
@@ -27,6 +30,8 @@ public class Conversation extends Thread {
         this.sock = s;
         this.msgThMng = msgThMng;
         this.id = UUID.randomUUID();
+        System.out.println("IDCONV : "+this.id);
+        this.usersIP = new ArrayList<>();
         try {
             this.iStream = this.sock.getInputStream();
             this.oStream = this.sock.getOutputStream();
@@ -125,10 +130,14 @@ public class Conversation extends Thread {
         this.id = UUID.randomUUID();
     }
 
-    public void addUser(User user) {
+    public void addUser(InetAddress userIP) {
+        if (!usersIP.contains(userIP)){
+            this.usersIP.add(userIP);
+        }
     }
 
-    public void removeUser(User user) {
+    public void removeUser(InetAddress userIP) {
+        this.usersIP.remove(userIP);
     }
 
     public UUID getID() {return this.id;}
