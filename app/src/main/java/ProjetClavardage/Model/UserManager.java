@@ -39,7 +39,7 @@ public class UserManager extends Thread {
         for (User user:usersByIP.values()
              ) {
             if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
-                //TODO afficher user dans le pannel
+                //TODO afficher user dans le panel
                 this.mc.addUser(user);
                 user.setConnected(false);
                 System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
@@ -52,7 +52,6 @@ public class UserManager extends Thread {
 
         }
     }
-
 
     // notifie aux autres utilisateurs que l'utilisateur courant est connecte
     // et envoie ses informations pour etre contacte
@@ -112,6 +111,7 @@ public class UserManager extends Thread {
             e.printStackTrace();
         }
     }
+
     public void close_listener() {
         this.sender(false);
         this.dgramSocket.close();
@@ -127,9 +127,7 @@ public class UserManager extends Thread {
                 System.out.println("UDP :"+"waiting..." );
                 dgramSocket.receive(inPacket);
                 InetAddress clientAddress = inPacket.getAddress();
-                if (clientAddress == lastAddress) {
-                    continue;
-                }
+                System.out.println("Received from " + clientAddress);
                 lastAddress = clientAddress;
                 int clientPort = inPacket.getPort();
                 String message = new String(inPacket.getData(), 0, inPacket.getLength());
@@ -139,8 +137,9 @@ public class UserManager extends Thread {
                     User user = new User(clientAddress,clientPort,message);
                     if (message!=user.getUsername()) {user.setUsername(message);}
                 }
-                else{
-                    connected_users.remove(new User(clientAddress,clientPort,message));
+                else{ //cas d'une deconnexion
+                    System.out.println("deco");
+                    this.usersByIP.remove(clientAddress);
                 }
                 String response= privateUser.getUsername();
                 DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
@@ -159,8 +158,8 @@ public class UserManager extends Thread {
     }
 
     // ?
-    public boolean isConnected(User user) {
-        return this.connected_users.contains(user);
+    public boolean isConnected(InetAddress userIP) {
+        return this.usersByIP.get(userIP).isConnected();
     }
 
 }
