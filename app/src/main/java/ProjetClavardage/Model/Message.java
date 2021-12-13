@@ -29,6 +29,7 @@ public abstract class Message implements Serializable {
     public LocalDateTime getDate(){return this.sentDate;}
     public InetAddress getIP(){return this.user.getIP();}
     public UUID getConvId(){return this.conversation.getID();}
+    public Conversation getConv(){return this.conversation;}
 
     @Override
     public String toString() {

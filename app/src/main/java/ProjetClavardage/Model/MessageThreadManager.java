@@ -6,6 +6,8 @@ import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.UUID;
 
 /*
 TODO
@@ -24,6 +26,7 @@ public class MessageThreadManager extends Thread {
 
     private ArrayList<UserInConv> userInConvs;
     private ArrayList<Conversation> conversations;
+    private HashMap<UUID,Conversation> conversationHashMap;
     private int servPort;
     private int clientPort;
 
@@ -32,26 +35,37 @@ public class MessageThreadManager extends Thread {
     public MessageThreadManager(MainController mc, int servPort, int clientPort) {
         this.mc = mc;
         this.conversations = new ArrayList<>();
+        this.conversationHashMap = new HashMap<>();
         this.userInConvs = new ArrayList<>();
         this.servPort = servPort;
         this.clientPort = clientPort;
     }
 
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
-    public int openConnection(InetAddress IPaddress, String username) {
+    public int openConnection(ArrayList<InetAddress> ipaddresses, String username) {
         // TODO raise exception instead
         if (this.conversations.size()>=this.NB_CONV_MAX) {
             //Message erreur
             return -1;
         }
         try {
-            System.out.println("Connect ip adress:" + IPaddress.toString());
-            Socket sock = new Socket(IPaddress, this.clientPort);
-            System.out.println("HERE conversation added");
-            ArrayList<InetAddress> usersIP = new ArrayList<>();
-            usersIP.add(IPaddress);
-            this.conversations.add(new Conversation(username, sock, this, usersIP));
-            this.conversations.get(this.conversations.size() - 1).start();
+            System.out.println("Connect ip adress:" + ipaddresses.toString());
+            ArrayList<Socket> socks = new ArrayList<>();
+            for (InetAddress ipaddress:ipaddresses
+                 ) {
+                socks.add(new Socket(ipaddress, this.clientPort));
+                System.out.println("HERE conversation added");
+            }
+
+            //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
+            Conversation conv = new Conversation(username, socks, this, ipaddresses);
+            this.conversationHashMap.put(conv.getID(),conv);
+            this.conversations.add(conv);
+
+
+            conv.send_message(new SpecialMessage(conv));
+
+            conv.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -84,7 +98,9 @@ public class MessageThreadManager extends Thread {
                 String str = "";
                 ArrayList<InetAddress> usersIP = new ArrayList<>();
                 usersIP.add(sock.getInetAddress());
-                this.conversations.add(new Conversation(this.mc.getUsernameByIP(sock.getInetAddress()), sock, this,usersIP));
+                ArrayList<Socket> socks = new ArrayList<>();
+                socks.add(sock);
+                this.conversations.add(new Conversation(this.mc.getUsernameByIP(sock.getInetAddress()), socks, this,usersIP));
                 System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
                 this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());

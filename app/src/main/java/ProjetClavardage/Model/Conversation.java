@@ -11,7 +11,7 @@ import java.util.EnumSet;
 
 public class Conversation extends Thread {
     //private byte[] err =                                                                                                                                                                                                                                                                                        ;
-    private Socket sock;
+    private ArrayList<Socket> socks;
     public static final int MSG_LENGTH = 280;
     private InputStream iStream;
     private OutputStream oStream;
@@ -24,43 +24,32 @@ public class Conversation extends Thread {
     /*private ObjectInputStream oiStream;
     private ObjectOutputStream ooStream;*/
 
-    public Conversation (String str, Socket s, MessageThreadManager msgThMng,ArrayList<InetAddress> usersIP) {
+    public Conversation (String str, ArrayList<Socket> s, MessageThreadManager msgThMng,ArrayList<InetAddress> usersIP) {
         super(str);
         this.name = str;
-        this.sock = s;
+        this.socks = s;
         this.msgThMng = msgThMng;
         this.id = UUID.randomUUID();
         System.out.println("IDCONV : "+this.id);
         this.usersIP = usersIP;
-        if (s != null) {
-            try {
-                this.iStream = this.sock.getInputStream();
-                this.oStream = this.sock.getOutputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
-    public Conversation (String str, Socket s, MessageThreadManager msgThMng, UUID id) {
+    public Conversation (String str, ArrayList<Socket> s, MessageThreadManager msgThMng, UUID id) {
         super(str);
         this.name = str;
-        this.sock = s;
+        this.socks = s;
         this.msgThMng = msgThMng;
         this.id = id;
-        try {
-            this.iStream = this.sock.getInputStream();
-            this.oStream = this.sock.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
 
     public void close_connection () {
         try {
             this.send_message(null);
-            this.sock.close();
+            for (Socket sock :this.socks
+                 ) {
+                sock.close();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -72,8 +61,11 @@ public class Conversation extends Thread {
             //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
             //this.oStream.write(data);
             //System.out.println("conv sent message");
-            ObjectOutputStream ooStream = new ObjectOutputStream(this.oStream);
-            ooStream.writeObject(msg);
+            for (Socket sock: this.socks
+                 ) {
+                ObjectOutputStream ooStream = new ObjectOutputStream(sock.getOutputStream());
+                ooStream.writeObject(msg);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -107,11 +99,28 @@ public class Conversation extends Thread {
             Message msg = null;
             ObjectInputStream oiStream = null;
             do {
-                oiStream = new ObjectInputStream(this.iStream);
-                msg = (Message) oiStream.readObject();
-                if (msg != null) {
-                    System.out.println("received msg=" + msg.toString());
-                    this.msgThMng.received(msg, this);
+                for (Socket sock: this.socks
+                     ) {
+                    oiStream = new ObjectInputStream(sock.getInputStream());
+                    msg = (Message) oiStream.readObject();
+                    if (msg instanceof SpecialMessage){  // un utilisateur ajoute et/ou supprime des gens -> on mets a jour usersID
+                        for (InetAddress ip: ((SpecialMessage) msg).getUsersIP()
+                             ) {
+                            if (!this.usersIP.contains(ip)) {
+                                this.addUser(ip);
+                            }
+                        }
+                        for (InetAddress ip: this.getUsersIP()
+                        ) {
+                            if (!((SpecialMessage) msg).getUsersIP().contains(ip)) {
+                                this.removeUser(ip);
+                            }
+                        }
+                    }
+                    if (msg != null) {
+                        System.out.println("received msg=" + msg.toString());
+                        this.msgThMng.received(msg, this);
+                    }
                 }
             } while (msg != null);
             System.out.println("closed");
@@ -137,7 +146,10 @@ public class Conversation extends Thread {
         if (!usersIP.contains(userIP)){
             this.usersIP.add(userIP);
         }
+
     }
+
+    public ArrayList<InetAddress> getUsersIP() {return this.usersIP;}
 
     public void removeUser(InetAddress userIP) {
         this.usersIP.remove(userIP);
