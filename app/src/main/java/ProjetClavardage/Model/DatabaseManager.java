@@ -1,11 +1,15 @@
 package ProjetClavardage.Model;
 
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
+
 import javax.xml.crypto.Data;
+import java.io.File;
 import java.net.InetAddress;
 import java.sql.*;
 import java.time.ZoneId;
 
-public class DatabaseManager {
+public final class DatabaseManager {
 
     private static Connection conn;
 
@@ -22,14 +26,17 @@ public class DatabaseManager {
         return conn;
     }*/
 
+    private DatabaseManager() {}
+
     // not working
     public static boolean connect() {
-        //String dataFolder = System.getProperty("user.home") + "\\Local Settings\\ApplicationData\\ClavardEZ\\database.db";
-        // for windows only
-        //String dataFolder = System.getenv("APPDATA");
-        //String url = "jdbc:sqlite:" + dataFolder + "\\ClavardEZ\\database.db";
-        //System.out.println("local database url : " + url);
-        String url = "jdbc:sqlite:database.db";
+        // merci à roro le sang aka Xx_MechaFeeder13_xX
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
+        (new File(dataFolder)).mkdirs();
+
+        String url = "jdbc:sqlite:" + dataFolder + File.separator + "database.db";
+        System.out.println("database location : " + url);
         try {
             DatabaseManager.conn = DriverManager.getConnection(url);
             if (conn != null) {
@@ -144,6 +151,19 @@ public class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void flushTableData() {
+        try {
+            Statement stmt = DatabaseManager.conn.createStatement();
+            String req = "TRUNCATE TABLE AppUser;" +
+                    "TRUNCATE TABLE ";
+            stmt.execute(req);
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

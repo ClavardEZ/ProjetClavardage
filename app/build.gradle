@@ -25,6 +25,9 @@ dependencies {
 
     // SQLITE JDBC
     implementation 'org.xerial:sqlite-jdbc:3.36.0.3'
+
+    // Java Dirs https://mvnrepository.com/artifact/net.harawata/appdirs
+    implementation group: 'net.harawata', name: 'appdirs', version: '1.2.1'
 }
 
 application {
