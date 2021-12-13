@@ -10,6 +10,7 @@ public abstract class Message implements Serializable {
 
     private User user;
     private transient Conversation conversation;
+    private UUID id;
 
     public Message(LocalDateTime date, Conversation conv) {
         this.sentDate = date;
@@ -21,6 +22,17 @@ public abstract class Message implements Serializable {
         this.sentDate = sentDate;
         this.user = user;
         this.conversation = conversation;
+    }
+
+    public Message(LocalDateTime sentDate, User user, Conversation conversation, UUID id) {
+        this.sentDate = sentDate;
+        this.user = user;
+        this.conversation = conversation;
+        this.id = id;
+    }
+
+    public UUID getId() {
+        return id;
     }
 
     public String getContent() {
