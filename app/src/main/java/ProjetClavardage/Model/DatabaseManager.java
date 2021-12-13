@@ -3,28 +3,19 @@ package ProjetClavardage.Model;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
+import javax.swing.plaf.nimbus.State;
 import javax.xml.crypto.Data;
 import java.io.File;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.*;
 import java.time.ZoneId;
+import java.util.UUID;
 
 public final class DatabaseManager {
 
     private static Connection conn;
-
-    // also connects to the database
-    /*public static Connection connect() {
-        Connection conn = null;
-        try {
-            String url = "jdbc:sqlite:database.sqlite";
-            conn = DriverManager.getConnection(url);
-            System.out.println("Connexion a la base de donnees etablie");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return conn;
-    }*/
 
     private DatabaseManager() {}
 
@@ -36,11 +27,9 @@ public final class DatabaseManager {
         (new File(dataFolder)).mkdirs();
 
         String url = "jdbc:sqlite:" + dataFolder + File.separator + "database.db";
-        System.out.println("database location : " + url);
         try {
             DatabaseManager.conn = DriverManager.getConnection(url);
             if (conn != null) {
-                System.out.println("New Database created/connection established to the database");
                 return true;
             }
             return false;
@@ -63,11 +52,12 @@ public final class DatabaseManager {
                 "   PRIMARY KEY(id_conversation)\n" +
                 ");\n";
         String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
+                "   id_message CHAR(36)" +
                 "   sent_date DATETIME,\n" +
                 "   content VARCHAR(280),\n" +
                 "   ipaddress VARCHAR(15),\n" +
                 "   id_conversation CHAR(36),\n" +
-                "   PRIMARY KEY(sent_date),\n" +
+                "   PRIMARY KEY(id_message),\n" +
                 "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress)\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation)\n" +
                 ");\n";
@@ -78,21 +68,16 @@ public final class DatabaseManager {
                 "   PRIMARY KEY(ipaddress, id_conversation, sent_date),\n" +
                 "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation),\n" +
-                "   FOREIGN KEY(sent_date) REFERENCES Message(sent_date)\n" +
+                "   FOREIGN KEY(id_message) REFERENCES Message(id_message)\n" +
                 ");";
 
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
             stmt.execute(reqAppUser);
-            System.out.println("AppUser table created succesfully");
             stmt.execute(reqConversation);
-            System.out.println("Conversation table created succesfully");
             stmt.execute(reqMessage);
-            System.out.println("Message table created succesfully");
             stmt.execute(reqUserInConv);
-            System.out.println("UserInConv table created succesfully");
-            System.out.println("Tables created succesfully");
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -104,7 +89,7 @@ public final class DatabaseManager {
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
-            pstmt.setString(1, user.getIP().toString());
+            pstmt.setString(1, user.getIP().getHostAddress());
             pstmt.setString(2, user.getUsername());
             pstmt.executeUpdate();
             pstmt.close();
@@ -131,13 +116,13 @@ public final class DatabaseManager {
     }
 
     public static void addConversation(Conversation conversation) {
-        String req = "INSERT INTO Message (sent_date, id)" +
+        String req = "INSERT INTO Conversation (id_conversation, conv_name)" +
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
 
-            pstmt.setString(1, conversation.getConvName());
-            pstmt.setString(2, conversation.getID().toString());
+            pstmt.setString(1, conversation.getID().toString());
+            pstmt.setString(2, conversation.getConvName());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
@@ -158,13 +143,14 @@ public final class DatabaseManager {
     public static void deleteTables() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
-            String req = "DROP TABLE IF EXISTS AppUser;" +
-                    "DROP TABLE IF EXISTS Conversation;" +
-                    "DROP TABLE IF EXISTS Message;" +
-                    "DROP TABLE IF EXISTS User_in_conv;";
-            stmt.execute(req);
+            String[] reqs = {"DROP TABLE IF EXISTS AppUser;",
+                    "DROP TABLE IF EXISTS Conversation;",
+                    "DROP TABLE IF EXISTS Message;",
+                    "DROP TABLE IF EXISTS User_in_conv;"};
+            for (int i = 0; i < reqs.length; i++) {
+                stmt.execute(reqs[i]);
+            }
             stmt.close();
-            System.out.println("Tables deleted");
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -173,15 +159,64 @@ public final class DatabaseManager {
     public static void flushTableData() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
-            String req = "TRUNCATE TABLE AppUser;" +
-                    "TRUNCATE TABLE Conversation;" +
-                    "TRUNCATE TABLE Message;" +
-                    "TRUNCATE TABLE User_in_conv;";
-            stmt.execute(req);
+            String[] reqs = {"DELETE TABLE AppUser;",
+                    "DELETE TABLE Conversation;",
+                    "DELETE TABLE Message;",
+                    "DELETE TABLE User_in_conv"};
+            for (int i = 0; i < reqs.length; i++) {
+                stmt.execute(reqs[i]);
+            }
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static User getUser(InetAddress ipaddress) {
+        String req = "SELECT *" +
+                "FROM AppUser " +
+                "WHERE ipaddress = ?;";
+        User user = null;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ipaddress.getHostAddress());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                user = new User(InetAddress.getByName(rs.getString("ipaddress")), -1, rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return user;
+    }
+
+    public static Conversation getConversation(UUID convId) {
+        String req = "SELECT *" +
+                "FROM Conversation " +
+                "WHERE id_conversation = ?";
+        Conversation conv = null;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, convId.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                conv = new Conversation(rs.getString("conv_name"), null, null, UUID.fromString(rs.getString("id_conversation")));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conv;
+    }
+
+    // TODO
+    public static Message getMessage() {
+        return null;
     }
 
 }
