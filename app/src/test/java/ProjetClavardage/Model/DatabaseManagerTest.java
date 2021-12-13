@@ -13,35 +13,29 @@ import static org.junit.Assert.*;
 
 public class DatabaseManagerTest extends TestCase {
 
+    private User user;
+    private Conversation conv;
+    private Message message;
+
     @Before
     public void setUp() throws Exception {
         DatabaseManager.connect();
         DatabaseManager.createTables();
+        //this.conv = new Conversation("Conv #1", null, null);
+        this.user = new User(InetAddress.getLocalHost(), 0, "user");
+        this.message = new TextMessage(LocalDateTime.now(), this.user, this.conv, "message");
     }
 
     @After
     public void tearDown() throws Exception {
-        DatabaseManager.deleteTables();
+        //DatabaseManager.flushTableData();
         DatabaseManager.closeConnection();
     }
 
     @Test
-    public void testAddUser() {
-        try {
-            DatabaseManager.addUser(InetAddress.getLocalHost(), "user");
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        // add select query to assert
-    }
-
-    @Test
     public void testAddMessage() {
-        try {
-            DatabaseManager.addMessage(new TextMessage(LocalDateTime.now(), new User(InetAddress.getLocalHost(), 9000, "user1"), new Conversation("user 1"), "message"));
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
+        DatabaseManager.addUser(this.user);
+        DatabaseManager.addConversation(this.conv);
+        DatabaseManager.addMessage(this.message);
     }
-
 }

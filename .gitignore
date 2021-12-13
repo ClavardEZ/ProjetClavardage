@@ -4,3 +4,6 @@
 # Ignore Gradle build output directory
 build
 /app/database.db
+
+# Ignore IDE files
+.idea

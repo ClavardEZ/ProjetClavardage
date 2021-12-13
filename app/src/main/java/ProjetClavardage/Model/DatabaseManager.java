@@ -99,13 +99,13 @@ public final class DatabaseManager {
         }
     }
 
-    public static void addUser(InetAddress ipaddress, String username) {
+    public static void addUser(User user) {
         String req = "INSERT INTO AppUser (ipaddress, username)" +
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
-            pstmt.setString(1, ipaddress.toString());
-            pstmt.setString(2, username);
+            pstmt.setString(1, user.getIP().toString());
+            pstmt.setString(2, user.getUsername());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {

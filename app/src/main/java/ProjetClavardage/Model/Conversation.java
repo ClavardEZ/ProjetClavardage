@@ -32,13 +32,16 @@ public class Conversation extends Thread {
         this.id = UUID.randomUUID();
         System.out.println("IDCONV : "+this.id);
         this.usersIP = usersIP;
-        try {
-            this.iStream = this.sock.getInputStream();
-            this.oStream = this.sock.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (s != null) {
+            try {
+                this.iStream = this.sock.getInputStream();
+                this.oStream = this.sock.getOutputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
+
     public Conversation (String str, Socket s, MessageThreadManager msgThMng, UUID id) {
         super(str);
         this.name = str;
