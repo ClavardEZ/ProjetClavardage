@@ -48,7 +48,9 @@ public class MessageThreadManager extends Thread {
             System.out.println("Connect ip adress:" + IPaddress.toString());
             Socket sock = new Socket(IPaddress, this.clientPort);
             System.out.println("HERE conversation added");
-            this.conversations.add(new Conversation(username, sock, this));
+            ArrayList<InetAddress> usersIP = new ArrayList<>();
+            usersIP.add(IPaddress);
+            this.conversations.add(new Conversation(username, sock, this, usersIP));
             this.conversations.get(this.conversations.size() - 1).start();
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,7 +82,9 @@ public class MessageThreadManager extends Thread {
                 }*/
                 //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
                 String str = "";
-                this.conversations.add(new Conversation(this.mc.getUsernameByIP(sock.getInetAddress()), sock, this));
+                ArrayList<InetAddress> usersIP = new ArrayList<>();
+                usersIP.add(sock.getInetAddress());
+                this.conversations.add(new Conversation(this.mc.getUsernameByIP(sock.getInetAddress()), sock, this,usersIP));
                 System.out.println("conversation added");
                 this.conversations.get(this.conversations.size() - 1).start();
                 this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());

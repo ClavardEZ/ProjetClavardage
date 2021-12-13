@@ -24,14 +24,14 @@ public class Conversation extends Thread {
     /*private ObjectInputStream oiStream;
     private ObjectOutputStream ooStream;*/
 
-    public Conversation (String str, Socket s, MessageThreadManager msgThMng) {
+    public Conversation (String str, Socket s, MessageThreadManager msgThMng,ArrayList<InetAddress> usersIP) {
         super(str);
         this.name = str;
         this.sock = s;
         this.msgThMng = msgThMng;
         this.id = UUID.randomUUID();
         System.out.println("IDCONV : "+this.id);
-        this.usersIP = new ArrayList<>();
+        this.usersIP = usersIP;
         try {
             this.iStream = this.sock.getInputStream();
             this.oStream = this.sock.getOutputStream();
