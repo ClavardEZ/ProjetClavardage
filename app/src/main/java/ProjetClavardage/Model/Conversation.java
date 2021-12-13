@@ -142,6 +142,8 @@ public class Conversation extends Thread {
 
     public UUID getID() {return this.id;}
 
+    public String getConvName() {return  this.name;}
+
 
 
 }

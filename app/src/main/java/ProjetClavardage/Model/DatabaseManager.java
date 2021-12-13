@@ -128,6 +128,21 @@ public final class DatabaseManager {
         }
     }
 
+    public static void addConversation(Conversation conversation) {
+        String req = "INSERT INTO Message (sent_date, id)" +
+                "VALUES(?, ?);";
+        try {
+            PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
+
+            pstmt.setString(1, conversation.getConvName());
+            pstmt.setString(2, conversation.getID().toString());
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static boolean closeConnection() {
         try {
             DatabaseManager.conn.close();
