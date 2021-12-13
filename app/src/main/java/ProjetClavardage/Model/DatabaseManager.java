@@ -93,6 +93,7 @@ public final class DatabaseManager {
             stmt.execute(reqUserInConv);
             System.out.println("UserInConv table created succesfully");
             System.out.println("Tables created succesfully");
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -106,6 +107,7 @@ public final class DatabaseManager {
             pstmt.setString(1, ipaddress.toString());
             pstmt.setString(2, username);
             pstmt.executeUpdate();
+            pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -172,13 +174,14 @@ public final class DatabaseManager {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
             String req = "TRUNCATE TABLE AppUser;" +
-                    "TRUNCATE TABLE ";
+                    "TRUNCATE TABLE Conversation;" +
+                    "TRUNCATE TABLE Message;" +
+                    "TRUNCATE TABLE User_in_conv;";
             stmt.execute(req);
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
     }
 
 }
