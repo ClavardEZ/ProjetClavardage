@@ -60,9 +60,7 @@ public class MainController {
         /*System.out.println("IP adress:" + InetAddress.getByName(this.pan.getUsername(index)));
         this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));*/
 
-        ArrayList<InetAddress> destinataires = new ArrayList<>();
-        destinataires.add(this.usersByUsername.get(this.pan.getUsername(index)).getIP());
-        this.msgThdMngr.openConnection(destinataires, this.pan.getUsername(index));
+        this.msgThdMngr.openConnection(this.usersByUsername.get(this.pan.getUsername(index)).getIP(), this.pan.getUsername(index),new Conversation("lala", msgThdMngr));
         System.out.println("IP address : " + this.usersByUsername.get(this.pan.getUsername(index)).getIP());
 
         //this.msgThdMngr.openConnection(InetAddress.getLocalHost());

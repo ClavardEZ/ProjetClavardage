@@ -13,5 +13,6 @@ public class SpecialMessage extends Message{
         this.usersIP = conversation.getUsersIP();
         this.convID = conversation.getID();
     }
+    public UUID getConvID() {return this.convID;}
     public ArrayList<InetAddress> getUsersIP(){return this.usersIP;}
 }

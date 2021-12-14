@@ -24,6 +24,24 @@ public class UserInConv extends Thread{
         }
     }
 
+    public void close() {
+        this.close();
+        this.interrupt();
+    }
+
+    public void send_message(Message msg) {
+        try {
+            //byte[] data = new byte[280];
+            //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
+            //this.oStream.write(data);
+            //System.out.println("conv sent message");
+            ObjectOutputStream ooStream = new ObjectOutputStream(sock.getOutputStream());
+            ooStream.writeObject(msg);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void run() {
         try {
         Message msg = null;
@@ -31,6 +49,11 @@ public class UserInConv extends Thread{
         do {
             oiStream = new ObjectInputStream(this.iStream);
             msg = (Message) oiStream.readObject();
+
+            if (msg instanceof SpecialMessage){  // un utilisateur ajoute et/ou supprime des gens -> on met a jour usersID
+                this.conv.maj_conv((SpecialMessage) msg);
+            }
+
             if (msg != null) {
                 System.out.println("received msg=" + msg.toString());
                 this.msgThMng.received(msg, this.conv);

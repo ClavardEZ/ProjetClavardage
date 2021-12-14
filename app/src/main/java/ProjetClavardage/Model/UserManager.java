@@ -42,10 +42,10 @@ public class UserManager extends Thread {
                 //TODO afficher user dans le panel
                 this.mc.addUser(user);
                 user.setConnected(false);
-                System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
+                //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
             }
             else { // si il s'est deco
-                System.out.println("user disconnected : " + user.getUsername());
+                //System.out.println("user disconnected : " + user.getUsername());
                 usersByIP.remove(user.getIP());
                 this.mc.removeUser(user);
             }
@@ -80,7 +80,7 @@ public class UserManager extends Thread {
                     DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
                             message.length(),broadcast, this.sendingPort);
                     dgramSocket.send(outPacket);
-                    System.out.println("UDP sent message");
+                    //System.out.println("UDP sent message");
                 }
             }
 
@@ -124,16 +124,16 @@ public class UserManager extends Thread {
             InetAddress lastAddress = null;
             while(true) {
                 DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
-                System.out.println("UDP :"+"waiting..." );
+                //System.out.println("UDP :"+"waiting..." );
                 dgramSocket.receive(inPacket);
                 InetAddress clientAddress = inPacket.getAddress();
-                System.out.println("Received from " + clientAddress);
+                //System.out.println("Received from " + clientAddress);
                 lastAddress = clientAddress;
                 int clientPort = inPacket.getPort();
                 String message = new String(inPacket.getData(), 0, inPacket.getLength());
-                System.out.println("UDP :"+message );
+                //System.out.println("UDP :"+message );
                 if (message.length()>2) {
-                    System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
+                    //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
                     if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
                         this.usersByIP.get(clientAddress).setUsername(message);
                     }
@@ -144,11 +144,11 @@ public class UserManager extends Thread {
                     if(this.usersByIP.get(clientAddress).isConnected()){
                         continue;
                     }
-                    System.out.println("Info : "+ clientAddress + "is still connected");
+                    //System.out.println("Info : "+ clientAddress + "is still connected");
                     this.usersByIP.get(clientAddress).setConnected(true);
                 }
                 else{ //cas d'une deconnexion
-                    System.out.println("deco");
+                    //System.out.println("deco");
                     this.usersByIP.remove(clientAddress);
                 }
                 String response= privateUser.getUsername();
