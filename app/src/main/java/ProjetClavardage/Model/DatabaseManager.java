@@ -41,40 +41,40 @@ public final class DatabaseManager {
     }
 
     public static void createTables() {
-        String reqAppUser = "CREATE TABLE IF NOT EXISTS AppUser (\n" +
-                "   ipaddress VARCHAR(15),\n" +
+        String reqUser = "CREATE TABLE IF NOT EXISTS user (\n" +
+                "   ip_address VARCHAR(15),\n" +
                 "   username VARCHAR(50),\n" +
-                "   PRIMARY KEY(ipaddress)\n" +
+                "   PRIMARY KEY(ip_address)\n" +
                 ");";
-        String reqConversation = "CREATE TABLE IF NOT EXISTS Conversation(\n" +
+        String reqConversation = "CREATE TABLE IF NOT EXISTS conversation(\n" +
                 "   id_conversation CHAR(36),\n" +
                 "   conv_name VARCHAR(50), \n" +
                 "   PRIMARY KEY(id_conversation)\n" +
                 ");\n";
-        String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
+        String reqMessage = "CREATE TABLE IF NOT EXISTS message(\n" +
                 "   id_message CHAR(36),\n" +
                 "   sent_date DATETIME,\n" +
                 "   content VARCHAR(280),\n" +
-                "   ipaddress VARCHAR(15),\n" +
+                "   ip_address VARCHAR(15),\n" +
                 "   id_conversation CHAR(36),\n" +
                 "   PRIMARY KEY(id_message),\n" +
-                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
-                "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation)\n" +
+                "   FOREIGN KEY(ip_address) REFERENCES user(ip_address),\n" +
+                "   FOREIGN KEY(id_conversation) REFERENCES conversation(id_conversation)\n" +
                 ");\n";
-        String reqUserInConv = "CREATE TABLE IF NOT EXISTS User_in_conv(\n" +
-                "   ipaddress VARCHAR(15),\n" +
+        String reqUserInConv = "CREATE TABLE IF NOT EXISTS user_in_conv(\n" +
+                "   ip_address VARCHAR(15),\n" +
                 "   id_conversation VARCHAR(50),\n" +
                 "   id_message CHAR(36),\n" +
-                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
-                "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation),\n" +
-                "   FOREIGN KEY(id_message) REFERENCES Message(id_message), " +
-                "   PRIMARY KEY(ipaddress, id_conversation, id_message)\n" +
+                "   FOREIGN KEY(ip_address) REFERENCES user(ip_address),\n" +
+                "   FOREIGN KEY(id_conversation) REFERENCES conversation(id_conversation),\n" +
+                "   FOREIGN KEY(id_message) REFERENCES message(id_message), " +
+                "   PRIMARY KEY(ip_address, id_conversation, id_message)\n" +
                 ");";
 
         Statement stmt = null;
         try {
             stmt = conn.createStatement();
-            stmt.execute(reqAppUser);
+            stmt.execute(reqUser);
             stmt.execute(reqConversation);
             stmt.execute(reqMessage);
             stmt.execute(reqUserInConv);
@@ -85,7 +85,7 @@ public final class DatabaseManager {
     }
 
     public static void addUser(User user) {
-        String req = "INSERT INTO AppUser (ipaddress, username)" +
+        String req = "INSERT INTO user (ip_address, username)" +
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
@@ -99,7 +99,7 @@ public final class DatabaseManager {
     }
 
     public static void addMessage(Message message) {
-        String req = "INSERT INTO Message (id_message, sent_date, content, ipaddress, id_conversation)" +
+        String req = "INSERT INTO message (id_message, sent_date, content, ip_address, id_conversation)" +
                 "VALUES(?, ?, ?, ?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
@@ -117,7 +117,7 @@ public final class DatabaseManager {
     }
 
     public static void addConversation(Conversation conversation) {
-        String req = "INSERT INTO Conversation (id_conversation, conv_name)" +
+        String req = "INSERT INTO conversation (id_conversation, conv_name)" +
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
@@ -144,10 +144,10 @@ public final class DatabaseManager {
     public static void deleteTables() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
-            String[] reqs = {"DROP TABLE IF EXISTS AppUser;",
-                    "DROP TABLE IF EXISTS Conversation;",
-                    "DROP TABLE IF EXISTS Message;",
-                    "DROP TABLE IF EXISTS User_in_conv;"};
+            String[] reqs = {"DROP TABLE IF EXISTS user;",
+                    "DROP TABLE IF EXISTS conversation;",
+                    "DROP TABLE IF EXISTS message;",
+                    "DROP TABLE IF EXISTS user_in_conv;"};
             for (int i = 0; i < reqs.length; i++) {
                 stmt.execute(reqs[i]);
             }
@@ -160,10 +160,10 @@ public final class DatabaseManager {
     public static void flushTableData() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
-            String[] reqs = {"DELETE TABLE AppUser;",
-                    "DELETE TABLE Conversation;",
-                    "DELETE TABLE Message;",
-                    "DELETE TABLE User_in_conv"};
+            String[] reqs = {"DELETE TABLE user;",
+                    "DELETE TABLE conversation;",
+                    "DELETE TABLE message;",
+                    "DELETE TABLE user_in_conv"};
             for (int i = 0; i < reqs.length; i++) {
                 stmt.execute(reqs[i]);
             }
@@ -173,17 +173,17 @@ public final class DatabaseManager {
         }
     }
 
-    public static User getUser(InetAddress ipaddress) {
+    public static User getUser(InetAddress ip_address) {
         String req = "SELECT *" +
-                "FROM AppUser " +
-                "WHERE ipaddress = ?;";
+                "FROM user " +
+                "WHERE ip_address = ?;";
         User user = null;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            stmt.setString(1, ipaddress.getHostAddress());
+            stmt.setString(1, ip_address.getHostAddress());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                user = new User(InetAddress.getByName(rs.getString("ipaddress")), -1, rs.getString("username"));
+                user = new User(InetAddress.getByName(rs.getString("ip_address")), -1, rs.getString("username"));
             }
             rs.close();
             stmt.close();
@@ -197,7 +197,7 @@ public final class DatabaseManager {
 
     public static Conversation getConversation(UUID convId) {
         String req = "SELECT *" +
-                "FROM Conversation " +
+                "FROM conversation " +
                 "WHERE id_conversation = ?";
         Conversation conv = null;
         try {
@@ -215,10 +215,9 @@ public final class DatabaseManager {
         return conv;
     }
 
-    // TODO bdd lower case (case sensitive)
     public static Message getMessage(UUID messageId, boolean isText) {
         String req = "SELECT *" +
-                "FROM Message " +
+                "FROM message " +
                 "WHERE id_message = ?;";
         Message message = null;
         try {
@@ -229,7 +228,7 @@ public final class DatabaseManager {
                 System.out.println("rs next");
                 if (isText) {
                     message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
-                            DatabaseManager.getUser(InetAddress.getByName(rs.getString("ipaddress"))),
+                            DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
                             DatabaseManager.getConversation(UUID.fromString(rs.getString("id_conversation"))),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content"));
