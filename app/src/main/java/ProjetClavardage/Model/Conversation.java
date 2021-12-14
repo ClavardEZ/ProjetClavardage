@@ -49,8 +49,10 @@ public class Conversation extends Thread {
         this.msgThMng = msgThMng;
         this.id = id;
         try {
-            this.iStream = this.sock.getInputStream();
-            this.oStream = this.sock.getOutputStream();
+            if (s != null) {
+                this.iStream = this.sock.getInputStream();
+                this.oStream = this.sock.getOutputStream();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -2,12 +2,15 @@ package ProjetClavardage.Model;
 
 import junit.framework.TestCase;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -19,13 +22,14 @@ public class DatabaseManagerTest extends TestCase {
     private Message message;
     private InetAddress inetAddress;
 
+    @Override
     @Before
     public void setUp() throws Exception {
         DatabaseManager.connect();
         DatabaseManager.createTables();
 
         // creating
-        this.inetAddress = InetAddress.getLocalHost();
+        this.inetAddress = InetAddress.getByName(InetAddress.getLocalHost().getHostAddress());
         this.user = new User(this.inetAddress, 0, "user");
         ArrayList<InetAddress> addresses = new ArrayList<>();
         addresses.add(this.user.getIP());
@@ -33,9 +37,11 @@ public class DatabaseManagerTest extends TestCase {
         this.message = new TextMessage(LocalDateTime.now(), this.user, this.conv, "message");
 
         // inserting
+        System.out.println("added");
         DatabaseManager.addUser(this.user);
         DatabaseManager.addConversation(this.conv);
         DatabaseManager.addMessage(this.message);
+        System.out.println("expected id : " + this.message.getId());
     }
 
     @After
@@ -48,8 +54,7 @@ public class DatabaseManagerTest extends TestCase {
     public void testGetUser() throws UnknownHostException {
         User reqResult = DatabaseManager.getUser(this.inetAddress);
         assertNotNull(reqResult);
-        assertEquals(this.user.getIP(), reqResult.getIP());
-        assertEquals(this.user.getUsername(), reqResult.getUsername());
+        assertEquals(this.user, reqResult);
     }
 
     @Test
@@ -58,5 +63,12 @@ public class DatabaseManagerTest extends TestCase {
         assertNotNull(reqResult);
         assertEquals(this.conv.getID(), reqResult.getID());
         assertEquals(this.conv.getConvName(), reqResult.getConvName());
+    }
+
+    @Test
+    public void testGetMessage() {
+        Message reqResult = DatabaseManager.getMessage(this.message.getId(), true);
+        assertNotNull(reqResult);
+        assertEquals(this.message, reqResult);
     }
 }

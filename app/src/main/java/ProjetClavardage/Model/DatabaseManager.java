@@ -52,23 +52,23 @@ public final class DatabaseManager {
                 "   PRIMARY KEY(id_conversation)\n" +
                 ");\n";
         String reqMessage = "CREATE TABLE IF NOT EXISTS Message(\n" +
-                "   id_message CHAR(36)" +
+                "   id_message CHAR(36),\n" +
                 "   sent_date DATETIME,\n" +
                 "   content VARCHAR(280),\n" +
                 "   ipaddress VARCHAR(15),\n" +
                 "   id_conversation CHAR(36),\n" +
                 "   PRIMARY KEY(id_message),\n" +
-                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress)\n" +
+                "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation)\n" +
                 ");\n";
         String reqUserInConv = "CREATE TABLE IF NOT EXISTS User_in_conv(\n" +
                 "   ipaddress VARCHAR(15),\n" +
                 "   id_conversation VARCHAR(50),\n" +
-                "   sent_date DATETIME,\n" +
-                "   PRIMARY KEY(ipaddress, id_conversation, sent_date),\n" +
+                "   id_message CHAR(36),\n" +
                 "   FOREIGN KEY(ipaddress) REFERENCES AppUser(ipaddress),\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES Conversation(id_conversation),\n" +
-                "   FOREIGN KEY(id_message) REFERENCES Message(id_message)\n" +
+                "   FOREIGN KEY(id_message) REFERENCES Message(id_message), " +
+                "   PRIMARY KEY(ipaddress, id_conversation, id_message)\n" +
                 ");";
 
         Statement stmt = null;
@@ -99,15 +99,16 @@ public final class DatabaseManager {
     }
 
     public static void addMessage(Message message) {
-        String req = "INSERT INTO Message (sent_date, content, ipaddress, id_conversation)" +
-                "VALUES(?, ?, ?, ?);";
+        String req = "INSERT INTO Message (id_message, sent_date, content, ipaddress, id_conversation)" +
+                "VALUES(?, ?, ?, ?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
 
-            pstmt.setTimestamp(1, Timestamp.valueOf(message.getDate()));
-            pstmt.setString(2, message.getContent());
-            pstmt.setString(3, message.getIP().toString());
-            pstmt.setString(4, message.getConvId().toString());
+            pstmt.setString(1, message.getId().toString());
+            pstmt.setTimestamp(2, Timestamp.valueOf(message.getDate()));
+            pstmt.setString(3, message.getContent());
+            pstmt.setString(4, message.getIP().getHostAddress());
+            pstmt.setString(5, message.getConvId().toString());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
@@ -214,9 +215,34 @@ public final class DatabaseManager {
         return conv;
     }
 
-    // TODO
-    public static Message getMessage() {
-        return null;
+    // TODO bdd lower case (case sensitive)
+    public static Message getMessage(UUID messageId, boolean isText) {
+        String req = "SELECT *" +
+                "FROM Message " +
+                "WHERE id_message = ?;";
+        Message message = null;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, messageId.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                System.out.println("rs next");
+                if (isText) {
+                    message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
+                            DatabaseManager.getUser(InetAddress.getByName(rs.getString("ipaddress"))),
+                            DatabaseManager.getConversation(UUID.fromString(rs.getString("id_conversation"))),
+                            UUID.fromString(rs.getString("id_message")),
+                            rs.getString("content"));
+                }
+                rs.close();
+                stmt.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        return message;
     }
 
 }
