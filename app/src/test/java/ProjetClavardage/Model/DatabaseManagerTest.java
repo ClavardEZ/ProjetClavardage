@@ -37,16 +37,14 @@ public class DatabaseManagerTest extends TestCase {
         this.message = new TextMessage(LocalDateTime.now(), this.user, this.conv, "message");
 
         // inserting
-        System.out.println("added");
         DatabaseManager.addUser(this.user);
         DatabaseManager.addConversation(this.conv);
         DatabaseManager.addMessage(this.message);
-        System.out.println("expected id : " + this.message.getId());
     }
 
     @After
     public void tearDown() {
-        DatabaseManager.deleteTables();
+        DatabaseManager.flushTableData();
         DatabaseManager.closeConnection();
     }
 

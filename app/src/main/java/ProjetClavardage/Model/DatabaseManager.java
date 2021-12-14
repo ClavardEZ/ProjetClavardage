@@ -131,6 +131,9 @@ public final class DatabaseManager {
         }
     }
 
+    // TODO
+    public static void addUserInConv(UserInConv userInConv) {}
+
     public static boolean closeConnection() {
         try {
             DatabaseManager.conn.close();
@@ -160,13 +163,10 @@ public final class DatabaseManager {
     public static void flushTableData() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
-            String[] reqs = {"DELETE TABLE user;",
-                    "DELETE TABLE conversation;",
-                    "DELETE TABLE message;",
-                    "DELETE TABLE user_in_conv"};
-            for (int i = 0; i < reqs.length; i++) {
-                stmt.execute(reqs[i]);
-            }
+            stmt.execute("DELETE FROM message;");
+            stmt.execute("DELETE FROM conversation;");
+            stmt.execute("DELETE FROM user;");
+            stmt.execute("DELETE FROM user_in_conv;");
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -225,7 +225,6 @@ public final class DatabaseManager {
             stmt.setString(1, messageId.toString());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                System.out.println("rs next");
                 if (isText) {
                     message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                             DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
@@ -242,6 +241,11 @@ public final class DatabaseManager {
             e.printStackTrace();
         }
         return message;
+    }
+
+    // TODO
+    public static UserInConv getUserInConv() {
+        return null;
     }
 
 }

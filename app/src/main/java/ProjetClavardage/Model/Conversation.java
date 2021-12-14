@@ -30,7 +30,6 @@ public class Conversation extends Thread {
         this.sock = s;
         this.msgThMng = msgThMng;
         this.id = UUID.randomUUID();
-        System.out.println("IDCONV : "+this.id);
         this.usersIP = usersIP;
         if (s != null) {
             try {
