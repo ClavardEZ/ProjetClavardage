@@ -83,10 +83,10 @@ public class MessageThreadManager extends Thread {
 
         try {
             //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
-            SocketAddress sa = new InetSocketAddress(getLocalAdress(), this.servPort);
+            SocketAddress sa = new InetSocketAddress(getLocalAddress(), this.servPort);
             servsock = new ServerSocket();
             servsock.bind(sa);
-            System.out.println("server listening on " + getLocalAdress() + " and port " + this.servPort);
+            System.out.println("server listening on " + getLocalAddress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 sock = servsock.accept();
                 //int i = 0;
@@ -158,7 +158,7 @@ public class MessageThreadManager extends Thread {
     }
     public int getClientPort(){return this.clientPort;}
 
-    public static InetAddress getLocalAdress() {
+    public static InetAddress getLocalAddress() {
         try {
             Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
             while (nis.hasMoreElements()) {
