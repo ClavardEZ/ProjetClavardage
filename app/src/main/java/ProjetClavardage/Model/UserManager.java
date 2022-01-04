@@ -141,9 +141,6 @@ public class UserManager extends Thread {
                         User user = new User(clientAddress,clientPort,message);
                         this.usersByIP.put(clientAddress,user);
                     }
-                    if(this.usersByIP.get(clientAddress).isConnected()){
-                        continue;
-                    }
                     //System.out.println("Info : "+ clientAddress + "is still connected");
                     this.usersByIP.get(clientAddress).setConnected(true);
                 }

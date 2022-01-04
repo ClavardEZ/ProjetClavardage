@@ -81,58 +81,64 @@ public class MessageThreadManager extends Thread {
 
         ServerSocket servsock = null;
 
-        try {
+
             //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
             SocketAddress sa = new InetSocketAddress(getLocalAddress(), this.servPort);
+        try {
             servsock = new ServerSocket();
             servsock.bind(sa);
-            System.out.println("server listening on " + getLocalAddress() + " and port " + this.servPort);
-            while (this.conversations.size()<=this.NB_CONV_MAX) {
-                sock = servsock.accept();
-                //int i = 0;
-                /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
-                    i++;
-                }*/
-                //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
-                String str = "";
-                ArrayList<InetAddress> usersIP = new ArrayList<>();
-                usersIP.add(sock.getInetAddress());
-
-
-                ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
-                SpecialMessage msg = (SpecialMessage) oiStream.readObject();
-
-
-                System.out.println("Conv Reception, Socket :" + sock.toString() +"   UUID sent : "+ msg.getConvID());
-                Conversation conv;
-                if(conversationHashMap.containsKey(msg.getConvID())) {
-                    conv = conversationHashMap.get(msg.getConvID());
-                    conv.addUser(sock);
-                }
-                else {
-                    conv = new Conversation("osef", this,msg.getConvID());
-                    this.conversations.add(conv);
-                    this.conversationHashMap.put(msg.getConvID(),conv);
-                    conv.addUser(sock);
-                    System.out.println("conversation added");
-                    this.mc.addConversationTab(conv);
-                }
-                for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
-                     ) {
-                    openConnection(ip,"osef",conv);
-                }
-
-                //TODO, ajouter les socket dans la conv
-                //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
-
-                // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
-                //this.mc.addContact(sock.getInetAddress().toString());
-            }
         } catch (IOException e) {
             e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
         }
+            System.out.println("server listening on " + getLocalAddress() + " and port " + this.servPort);
+            while (this.conversations.size()<=this.NB_CONV_MAX) {
+                try{
+                    sock = servsock.accept();
+                    //int i = 0;
+                    /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
+                        i++;
+                    }*/
+                    //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
+                    String str = "";
+                    ArrayList<InetAddress> usersIP = new ArrayList<>();
+                    usersIP.add(sock.getInetAddress());
+
+
+                    ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
+                    SpecialMessage msg = (SpecialMessage) oiStream.readObject();
+
+
+                    System.out.println("Conv Reception, Socket :" + sock.toString() +"   UUID sent : "+ msg.getConvID());
+                    Conversation conv;
+                    if(conversationHashMap.containsKey(msg.getConvID())) {
+                        conv = conversationHashMap.get(msg.getConvID());
+                        conv.addUser(sock);
+                    }
+                    else {
+                        conv = new Conversation("osef", this,msg.getConvID());
+                        this.conversations.add(conv);
+                        this.conversationHashMap.put(msg.getConvID(),conv);
+                        conv.addUser(sock);
+                        System.out.println("conversation added");
+                        this.mc.addConversationTab(conv);
+                    }
+                    for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
+                         ) {
+                        openConnection(ip,"osef",conv);
+                    }
+
+                    //TODO, ajouter les socket dans la conv
+                    //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+
+                    // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
+                    //this.mc.addContact(sock.getInetAddress().toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
     public void close_conversation(int conv_id) {
         this.conversations.get(conv_id).close_connection();

@@ -244,6 +244,9 @@ public class Pan extends JPanel {
     }
 
     public int getSelectedIndex() {
+        /*if (this.tabs.getSelectedIndex()<0) {
+            return 0;
+        }*/
         return this.tabs.getSelectedIndex();
     }
 
