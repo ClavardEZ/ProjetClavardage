@@ -122,7 +122,7 @@ public final class DatabaseManager {
             pstmt.setTimestamp(1, Timestamp.valueOf(message.getDate()));
             pstmt.setString(2, message.getContent());
             pstmt.setString(3, message.getIP().toString());
-            pstmt.setString(4, message.getConvId().toString());
+            pstmt.setString(4, message.getConvID().toString());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {

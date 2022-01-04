@@ -219,10 +219,11 @@ public class Pan extends JPanel {
         this.contacts.removeElement(username);
     }
 
-    public void addConversationTab(String title) {
+    public ChatPanel addConversationTab(String title) {
         this.chatPanels.add(new ChatPanel(this));
         tabs.addTab(title, this.chatPanels.get(this.chatPanels.size() - 1));
         tabs.setTabComponentAt(this.tabs.getTabCount() - 1, new ButtonTabComponent(this.mc, tabs, this.closeImage, this.tabs.getTabCount() - 1, this));
+        return this.chatPanels.get(this.chatPanels.size() - 1);
         // TODO add reveived conv to contacts tab
     }
 
@@ -230,9 +231,9 @@ public class Pan extends JPanel {
         this.tabs.remove(index);
     }
 
-    public void addTextToTab(int tabIndex, String text) {
-        // TODO refactor to not use index
-        ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
+    public void addTextToTab(ChatPanel chatPanel, String text) {
+        // TODO refactor to not use index  ::::Cbon
+        //ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText(text, false);
     }
 

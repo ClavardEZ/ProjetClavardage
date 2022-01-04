@@ -24,10 +24,16 @@ public class ControllerContactList implements MouseListener {
             index = list.locationToIndex(e.getPoint());
             this.mc.openConversation(index);
         }
+
     }
 
     @Override
     public void mousePressed(MouseEvent e) {
+        //TODO faire un truc plus propre
+        JList list =(JList) e.getSource();
+        int index = -1;
+        index = list.locationToIndex(e.getPoint());
+        this.mc.addUserInConv(index);
 
     }
 

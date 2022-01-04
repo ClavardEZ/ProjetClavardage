@@ -57,12 +57,12 @@ public class MessageThreadManager extends Thread {
             System.out.println("HERE conversation added");
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
-            this.conversationHashMap.put(conv.getID(),conv);
-            this.conversations.add(conv);
-            //conv.init();
-            //conv.start();
+            if (!conversationHashMap.containsKey(conv.getID())) {
+                this.conversationHashMap.put(conv.getID(), conv);
+                this.conversations.add(conv);
+            }
             SpecialMessage spemsg = new SpecialMessage(conv);
-            System.out.println("UUID sent : "+ spemsg.getConvID());
+            System.out.println("Conv Creation, Socket :" + sock.toString() +"   UUID sent : "+ spemsg.getConvID());
             conv.send_message(spemsg);
 
         } catch (IOException e) {
@@ -102,7 +102,8 @@ public class MessageThreadManager extends Thread {
                 ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
                 SpecialMessage msg = (SpecialMessage) oiStream.readObject();
 
-                System.out.println("UUID received : "+ msg.getConvID());
+
+                System.out.println("Conv Reception, Socket :" + sock.toString() +"   UUID sent : "+ msg.getConvID());
                 Conversation conv;
                 if(conversationHashMap.containsKey(msg.getConvID())) {
                     conv = conversationHashMap.get(msg.getConvID());
@@ -114,6 +115,7 @@ public class MessageThreadManager extends Thread {
                     this.conversationHashMap.put(msg.getConvID(),conv);
                     conv.addUser(sock);
                     System.out.println("conversation added");
+                    this.mc.addConversationTab(conv);
                 }
                 for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
                      ) {
@@ -121,7 +123,8 @@ public class MessageThreadManager extends Thread {
                 }
 
                 //TODO, ajouter les socket dans la conv
-                this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+                //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+
                 // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
                 //this.mc.addContact(sock.getInetAddress().toString());
             }
@@ -155,7 +158,8 @@ public class MessageThreadManager extends Thread {
 
     public void received(Message msg, Conversation conv) {
         String text = msg.getUser().getUsername() + ">" + msg.getContent();
-        this.mc.addTextToTab(this.conversations.indexOf(conv), text);
+        //this.mc.addTextToTab(this.conversations.indexOf(conv), text);
+        this.mc.addTextToTab(conv,text);
     }
     public int getClientPort(){return this.clientPort;}
 
@@ -178,5 +182,7 @@ public class MessageThreadManager extends Thread {
         }
         return null;
     }
+
+    public HashMap<UUID,Conversation> getConvByID() {return this.conversationHashMap;}
 
 }
