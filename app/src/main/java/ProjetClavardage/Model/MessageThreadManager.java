@@ -105,12 +105,13 @@ public class MessageThreadManager extends Thread {
                 System.out.println("UUID received : "+ msg.getConvID());
                 Conversation conv;
                 if(conversationHashMap.containsKey(msg.getConvID())) {
-                    conv = conversationHashMap.get(msg.getConvId());
+                    conv = conversationHashMap.get(msg.getConvID());
                     conv.addUser(sock);
                 }
                 else {
                     conv = new Conversation("osef", this,msg.getConvID());
                     this.conversations.add(conv);
+                    this.conversationHashMap.put(msg.getConvID(),conv);
                     conv.addUser(sock);
                     System.out.println("conversation added");
                 }

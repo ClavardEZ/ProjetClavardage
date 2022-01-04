@@ -54,7 +54,7 @@ public class UserInConv extends Thread{
                 this.conv.maj_conv((SpecialMessage) msg);
             }
 
-            if (msg != null) {
+            else if (msg != null) {
                 System.out.println("received msg=" + msg.toString());
                 this.msgThMng.received(msg, this.conv);
             }
