@@ -198,7 +198,7 @@ public final class DatabaseManager {
     public static Conversation getConversation(UUID convId) {
         String req = "SELECT *" +
                 "FROM conversation " +
-                "WHERE id_conversation = ?";
+                "WHERE id_conversation = ?;";
         Conversation conv = null;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
@@ -250,7 +250,7 @@ public final class DatabaseManager {
 
     public static void removeUser(InetAddress ip_address) {
         String req = "DELETE FROM user" +
-                "WHERE ip_addres = ?";
+                " WHERE ip_address = ?;";
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
             stmt.setString(1, ip_address.getHostAddress());
@@ -259,6 +259,37 @@ public final class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void removeConversation(UUID convId) {
+        String req = "DELETE FROM conversation" +
+                " WHERE id_conversation = ?";
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, convId.toString());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void removeMessage(UUID messageId, boolean isText) {
+        String req = "DELETE FROM message" +
+                " WHERE id_message = ?";
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, messageId.toString());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // TODO
+    public static void removeUserInConv() {
+
     }
 
 }

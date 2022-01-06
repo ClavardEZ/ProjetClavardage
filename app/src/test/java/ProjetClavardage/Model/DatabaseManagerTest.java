@@ -69,4 +69,22 @@ public class DatabaseManagerTest extends TestCase {
         assertNotNull(reqResult);
         assertEquals(this.message, reqResult);
     }
+
+    @Test
+    public void testRemoveUser() {
+        DatabaseManager.removeUser(this.user.getIP());
+        assertNull(DatabaseManager.getUser(this.user.getIP()));
+    }
+
+    @Test
+    public void testRemoveConversation() {
+        DatabaseManager.removeConversation(this.conv.getID());
+        assertNull(DatabaseManager.getConversation(this.conv.getID()));
+    }
+
+    @Test
+    public void testRemoveMessage() {
+        DatabaseManager.removeMessage(this.message.getId(), true);
+        assertNull(DatabaseManager.getMessage(this.message.getId(), true));
+    }
 }
