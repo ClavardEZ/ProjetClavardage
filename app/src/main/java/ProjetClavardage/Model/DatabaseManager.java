@@ -248,4 +248,17 @@ public final class DatabaseManager {
         return null;
     }
 
+    public static void removeUser(InetAddress ip_address) {
+        String req = "DELETE FROM user" +
+                "WHERE ip_addres = ?";
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ip_address.getHostAddress());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
