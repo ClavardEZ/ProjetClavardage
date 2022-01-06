@@ -103,7 +103,6 @@ public final class DatabaseManager {
                 "VALUES(?, ?, ?, ?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
-
             pstmt.setString(1, message.getId().toString());
             pstmt.setTimestamp(2, Timestamp.valueOf(message.getDate()));
             pstmt.setString(3, message.getContent());

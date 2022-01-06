@@ -9,6 +9,7 @@ import java.util.Date;
 
 public abstract class Message implements Serializable {
     private LocalDateTime sentDate;
+    private UUID convID;
 
     private User user;
     private transient Conversation conversation;
@@ -18,6 +19,7 @@ public abstract class Message implements Serializable {
         this.sentDate = date;
         this.conversation = conv;
         this.user = null;
+        this.convID = this.conversation.getID();
         this.id = UUID.randomUUID();
     }
 
@@ -25,6 +27,7 @@ public abstract class Message implements Serializable {
         this.sentDate = sentDate;
         this.user = user;
         this.conversation = conversation;
+        this.convID = conversation.getID();
         this.id = UUID.randomUUID();
     }
 
@@ -33,6 +36,7 @@ public abstract class Message implements Serializable {
         this.user = user;
         this.conversation = conversation;
         this.id = id;
+        this.convID = conversation.getID();
     }
 
     public UUID getId() {
@@ -44,7 +48,9 @@ public abstract class Message implements Serializable {
     }
     public LocalDateTime getDate(){return this.sentDate;}
     public InetAddress getIP(){return this.user.getIP();}
-    public UUID getConvId(){return this.conversation.getID();}
+
+    public UUID getConvID() {return this.convID;}
+  
     public Conversation getConv(){return this.conversation;}
 
     @Override
@@ -52,7 +58,7 @@ public abstract class Message implements Serializable {
         return "Message{" +
                 "sentDate=" + sentDate +
                 ", user=" + user +
-                ", conversation=" + conversation +
+                ", conversationID=" + this.convID.toString() +
                 '}';
     }
 
