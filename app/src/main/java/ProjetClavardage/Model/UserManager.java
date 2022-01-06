@@ -35,21 +35,21 @@ public class UserManager extends Thread {
     }
 
     public void users_update () {
+        synchronized (this) {
+            for (User user : usersByIP.values()
+            ) {
+                if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
+                    //TODO afficher user dans le panel
+                    this.mc.addUser(user);
+                    user.setConnected(false);
+                    //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
+                } else { // si il s'est deco
+                    //System.out.println("user disconnected : " + user.getUsername());
+                    usersByIP.remove(user.getIP());
+                    this.mc.removeUser(user);
+                }
 
-        for (User user:usersByIP.values()
-             ) {
-            if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
-                //TODO afficher user dans le panel
-                this.mc.addUser(user);
-                user.setConnected(false);
-                //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
             }
-            else { // si il s'est deco
-                //System.out.println("user disconnected : " + user.getUsername());
-                usersByIP.remove(user.getIP());
-                this.mc.removeUser(user);
-            }
-
         }
     }
 
@@ -119,45 +119,45 @@ public class UserManager extends Thread {
 
     // ecoute les connexion entrantes de nouveaux utilisateurs
     public void run() {
-        try {
             byte[] buffer = new byte[256];
             InetAddress lastAddress = null;
             while(true) {
-                DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
-                //System.out.println("UDP :"+"waiting..." );
-                dgramSocket.receive(inPacket);
-                InetAddress clientAddress = inPacket.getAddress();
-                //System.out.println("Received from " + clientAddress);
-                lastAddress = clientAddress;
-                int clientPort = inPacket.getPort();
-                String message = new String(inPacket.getData(), 0, inPacket.getLength());
-                //System.out.println("UDP :"+message );
-                if (message.length()>2) {
-                    //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
-                    if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
-                        this.usersByIP.get(clientAddress).setUsername(message);
+                try {
+                    DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
+                    //System.out.println("UDP :"+"waiting..." );
+                    dgramSocket.receive(inPacket);
+                    InetAddress clientAddress = inPacket.getAddress();
+                    //System.out.println("Received from " + clientAddress);
+                    lastAddress = clientAddress;
+                    int clientPort = inPacket.getPort();
+                    String message = new String(inPacket.getData(), 0, inPacket.getLength());
+                    //System.out.println("UDP :"+message );
+                    if (message.length()>2) {
+                        //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
+                        if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
+                            this.usersByIP.get(clientAddress).setUsername(message);
+                        }
+                        else {  //cas ou on découvre qu'il est connecte
+                            User user = new User(clientAddress,clientPort,message);
+                            this.usersByIP.put(clientAddress,user);
+                        }
+                        //System.out.println("Info : "+ clientAddress + "is still connected");
+                        this.usersByIP.get(clientAddress).setConnected(true);
+                        String response= privateUser.getUsername();
+                        DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
+                                clientAddress, clientPort);
+                        dgramSocket.send(outPacket);
                     }
-                    else {  //cas ou on découvre qu'il est connecte
-                        User user = new User(clientAddress,clientPort,message);
-                        this.usersByIP.put(clientAddress,user);
+                    else{ //cas d'une deconnexion
+                        //System.out.println("deco");
+                        this.usersByIP.remove(clientAddress);
                     }
-                    //System.out.println("Info : "+ clientAddress + "is still connected");
-                    this.usersByIP.get(clientAddress).setConnected(true);
+                } catch (SocketException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-                else{ //cas d'une deconnexion
-                    //System.out.println("deco");
-                    this.usersByIP.remove(clientAddress);
-                }
-                String response= privateUser.getUsername();
-                DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
-                                                                clientAddress, clientPort);
-                dgramSocket.send(outPacket);
             }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     // ?

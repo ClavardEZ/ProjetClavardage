@@ -83,7 +83,7 @@ public class MessageThreadManager extends Thread {
 
 
             //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
-            SocketAddress sa = new InetSocketAddress(getLocalAddress(), this.servPort);
+            SocketAddress sa = new InetSocketAddress(this.servPort);
         try {
             servsock = new ServerSocket();
             servsock.bind(sa);
