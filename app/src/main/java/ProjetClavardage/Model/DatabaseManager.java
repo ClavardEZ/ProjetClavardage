@@ -107,7 +107,7 @@ public final class DatabaseManager {
             pstmt.setTimestamp(2, Timestamp.valueOf(message.getDate()));
             pstmt.setString(3, message.getContent());
             pstmt.setString(4, message.getIP().getHostAddress());
-            pstmt.setString(5, message.getConvId().toString());
+            pstmt.setString(5, message.getConvID().toString());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
@@ -194,7 +194,7 @@ public final class DatabaseManager {
         return user;
     }
 
-    public static Conversation getConversation(UUID convId) {
+    public static Conversation getConversation(UUID convId, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM conversation " +
                 "WHERE id_conversation = ?;";
@@ -204,7 +204,7 @@ public final class DatabaseManager {
             stmt.setString(1, convId.toString());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                conv = new Conversation(rs.getString("conv_name"), null, null, UUID.fromString(rs.getString("id_conversation")));
+                conv = new Conversation(rs.getString("conv_name"), msgThdMngr, UUID.fromString(rs.getString("id_conversation")));
             }
             rs.close();
             stmt.close();
@@ -214,7 +214,7 @@ public final class DatabaseManager {
         return conv;
     }
 
-    public static Message getMessage(UUID messageId, boolean isText) {
+    public static Message getMessage(UUID messageId, boolean isText, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM message " +
                 "WHERE id_message = ?;";
@@ -227,7 +227,7 @@ public final class DatabaseManager {
                 if (isText) {
                     message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                             DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
-                            DatabaseManager.getConversation(UUID.fromString(rs.getString("id_conversation"))),
+                            DatabaseManager.getConversation(UUID.fromString(rs.getString("id_conversation")), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content"));
                 }

@@ -33,7 +33,7 @@ public class DatabaseManagerTest extends TestCase {
         this.user = new User(this.inetAddress, 0, "user");
         ArrayList<InetAddress> addresses = new ArrayList<>();
         addresses.add(this.user.getIP());
-        this.conv = new Conversation("Conv #1", null, null, addresses);
+        this.conv = new Conversation("Conv #1", null);
         this.message = new TextMessage(LocalDateTime.now(), this.user, this.conv, "message");
 
         // inserting
@@ -57,7 +57,7 @@ public class DatabaseManagerTest extends TestCase {
 
     @Test
     public void testGetConversation() {
-        Conversation reqResult = DatabaseManager.getConversation(this.conv.getID());
+        Conversation reqResult = DatabaseManager.getConversation(this.conv.getID(), null);
         assertNotNull(reqResult);
         assertEquals(this.conv.getID(), reqResult.getID());
         assertEquals(this.conv.getConvName(), reqResult.getConvName());
@@ -65,7 +65,7 @@ public class DatabaseManagerTest extends TestCase {
 
     @Test
     public void testGetMessage() {
-        Message reqResult = DatabaseManager.getMessage(this.message.getId(), true);
+        Message reqResult = DatabaseManager.getMessage(this.message.getId(), true, null);
         assertNotNull(reqResult);
         assertEquals(this.message, reqResult);
     }
@@ -79,12 +79,12 @@ public class DatabaseManagerTest extends TestCase {
     @Test
     public void testRemoveConversation() {
         DatabaseManager.removeConversation(this.conv.getID());
-        assertNull(DatabaseManager.getConversation(this.conv.getID()));
+        assertNull(DatabaseManager.getConversation(this.conv.getID(), null));
     }
 
     @Test
     public void testRemoveMessage() {
         DatabaseManager.removeMessage(this.message.getId(), true);
-        assertNull(DatabaseManager.getMessage(this.message.getId(), true));
+        assertNull(DatabaseManager.getMessage(this.message.getId(), true, null));
     }
 }

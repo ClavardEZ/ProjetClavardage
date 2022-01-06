@@ -29,12 +29,12 @@ public class ControllerContactList implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        //TODO faire un truc plus propre
+       /* //TODO faire un truc plus propre
         JList list =(JList) e.getSource();
         int index = -1;
         index = list.locationToIndex(e.getPoint());
         this.mc.addUserInConv(index);
-
+*/
     }
 
     @Override
