@@ -61,11 +61,14 @@ public class UserInConv extends Thread{
         } while (msg != null);
         System.out.println("closed");
         this.msgThMng.close_conversation_conv(this.conv);
-    } catch (SocketException e) {
-        System.out.println("Client disconnected");
-    } catch (IOException | ClassNotFoundException e) {
-        e.printStackTrace();
+        } catch (SocketException e) {
+            System.out.println("Client disconnected");
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
+    public InetAddress getSocketAddress() {
+        return this.sock.getInetAddress();
     }
 }

@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +22,7 @@ public class DatabaseManagerTest extends TestCase {
     private Conversation conv;
     private Message message;
     private InetAddress inetAddress;
+    //private UserInConv userInConv;
 
     @Override
     @Before
@@ -35,11 +37,13 @@ public class DatabaseManagerTest extends TestCase {
         addresses.add(this.user.getIP());
         this.conv = new Conversation("Conv #1", null);
         this.message = new TextMessage(LocalDateTime.now(), this.user, this.conv, "message");
+        //this.userInConv = new UserInConv("UserInConv", new Socket(this.inetAddress, 9000), null, this.conv);
 
         // inserting
         DatabaseManager.addUser(this.user);
         DatabaseManager.addConversation(this.conv);
         DatabaseManager.addMessage(this.message);
+        DatabaseManager.addUserInConv(this.inetAddress, this.conv.getID());
     }
 
     @After

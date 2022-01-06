@@ -6,6 +6,7 @@ import net.harawata.appdirs.AppDirsFactory;
 import javax.swing.plaf.nimbus.State;
 import javax.xml.crypto.Data;
 import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
@@ -67,8 +68,7 @@ public final class DatabaseManager {
                 "   id_message CHAR(36),\n" +
                 "   FOREIGN KEY(ip_address) REFERENCES user(ip_address),\n" +
                 "   FOREIGN KEY(id_conversation) REFERENCES conversation(id_conversation),\n" +
-                "   FOREIGN KEY(id_message) REFERENCES message(id_message), " +
-                "   PRIMARY KEY(ip_address, id_conversation, id_message)\n" +
+                "   PRIMARY KEY(ip_address, id_conversation)\n" +
                 ");";
 
         Statement stmt = null;
@@ -131,7 +131,19 @@ public final class DatabaseManager {
     }
 
     // TODO
-    public static void addUserInConv(UserInConv userInConv) {}
+    public static void addUserInConv(InetAddress ip_address, UUID conv_id) {
+        String req = "INSERT INTO user_in_conv (ip_address, id_conversation)" +
+                " VALUES(?, ?);";
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ip_address.getHostAddress());
+            stmt.setString(2, conv_id.toString());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static boolean closeConnection() {
         try {
@@ -243,8 +255,36 @@ public final class DatabaseManager {
     }
 
     // TODO
-    public static UserInConv getUserInConv() {
-        return null;
+    public static UserInConv getUserInConv(InetAddress ip_address, UUID id_conv, MessageThreadManager msgThdMngr, boolean isSocket) {
+        String req = "SELECT *" +
+                " FROM user_in_conv" +
+                " WHERE ip_address = ?" +
+                " AND id_conversation = ?;";
+        UserInConv userInConv = null;
+
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ip_address.getHostAddress());
+            stmt.setString(2, id_conv.toString());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Conversation conv = DatabaseManager.getConversation(id_conv, msgThdMngr);
+                if (isSocket) {
+                    userInConv = new UserInConv("none", new Socket(InetAddress.getByName(rs.getString("ip_address")), MessageThreadManager.NUM_PORT), msgThdMngr, conv);
+                }
+                userInConv = new UserInConv("none", null, msgThdMngr, conv);
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return userInConv;
     }
 
     public static void removeUser(InetAddress ip_address) {
@@ -287,8 +327,18 @@ public final class DatabaseManager {
     }
 
     // TODO
-    public static void removeUserInConv() {
-
+    public static void removeUserInConv(InetAddress ip_address, UUID id_conversation) {
+        String req = "DELETE FROM user_in_conv" +
+                " WHERE ip_address = ?" +
+                " AND id_conversation = ?;";
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ip_address.getHostAddress());
+            stmt.setString(2, id_conversation.toString());
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

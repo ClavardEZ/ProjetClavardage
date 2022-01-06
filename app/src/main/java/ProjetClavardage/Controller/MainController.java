@@ -5,6 +5,7 @@ import ProjetClavardage.View.ButtonTabComponent;
 import ProjetClavardage.View.ChatPanel;
 import ProjetClavardage.View.Pan;
 
+import javax.xml.crypto.Data;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
@@ -37,6 +38,9 @@ public class MainController {
         this.userManager.start_listener();
         this.userManager.start();
         this.userManager.sender(true);
+
+        DatabaseManager.connect();
+        DatabaseManager.createTables();
     }
 
     public String getUsernameByIP(InetAddress ip) {
@@ -49,6 +53,9 @@ public class MainController {
             // ajout à a vue
             // can be called directly
             this.addContact(user.getUsername());
+            // ajout dans la bd
+            if (DatabaseManager.getUser(user.getIP()) == null)
+                DatabaseManager.addUser(user);
         }
     }
 
@@ -64,6 +71,7 @@ public class MainController {
         Conversation conv = this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex());
         //this.msgThdMngr.openConnection(this.usersByUsername.get(this.pan.getUsername(index)).getIP(), this.pan.getUsername(index),conv);
         //System.out.println("New user in conv, IP :  " + this.usersByUsername.get(this.pan.getUsername(index)).getIP());
+        //DatabaseManager.addUserInConv();
     }
 
     public void openConversation(int index) {
@@ -92,6 +100,9 @@ public class MainController {
             System.out.println("TAB SELECTIONNE : "+ this.pan.getSelectedIndex());
             this.msgThdMngr.send(msg, this.pan.getSelectedIndex());
             this.pan.emptyTextField();
+
+            // ajout a la bd
+            DatabaseManager.addMessage(msg);
         }
     }
 
@@ -101,6 +112,7 @@ public class MainController {
     public void addConversationTab(Conversation conv) {
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         this.tabByConv.put(conv,chatPanel);
+        DatabaseManager.addConversation(conv);
     }
 
     public void addContact(String username) {
