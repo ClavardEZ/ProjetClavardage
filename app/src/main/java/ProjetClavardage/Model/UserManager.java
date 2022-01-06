@@ -74,7 +74,7 @@ public class UserManager extends Thread {
                 {
                     InetAddress broadcast = interfaceAddress.getBroadcast();
                     // second condition for test only
-                    if (broadcast == null || broadcast.toString().contains("11"))
+                    if (broadcast == null || broadcast.toString().contains("10"))
                         continue;
 
                     DatagramPacket outPacket = new DatagramPacket(message.getBytes(),

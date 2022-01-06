@@ -1,4 +1,6 @@
 package ProjetClavardage.Model;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 import java.io.Serializable;
 import java.net.InetAddress;
@@ -18,6 +20,7 @@ public abstract class Message implements Serializable {
         this.conversation = conv;
         this.user = null;
         this.convID = this.conversation.getID();
+        this.id = UUID.randomUUID();
     }
 
     public Message(LocalDateTime sentDate, User user, Conversation conversation) {
@@ -25,6 +28,7 @@ public abstract class Message implements Serializable {
         this.user = user;
         this.conversation = conversation;
         this.convID = conversation.getID();
+        this.id = UUID.randomUUID();
     }
 
     public Message(LocalDateTime sentDate, User user, Conversation conversation, UUID id) {
@@ -36,7 +40,7 @@ public abstract class Message implements Serializable {
     }
 
     public UUID getId() {
-        return id;
+        return this.id;
     }
 
     public String getContent() {
@@ -44,7 +48,9 @@ public abstract class Message implements Serializable {
     }
     public LocalDateTime getDate(){return this.sentDate;}
     public InetAddress getIP(){return this.user.getIP();}
+
     public UUID getConvID() {return this.convID;}
+  
     public Conversation getConv(){return this.conversation;}
 
     @Override
@@ -58,5 +64,16 @@ public abstract class Message implements Serializable {
 
     public User getUser() {
         return user;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Message message = (Message) o;
+        return sentDate.truncatedTo(ChronoUnit.MILLIS).equals(message.sentDate.truncatedTo(ChronoUnit.MILLIS))
+                && user.equals(message.user)
+                && Objects.equals(conversation.getID(), message.conversation.getID())
+                && id.equals(message.id);
     }
 }
