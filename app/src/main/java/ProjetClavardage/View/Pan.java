@@ -1,9 +1,6 @@
 package ProjetClavardage.View;
 
-import ProjetClavardage.Controller.ControllerAddConversation;
-import ProjetClavardage.Controller.ControllerContactList;
-import ProjetClavardage.Controller.ControllerSendMessage;
-import ProjetClavardage.Controller.MainController;
+import ProjetClavardage.Controller.*;
 /*import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
 import ProjetClavardage.Model.TextMessage;*/
@@ -95,11 +92,14 @@ public class Pan extends JPanel {
         JButton logout = new JButton(new ImageIcon(logoutImage));
         JButton settings = new JButton(new ImageIcon(settingsImage));
         JButton userPic = new JButton(new ImageIcon(userImage));
+        JButton search = new JButton("Search message");
+        search.addActionListener(new ControllerSearchMessage(this, this.mc));
         userPic.setEnabled(false);
 
         optionsPanel.add(logout);
         optionsPanel.add(settings);
         optionsPanel.add(userPic);
+        optionsPanel.add(search);
 
         /* conversations panel */
         JPanel conversationsPanel = new JPanel();
@@ -241,6 +241,12 @@ public class Pan extends JPanel {
         int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText( this.mc.getPrivateUsername() + ">" + this.textField.getText(), true);
+    }
+
+    public void addTextToTabAsSender(String text) {
+        int tabIndex = this.tabs.getSelectedIndex();
+        ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
+        chatPanel.addText( this.mc.getPrivateUsername() + ">" + text, true);
     }
 
     public int getSelectedIndex() {

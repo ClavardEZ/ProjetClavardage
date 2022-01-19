@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainController {
     // TODO link users lists with pan through this class
@@ -54,8 +55,10 @@ public class MainController {
             // can be called directly
             this.addContact(user.getUsername());
             // ajout dans la bd
-            if (DatabaseManager.getUser(user.getIP()) == null)
+            if (DatabaseManager.getUser(user.getIP()) == null) {
+                System.out.println("user added to database");
                 DatabaseManager.addUser(user);
+            }
         }
     }
 
@@ -79,13 +82,33 @@ public class MainController {
         /*System.out.println("IP adress:" + InetAddress.getByName(this.pan.getUsername(index)));
         this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));*/
 
-        Conversation conv = new Conversation("lala", msgThdMngr);
-        this.msgThdMngr.openConnection(this.usersByUsername.get(this.pan.getUsername(index)).getIP(), this.pan.getUsername(index),conv);
-        System.out.println("IP address : " + this.usersByUsername.get(this.pan.getUsername(index)).getIP());
+        // TODO utiliser hashmap au lieu de index ? peut faire bugger
+        Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
+        InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
+        this.msgThdMngr.openConnection(ip_address, this.pan.getUsername(index),conv);
+        System.out.println("IP address : " + ip_address);
         //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
         ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
         this.tabByConv.put(conv,chatPanel);
+
+        // ajout à la base de données
+        // si la conversation est déjà présente dans la base de données on charge les messages
+        if (DatabaseManager.getConversation(ip_address, this.msgThdMngr) != null) {
+            System.out.println("conv already exists in database messages loaded");
+            List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
+            for (Message message :
+                    messages) {
+                if (message.getIP().equals(ip_address)) {
+                    this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                } else {
+                    this.pan.addTextToTabAsSender(message.getContent());
+                }
+            }
+        } else {
+            System.out.println("new conv in database");
+            DatabaseManager.addConversation(conv, ip_address);
+        }
     }
 
     public void closeConversation(int index) {
@@ -112,7 +135,27 @@ public class MainController {
     public void addConversationTab(Conversation conv) {
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         this.tabByConv.put(conv,chatPanel);
-        DatabaseManager.addConversation(conv);
+        //DatabaseManager.addConversation();
+        InetAddress ip_address = null;
+        if (conv.getUsersIP().size() > 0) {
+            ip_address = conv.getUsersIP().get(0);
+            // si la conversation est déjà dans la base de données
+            if (DatabaseManager.getConversation(ip_address, this.msgThdMngr) != null) {
+                System.out.println("conv already exists in database messages loaded");
+                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
+                for (Message message :
+                        messages) {
+                    if (message.getIP().equals(ip_address)) {
+                        this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                    } else {
+                        this.pan.addTextToTabAsSender(message.getContent());
+                    }
+                }
+            } else {
+                System.out.println("new conv in database");
+                DatabaseManager.addConversation(conv, ip_address);
+            }
+        }
     }
 
     public void addContact(String username) {

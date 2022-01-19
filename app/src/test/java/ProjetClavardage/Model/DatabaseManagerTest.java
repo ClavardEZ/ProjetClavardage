@@ -24,6 +24,7 @@ public class DatabaseManagerTest extends TestCase {
     private InetAddress inetAddress;
     //private UserInConv userInConv;
 
+    /*
     @Override
     @Before
     public void setUp() throws Exception {
@@ -44,7 +45,7 @@ public class DatabaseManagerTest extends TestCase {
         DatabaseManager.addConversation(this.conv);
         DatabaseManager.addMessage(this.message);
         DatabaseManager.addUserInConv(this.inetAddress, this.conv.getID());
-    }
+    }*/
 
     @After
     public void tearDown() {
@@ -59,13 +60,14 @@ public class DatabaseManagerTest extends TestCase {
         assertEquals(this.user, reqResult);
     }
 
+    /*
     @Test
     public void testGetConversation() {
         Conversation reqResult = DatabaseManager.getConversation(this.conv.getID(), null);
         assertNotNull(reqResult);
         assertEquals(this.conv.getID(), reqResult.getID());
         assertEquals(this.conv.getConvName(), reqResult.getConvName());
-    }
+    }*/
 
     @Test
     public void testGetMessage() {
@@ -80,11 +82,11 @@ public class DatabaseManagerTest extends TestCase {
         assertNull(DatabaseManager.getUser(this.user.getIP()));
     }
 
-    @Test
+    /*@Test
     public void testRemoveConversation() {
         DatabaseManager.removeConversation(this.conv.getID());
         assertNull(DatabaseManager.getConversation(this.conv.getID(), null));
-    }
+    }*/
 
     @Test
     public void testRemoveMessage() {

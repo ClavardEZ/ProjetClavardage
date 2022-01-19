@@ -12,6 +12,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.sql.*;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public final class DatabaseManager {
@@ -42,34 +44,31 @@ public final class DatabaseManager {
     }
 
     public static void createTables() {
-        String reqUser = "CREATE TABLE IF NOT EXISTS user (\n" +
-                "   ip_address VARCHAR(15),\n" +
-                "   username VARCHAR(50),\n" +
-                "   PRIMARY KEY(ip_address)\n" +
-                ");";
-        String reqConversation = "CREATE TABLE IF NOT EXISTS conversation(\n" +
-                "   id_conversation CHAR(36),\n" +
-                "   conv_name VARCHAR(50), \n" +
-                "   PRIMARY KEY(id_conversation)\n" +
-                ");\n";
-        String reqMessage = "CREATE TABLE IF NOT EXISTS message(\n" +
-                "   id_message CHAR(36),\n" +
-                "   sent_date DATETIME,\n" +
-                "   content VARCHAR(280),\n" +
-                "   ip_address VARCHAR(15),\n" +
-                "   id_conversation CHAR(36),\n" +
-                "   PRIMARY KEY(id_message),\n" +
-                "   FOREIGN KEY(ip_address) REFERENCES user(ip_address),\n" +
-                "   FOREIGN KEY(id_conversation) REFERENCES conversation(id_conversation)\n" +
-                ");\n";
-        String reqUserInConv = "CREATE TABLE IF NOT EXISTS user_in_conv(\n" +
-                "   ip_address VARCHAR(15),\n" +
-                "   id_conversation VARCHAR(50),\n" +
-                "   id_message CHAR(36),\n" +
-                "   FOREIGN KEY(ip_address) REFERENCES user(ip_address),\n" +
-                "   FOREIGN KEY(id_conversation) REFERENCES conversation(id_conversation),\n" +
-                "   PRIMARY KEY(ip_address, id_conversation)\n" +
-                ");";
+        String reqUser = """
+        CREATE TABLE IF NOT EXISTS user(
+            ip_address VARCHAR(15),
+            username VARCHAR(50),
+            PRIMARY KEY(ip_address)
+        );
+        """;
+        String reqConversation = """
+        CREATE TABLE IF NOT EXISTS conversation(
+            ip_address VARCHAR(15),
+            conv_name VARCHAR(50),
+            PRIMARY KEY(ip_address),
+            FOREIGN KEY(ip_address) REFERENCES user(ip_address)  
+        );
+        """;
+        String reqMessage = """
+        CREATE TABLE IF NOT EXISTS message(
+            id_message CHAR(36),
+            sent_date DATETIME,
+            content VARCHAR(280),
+            ip_address VARCHAR(15),
+            PRIMARY KEY(id_message),
+            FOREIGN KEY(ip_address) REFERENCES user(ip_address)
+        );
+        """;
 
         Statement stmt = null;
         try {
@@ -77,7 +76,6 @@ public final class DatabaseManager {
             stmt.execute(reqUser);
             stmt.execute(reqConversation);
             stmt.execute(reqMessage);
-            stmt.execute(reqUserInConv);
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -85,8 +83,10 @@ public final class DatabaseManager {
     }
 
     public static void addUser(User user) {
-        String req = "INSERT INTO user (ip_address, username)" +
-                "VALUES(?, ?);";
+        String req = """
+            INSERT INTO user (ip_address, username)
+            VALUES(?, ?);
+        """;
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
             pstmt.setString(1, user.getIP().getHostAddress());
@@ -99,47 +99,34 @@ public final class DatabaseManager {
     }
 
     public static void addMessage(Message message) {
-        String req = "INSERT INTO message (id_message, sent_date, content, ip_address, id_conversation)" +
-                "VALUES(?, ?, ?, ?, ?);";
+        String req = """
+            INSERT INTO message(id_message, sent_date, content, ip_address)
+            VALUES(?, ?, ?, ?);
+        """;
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
             pstmt.setString(1, message.getId().toString());
             pstmt.setTimestamp(2, Timestamp.valueOf(message.getDate()));
             pstmt.setString(3, message.getContent());
             pstmt.setString(4, message.getIP().getHostAddress());
-            pstmt.setString(5, message.getConvID().toString());
             pstmt.executeUpdate();
+            System.out.println("message added to database");
             pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    public static void addConversation(Conversation conversation) {
-        String req = "INSERT INTO conversation (id_conversation, conv_name)" +
+    public static void addConversation(Conversation conversation, InetAddress ip_address) {
+        String req = "INSERT INTO conversation (ip_address, conv_name)" +
                 "VALUES(?, ?);";
         try {
             PreparedStatement pstmt = DatabaseManager.conn.prepareStatement(req);
 
-            pstmt.setString(1, conversation.getID().toString());
+            pstmt.setString(1, ip_address.getHostAddress());
             pstmt.setString(2, conversation.getConvName());
             pstmt.executeUpdate();
             pstmt.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // TODO
-    public static void addUserInConv(InetAddress ip_address, UUID conv_id) {
-        String req = "INSERT INTO user_in_conv (ip_address, id_conversation)" +
-                " VALUES(?, ?);";
-        try {
-            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            stmt.setString(1, ip_address.getHostAddress());
-            stmt.setString(2, conv_id.toString());
-            stmt.executeUpdate();
-            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -206,17 +193,17 @@ public final class DatabaseManager {
         return user;
     }
 
-    public static Conversation getConversation(UUID convId, MessageThreadManager msgThdMngr) {
+    public static Conversation getConversation(InetAddress ip_address, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM conversation " +
-                "WHERE id_conversation = ?;";
+                "WHERE ip_address = ?;";
         Conversation conv = null;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            stmt.setString(1, convId.toString());
+            stmt.setString(1, ip_address.getHostAddress());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                conv = new Conversation(rs.getString("conv_name"), msgThdMngr, UUID.fromString(rs.getString("id_conversation")));
+                conv = new Conversation(rs.getString("conv_name"), msgThdMngr);
             }
             rs.close();
             stmt.close();
@@ -239,7 +226,7 @@ public final class DatabaseManager {
                 if (isText) {
                     message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                             DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
-                            DatabaseManager.getConversation(UUID.fromString(rs.getString("id_conversation")), msgThdMngr),
+                            DatabaseManager.getConversation(InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content"));
                 }
@@ -254,25 +241,31 @@ public final class DatabaseManager {
         return message;
     }
 
-    // TODO
-    public static UserInConv getUserInConv(InetAddress ip_address, UUID id_conv, MessageThreadManager msgThdMngr, boolean isSocket) {
-        String req = "SELECT *" +
-                " FROM user_in_conv" +
-                " WHERE ip_address = ?" +
-                " AND id_conversation = ?;";
-        UserInConv userInConv = null;
+    public static List<Message> getAllMessagesFromConv(Conversation conv, boolean isText, MessageThreadManager msgThdMngr) {
+        ArrayList<Message> messages = new ArrayList<>();
 
+        String req = """
+                SELECT *
+                FROM message
+                WHERE ip_address = ?
+                """;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            InetAddress ip_address = null;
+            if (conv.getUsersIP().size() > 0) {
+                ip_address = conv.getUsersIP().get(0);
+            }
             stmt.setString(1, ip_address.getHostAddress());
-            stmt.setString(2, id_conv.toString());
             ResultSet rs = stmt.executeQuery();
-            if (rs.next()) {
-                Conversation conv = DatabaseManager.getConversation(id_conv, msgThdMngr);
-                if (isSocket) {
-                    userInConv = new UserInConv("none", new Socket(InetAddress.getByName(rs.getString("ip_address")), MessageThreadManager.NUM_PORT), msgThdMngr, conv);
+            System.out.println("all messages query");
+            while (rs.next()) {
+                if (isText) {
+                    messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
+                            DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
+                            DatabaseManager.getConversation(InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
+                            UUID.fromString(rs.getString("id_message")),
+                            rs.getString("content")));
                 }
-                userInConv = new UserInConv("none", null, msgThdMngr, conv);
             }
             rs.close();
             stmt.close();
@@ -280,11 +273,11 @@ public final class DatabaseManager {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
-        return userInConv;
+        System.out.println("all messages query done");
+
+        return messages;
     }
 
     public static void removeUser(InetAddress ip_address) {
@@ -300,12 +293,12 @@ public final class DatabaseManager {
         }
     }
 
-    public static void removeConversation(UUID convId) {
+    public static void removeConversation(InetAddress ip_address) {
         String req = "DELETE FROM conversation" +
                 " WHERE id_conversation = ?";
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            stmt.setString(1, convId.toString());
+            stmt.setString(1, ip_address.getHostAddress());
             stmt.executeUpdate();
             stmt.close();
         } catch (SQLException e) {
@@ -326,19 +319,40 @@ public final class DatabaseManager {
         }
     }
 
-    // TODO
-    public static void removeUserInConv(InetAddress ip_address, UUID id_conversation) {
-        String req = "DELETE FROM user_in_conv" +
-                " WHERE ip_address = ?" +
-                " AND id_conversation = ?;";
+    public static List<Message> searchMessageBytext(Conversation conv, String text, MessageThreadManager msgThdMngr) {
+        ArrayList<Message> messages = new ArrayList<>();
+
+        String req = """
+                SELECT *
+                FROM message
+                WHERE ip_address = ?
+                AND content like ?;
+                """;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            stmt.setString(1, ip_address.getHostAddress());
-            stmt.setString(2, id_conversation.toString());
+            InetAddress ipAddress = null;
+            if (conv.getUsersIP().size() > 0) {
+                ipAddress = conv.getUsersIP().get(0);
+            }
+            stmt.setString(1, ipAddress.getHostAddress());
+            stmt.setString(2, text);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
+                        DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
+                        DatabaseManager.getConversation(InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
+                        UUID.fromString(rs.getString("id_message")),
+                        rs.getString("content")));
+            }
+            rs.close();
             stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
         }
+
+        return messages;
     }
 
 }

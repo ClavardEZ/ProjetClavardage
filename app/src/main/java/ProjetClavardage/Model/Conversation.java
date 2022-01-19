@@ -126,7 +126,18 @@ public class Conversation{
 
     public String getConvName() {return  this.name;}
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Conversation that = (Conversation) o;
+        return Objects.equals(usersIP, that.usersIP);
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(usersIP);
+    }
 
     public String getName() {return this.name;}
 

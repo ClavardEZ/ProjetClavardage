@@ -19,6 +19,6 @@ public class ControllerAddConversation implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new PopupNewConv(pan, this.pan.getParent().getSize());
+        new PopupNewConv(this.mc, pan, this.pan.getParent().getSize());
     }
 }
