@@ -5,9 +5,11 @@ import org.checkerframework.checker.guieffect.qual.UI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.*;
 
 public class AppFrame extends JFrame {
 
+    ;
     public AppFrame(String title, int servPort, int clientPort, int listeningPort, int sendingPort, boolean maximised) throws HeadlessException {
         super();
         this.setTitle(title);
@@ -33,6 +35,18 @@ public class AppFrame extends JFrame {
         } catch (UnsupportedLookAndFeelException e) {
             e.printStackTrace();
         }
+        addWindowListener(new WindowAdapter()
+        {
+            @Override
+            public void windowClosing(WindowEvent e)
+            {
+                mc.closingApp();
+                System.out.println("LALALALALA Closed");
+                e.getWindow().dispose();
+            }
+        });
     }
+
+
     
 }

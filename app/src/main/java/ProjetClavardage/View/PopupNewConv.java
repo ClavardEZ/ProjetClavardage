@@ -1,5 +1,7 @@
 package ProjetClavardage.View;
 
+import ProjetClavardage.Controller.MainController;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -8,10 +10,12 @@ import java.awt.event.ActionListener;
 public class PopupNewConv extends JFrame {
 
     private Pan parent;
+    private MainController mc;
 
-    public PopupNewConv(Pan parent, Dimension dimensionParent) {
+    public PopupNewConv(MainController mainController, Pan parent, Dimension dimensionParent) {
         super("Ajouter une conversation");
         this.parent = parent;
+        this.mc = mainController;
 
         this.setMinimumSize(new Dimension((int) (dimensionParent.getWidth()/4), (int) (dimensionParent.getHeight()/4)));
         Dimension windowSize = this.getSize();
@@ -31,7 +35,8 @@ public class PopupNewConv extends JFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 5, 10);
-        pan.add(new JLabel("Adresse IP (temporaire pour test)"), gbc);
+        JLabel label =new JLabel("Nouveau nom d'utilisateur : ");
+        pan.add(label, gbc);
         JTextField input = new JTextField();
         String placeholdermsg = "Entrez l'adresse IP";
         input.addFocusListener(new TextPlaceholderListener(input, placeholdermsg));
@@ -51,8 +56,12 @@ public class PopupNewConv extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!input.getText().equals(placeholdermsg)) {
-                    PopupNewConv.this.parent.addContact(input.getText());
+                    if (PopupNewConv.this.mc.changeUserName(input.getText())) {
                     PopupNewConv.this.dispose();
+                    }
+                    else {
+                        label.setText("Non déjà utlisé !");
+                    }
                 }
             }
         });
@@ -61,8 +70,12 @@ public class PopupNewConv extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (!input.getText().equals(placeholdermsg)) {
-                    PopupNewConv.this.parent.addContact(input.getText());
-                    PopupNewConv.this.dispose();
+                    if (PopupNewConv.this.mc.changeUserName(input.getText())) {
+                        PopupNewConv.this.dispose();
+                    }
+                    else {
+                        label.setText("Non déjà utlisé !");
+                    }
                 }
             }
         });

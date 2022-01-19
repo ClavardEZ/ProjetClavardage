@@ -11,10 +11,12 @@ public class ControllerAddConversation implements ActionListener {
 
     private Pan pan;
     private DefaultListModel<String> contacts;
+    private MainController mc;
 
-    public ControllerAddConversation(Pan pan, DefaultListModel<String> contacts) {
+    public ControllerAddConversation(MainController mc, Pan pan, DefaultListModel<String> contacts) {
         this.pan = pan;
         this.contacts = contacts;
+        this.mc = mc;
     }
 
     @Override

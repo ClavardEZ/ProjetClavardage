@@ -148,6 +148,13 @@ public class MessageThreadManager extends Thread {
         System.out.println("conv removed");
     }
 
+    public void close_all_conversation() {
+        for (Conversation conv: conversations
+             ) {
+            conv.close_connection();
+        }
+    }
+
     public void close_conversation_conv(Conversation conv) {
         System.out.println("conv closed from distant");
         conv.close_connection();

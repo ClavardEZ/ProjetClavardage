@@ -24,6 +24,7 @@ public class MainController {
     private UserManager userManager;
     private HashMap<Conversation, ChatPanel> tabByConv;
     private HashMap<String, User> usersByUsername;
+    private HashMap<User, String> usernameByusers;
 
     public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
         this.pan = new Pan(this);
@@ -32,6 +33,7 @@ public class MainController {
         this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(), username);
 
         // udp
+        this.usernameByusers = new HashMap<>();
         this.usersByUsername = new HashMap<>();
         this.tabByConv = new HashMap<>();
 
@@ -50,7 +52,13 @@ public class MainController {
 
     public void addUser(User user) {
         if (!this.usersByUsername.containsKey(user.getUsername())) {
+            if (this.usernameByusers.containsKey(user)) {
+                this.pan.removeContact(usernameByusers.get(user));
+                this.usersByUsername.remove(usernameByusers.get(user));
+                this.usernameByusers.remove(user);
+            }
             this.usersByUsername.put(user.getUsername(), user);
+            this.usernameByusers.put(user, user.getUsername());
             // ajout à a vue
             // can be called directly
             this.addContact(user.getUsername());
@@ -65,6 +73,7 @@ public class MainController {
     public void removeUser(User user) {
         System.out.println("user removed from mc");
         this.usersByUsername.remove(user.getUsername());
+        this.usernameByusers.remove(user);
         this.pan.removeContact(user.getUsername());
     }
 
@@ -128,6 +137,10 @@ public class MainController {
             DatabaseManager.addMessage(msg);
         }
     }
+    public void closingApp(){
+        this.msgThdMngr.close_all_conversation();
+        this.userManager.sender(false);
+    }
 
     /*public void addConversationTab(String title) {
         this.pan.addConversationTab(title);
@@ -156,6 +169,14 @@ public class MainController {
                 DatabaseManager.addConversation(conv, ip_address);
             }
         }
+    }
+
+    public boolean changeUserName(String username) { //renvoie 0 si erreur
+        boolean bool = this.privateUser.updateUsername(username);
+        if (bool){
+            this.userManager.sender(true);
+        }
+        return bool;
     }
 
     public void addContact(String username) {

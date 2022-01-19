@@ -134,8 +134,9 @@ public class Pan extends JPanel {
 
         this.addConvButton = new JButton("+");
         conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);
-        ControllerAddConversation ctrlAddConv = new ControllerAddConversation(this, this.contacts);
+        ControllerAddConversation ctrlAddConv = new ControllerAddConversation(this.mc,this, this.contacts);
         addConvButton.addActionListener(ctrlAddConv);
+        settings.addActionListener(ctrlAddConv);
 
         conversationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 

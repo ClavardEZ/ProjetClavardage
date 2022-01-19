@@ -150,7 +150,10 @@ public class UserManager extends Thread {
                     }
                     else{ //cas d'une deconnexion
                         //System.out.println("deco");
-                        this.usersByIP.remove(clientAddress);
+                        if (this.usersByIP.containsKey(clientAddress)){
+                            this.mc.removeUser(usersByIP.get(clientAddress));
+                            this.usersByIP.remove(clientAddress);
+                        }
                     }
                 } catch (SocketException e) {
                     e.printStackTrace();

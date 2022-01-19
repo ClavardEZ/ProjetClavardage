@@ -8,9 +8,11 @@ import java.net.InetAddress;
 public class PrivateUser extends User {
     private String password;
 
-    public void updateUsername(String username) {
-        // broadcast sur le reseau pour voir si le pseudo est dispo
-        // si dispo alors maj
+    public boolean updateUsername(String username) {
+        // TODO checker si le nouveau pseudo est déjà dans la base de donnée sinon, on l'ajoute
+        this.setUsername(username);
+
+        return true;
     }
 
     // not safe
