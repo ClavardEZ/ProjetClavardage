@@ -115,7 +115,9 @@ public class MessageThreadManager extends Thread {
                         conv.addUser(sock);
                     }
                     else {
-                        conv = new Conversation("osef", this,msg.getConvID());
+                        //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
+                        String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
+                        conv = new Conversation(username, this,msg.getConvID());
                         this.conversations.add(conv);
                         this.conversationHashMap.put(msg.getConvID(),conv);
                         conv.addUser(sock);

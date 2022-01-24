@@ -335,7 +335,7 @@ public final class DatabaseManager {
                 ipAddress = conv.getUsersIP().get(0);
             }
             stmt.setString(1, ipAddress.getHostAddress());
-            stmt.setString(2, text);
+            stmt.setString(2, "%" + text + "%");
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
                 messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),

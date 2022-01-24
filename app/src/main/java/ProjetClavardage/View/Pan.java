@@ -1,6 +1,7 @@
 package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.*;
+import ProjetClavardage.Model.Message;
 /*import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
 import ProjetClavardage.Model.TextMessage;*/
@@ -19,6 +20,7 @@ import java.net.UnknownHostException;
 import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Classe principale de la vue

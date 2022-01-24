@@ -92,6 +92,7 @@ public class PopupSearchMessage extends JFrame {
         List<Message> messages = DatabaseManager.searchMessageBytext(this.mc.getMsgThdMngr().getConversationsAt(this.parent.getSelectedIndex()),
                 text,
                 this.mc.getMsgThdMngr());
+
         new PopupSearchResult(messages);
     }
 }
