@@ -143,13 +143,13 @@ public class UserManager extends Thread {
                                 else {  //cas ou on découvre qu'il est connecte
                                     User user = new User(clientAddress,clientPort,message);
                                     this.usersByIP.put(clientAddress,user);
+                                    String response= privateUser.getUsername();
+                                    DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
+                                            clientAddress, clientPort);
+                                    dgramSocket.send(outPacket);
                                 }
                                 //System.out.println("Info : "+ clientAddress + "is still connected");
                                 this.usersByIP.get(clientAddress).setConnected(true);
-                                String response= privateUser.getUsername();
-                                DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
-                                        clientAddress, clientPort);
-                                dgramSocket.send(outPacket);
                             }
                             else{ //cas d'une deconnexion
                                 //System.out.println("deco");
