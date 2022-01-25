@@ -105,7 +105,7 @@ public class MainController {
         // ajout à la base de données
         // si la conversation est déjà présente dans la base de données on charge les messages
         // ouverture depuis moi
-        if (DatabaseManager.getConversation(conv.getID(), ip_address, this.msgThdMngr) != null) {
+        if (DatabaseManager.getConvByIp(ip_address, this.msgThdMngr) != null) {
             System.out.println("ip address opened from HERE : " + ip_address);
             List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
             System.out.println("conv already exists in database, " + messages.size() + " messages loaded");

@@ -325,6 +325,26 @@ public final class DatabaseManager {
         }
     }
 
+    public static Conversation getConvByIp(InetAddress ipAddress, MessageThreadManager msgThdMngr) {
+        String req = "SELECT *" +
+                "FROM conversation " +
+                "WHERE ip_address = ?;";
+        Conversation conv = null;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ipAddress.getHostAddress());
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                conv = new Conversation(rs.getString("conv_name"), msgThdMngr, UUID.fromString(rs.getString("conv_id")));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return conv;
+    }
+
     public static List<Message> searchMessageBytext(Conversation conv, String text, MessageThreadManager msgThdMngr) {
         ArrayList<Message> messages = new ArrayList<>();
 
