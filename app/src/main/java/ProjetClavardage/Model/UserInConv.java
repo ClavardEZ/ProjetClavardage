@@ -58,6 +58,7 @@ public class UserInConv extends Thread{
             else if (msg != null) {
                 System.out.println("received msg=" + msg.toString());
                 this.msgThMng.received(msg, msgThMng.getConvByID().get(msg.getConvID()));
+                DatabaseManager.addMessage(msg);
             }
         } while (msg != null);
         System.out.println("closed");
