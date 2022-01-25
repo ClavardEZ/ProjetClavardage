@@ -92,34 +92,39 @@ public class MainController {
         this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));*/
 
         // TODO utiliser hashmap au lieu de index ? peut faire bugger
-        Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
-        InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
-        this.msgThdMngr.openConnection(ip_address, this.pan.getUsername(index),conv);
-        System.out.println("IP address : " + ip_address);
-        //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
-        //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
-        ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
-        this.tabByConv.put(ip_address,chatPanel);
+        if (!this.tabByConv.containsKey(this.pan.getUsername(index))){  //evite la création de 2 tab avec meme destinataire
 
-        // ajout à la base de données
-        // si la conversation est déjà présente dans la base de données on charge les messages
-        // ouverture depuis moi
-        if (DatabaseManager.getConvByIp(ip_address, this.msgThdMngr) != null) {
-            System.out.println("ip address opened from HERE : " + ip_address);
-            List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
-            System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
-            for (Message message :
-                    messages) {
-                if (message.getIP().equals(ip_address)) {
-                    this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
-                } else {
-                    this.pan.addTextToTabAsSender(message.getContent());
+
+            Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
+            InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
+            this.msgThdMngr.openConnection(ip_address, this.pan.getUsername(index),conv);
+            System.out.println("IP address : " + ip_address);
+            //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
+
+            //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
+            ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
+            this.tabByConv.put(ip_address,chatPanel);
+
+            // ajout à la base de données
+            // si la conversation est déjà présente dans la base de données on charge les messages
+            // ouverture depuis moi
+            if (DatabaseManager.getConvByIp(ip_address, this.msgThdMngr) != null) {
+                System.out.println("ip address opened from HERE : " + ip_address);
+                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
+                System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
+                for (Message message :
+                        messages) {
+                    if (message.getIP().equals(ip_address)) {
+                        this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                    } else {
+                        this.pan.addTextToTabAsSender(message.getContent());
+                    }
                 }
+            } else {
+                System.out.println("new conv in database");
+                DatabaseManager.addConversation(conv, ip_address);
             }
-        } else {
-            System.out.println("new conv in database");
-            DatabaseManager.addConversation(conv, ip_address);
         }
     }
 
@@ -206,6 +211,7 @@ public class MainController {
             this.pan.addTextToTab(this.tabByConv.get(conv.getUsersIP().get(0)), text);
         }
     }
+    public HashMap getTabByConv() {return this.tabByConv;}
 
     public Pan getPan() {
         return pan;

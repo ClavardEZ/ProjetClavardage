@@ -96,6 +96,7 @@ public class MessageThreadManager extends Thread {
             System.out.println("server listening on " + getLocalAddress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 try{
+                    System.out.println("EN ATTENTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     sock = servsock.accept();
                     //int i = 0;
                     /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
