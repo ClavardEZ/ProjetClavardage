@@ -128,8 +128,6 @@ public class UserManager extends Thread {
                     dgramSocket.receive(inPacket);
                     InetAddress clientAddress = inPacket.getAddress();
 
-                    // TODO regler pb detecter soi meme sur udp
-
                     if (true) {
                         //System.out.println("Received from " + clientAddress);
                         lastAddress = clientAddress;
@@ -137,7 +135,6 @@ public class UserManager extends Thread {
                         String message = new String(inPacket.getData(), 0, inPacket.getLength());
                         //System.out.println("UDP :"+message );
                         if (!message.equals(privateUser.getUsername())) {
-                            System.out.println("nom recu : "+message+"    nom de l'user : " + privateUser.getUsername());
                             if (message.length()>2) {
                                 //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
                                 if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
