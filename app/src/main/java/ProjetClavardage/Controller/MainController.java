@@ -30,7 +30,7 @@ public class MainController {
         this.pan = new Pan(this);
         this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
         this.msgThdMngr.start();
-        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(), username);
+        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(), username); // set correct ip address
 
         // udp
         this.usernameByusers = new HashMap<>();

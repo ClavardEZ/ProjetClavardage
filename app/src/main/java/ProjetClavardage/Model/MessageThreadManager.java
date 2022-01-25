@@ -82,8 +82,8 @@ public class MessageThreadManager extends Thread {
         ServerSocket servsock = null;
 
 
-            //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
-            SocketAddress sa = new InetSocketAddress(this.servPort);
+        //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
+        SocketAddress sa = new InetSocketAddress(this.servPort);
         try {
             servsock = new ServerSocket();
             servsock.bind(sa);
