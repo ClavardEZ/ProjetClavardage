@@ -59,7 +59,10 @@ public class MessageThreadManager extends Thread {
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
             if (!conversationHashMap.containsKey(conv.getID())) {
                 this.conversationHashMap.put(conv.getID(), conv);
+                System.out.println("added to convs");
                 this.conversations.add(conv);
+            } else {
+                System.out.println("no added to convs");
             }
             SpecialMessage spemsg = new SpecialMessage(conv);
             System.out.println("Conv Creation, Socket :" + sock.toString() +"   UUID sent : "+ spemsg.getConvID());
