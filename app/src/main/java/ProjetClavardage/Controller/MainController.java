@@ -165,6 +165,7 @@ public class MainController {
         this.pan.addConversationTab(title);
     }*/
     public void addConversationTab(Conversation conv) {
+        // TODO faire ajouter les messages reçus depuis la bd
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         //DatabaseManager.addConversation();
         InetAddress ip_address = null;
