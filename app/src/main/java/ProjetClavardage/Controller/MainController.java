@@ -172,14 +172,15 @@ public class MainController {
             ip_address = conv.getUsersIP().get(0);
             this.tabByConv.put(ip_address,chatPanel);
             // si la conversation est déjà dans la base de données
-            if (DatabaseManager.getConversation(conv.getID(), ip_address, this.msgThdMngr) != null) {
-                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
+            Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
+            if (conv2 != null) {
+                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(ip_address)) {
                         System.out.println("message loaded from db");
-                        this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                        this.addTextToTab(conv2, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
                         this.pan.addTextToTabAsSender(message.getContent());
                     }
