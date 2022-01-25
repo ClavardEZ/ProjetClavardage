@@ -22,7 +22,7 @@ public class MainController {
     private MessageThreadManager msgThdMngr;
     private PrivateUser privateUser;
     private UserManager userManager;
-    private HashMap<Conversation, ChatPanel> tabByConv;
+    private HashMap<InetAddress, ChatPanel> tabByConv;
     private HashMap<String, User> usersByUsername;
     private HashMap<User, String> usernameByusers;
 
@@ -100,7 +100,7 @@ public class MainController {
 
         //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
         ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
-        this.tabByConv.put(conv,chatPanel);
+        this.tabByConv.put(ip_address,chatPanel);
 
         // ajout à la base de données
         // si la conversation est déjà présente dans la base de données on charge les messages
@@ -150,11 +150,11 @@ public class MainController {
     }*/
     public void addConversationTab(Conversation conv) {
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
-        this.tabByConv.put(conv,chatPanel);
         //DatabaseManager.addConversation();
         InetAddress ip_address = null;
         if (conv.getUsersIP().size() > 0) {
             ip_address = conv.getUsersIP().get(0);
+            this.tabByConv.put(ip_address,chatPanel);
             // si la conversation est déjà dans la base de données
             if (DatabaseManager.getConversation(ip_address, this.msgThdMngr) != null) {
                 System.out.println("conv already exists in database messages loaded");
@@ -195,7 +195,13 @@ public class MainController {
     }*/
 
     public void addTextToTab(Conversation conv, String text) {
-        this.pan.addTextToTab(tabByConv.get(conv), text);
+        tabByConv.entrySet().forEach(entry -> {
+            System.out.println(entry.getKey() + " " + entry.getValue());
+        });
+        //this.pan.addTextToTab(tabByConv.get(conv), text);
+        if (conv.getUsersIP().size() > 0) {
+            this.pan.addTextToTab(this.tabByConv.get(conv.getUsersIP().get(0)), text);
+        }
     }
 
     public Pan getPan() {
