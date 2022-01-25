@@ -48,6 +48,7 @@ public final class DatabaseManager {
         CREATE TABLE IF NOT EXISTS user(
             ip_address VARCHAR(15),
             username VARCHAR(50),
+            isPrivate INTEGER,
             PRIMARY KEY(ip_address)
         );
         """;
@@ -87,13 +88,29 @@ public final class DatabaseManager {
 
     public static void addUser(User user) {
         String req = """
-            INSERT INTO user (ip_address, username)
-            VALUES(?, ?);
+            INSERT INTO user (ip_address, username, isPrivate)
+            VALUES(?, ?, 0);
         """;
         try {
             PreparedStatement pstmt = conn.prepareStatement(req);
             pstmt.setString(1, user.getIP().getHostAddress());
             pstmt.setString(2, user.getUsername());
+            pstmt.executeUpdate();
+            pstmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void addPrivateUser(PrivateUser pUser) {
+        String req = """
+            INSERT INTO user (ip_address, username, isPrivate)
+            VALUES(?, ?, 1);
+        """;
+        try {
+            PreparedStatement pstmt = conn.prepareStatement(req);
+            pstmt.setString(1, pUser.getIP().getHostAddress());
+            pstmt.setString(2, pUser.getUsername());
             pstmt.executeUpdate();
             pstmt.close();
         } catch (SQLException e) {
@@ -186,7 +203,11 @@ public final class DatabaseManager {
             stmt.setString(1, ip_address.getHostAddress());
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                user = new User(InetAddress.getByName(rs.getString("ip_address")), -1, rs.getString("username"));
+                if (rs.getInt("isPrivate") == 1) {
+                    user = new PrivateUser(InetAddress.getByName(rs.getString("ip_address")), rs.getString("username"));
+                } else {
+                    user = new User(InetAddress.getByName(rs.getString("ip_address")), -1, rs.getString("username"));
+                }
             }
             rs.close();
             stmt.close();
@@ -195,7 +216,36 @@ public final class DatabaseManager {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
+
+        if (user == null) {
+            System.out.println("user null get usre db");
+        }
+
         return user;
+    }
+
+    public static PrivateUser getPrivateUser() {
+        String req = """
+                SELECT *
+                FROM user
+                WHERE isPrivate = 1;
+                """;
+        PrivateUser pUser = null;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                try {
+                    pUser = new PrivateUser(InetAddress.getByName(rs.getString("ip_address")), rs.getString("username"));
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return pUser;
     }
 
     public static Conversation getConversation(UUID convId, InetAddress ip_address, MessageThreadManager msgThdMngr) {
@@ -262,6 +312,7 @@ public final class DatabaseManager {
             }
             //stmt.setString(1, ip_address.getHostAddress());
             stmt.setString(1, conv.getID().toString());
+            System.out.println("db conv id in : " + conv.getID().toString());
             ResultSet rs = stmt.executeQuery();
             System.out.println("all messages query");
             while (rs.next()) {
@@ -271,7 +322,12 @@ public final class DatabaseManager {
                             DatabaseManager.getConversation(conv.getID(), InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content")));
+                    if (messages.get(0).getUser() == null) {
+                        System.out.println("user null db HERE");
+                    }
                 }
+                User user = DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address")));
+
             }
             rs.close();
             stmt.close();
@@ -336,6 +392,7 @@ public final class DatabaseManager {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 conv = new Conversation(rs.getString("conv_name"), msgThdMngr, UUID.fromString(rs.getString("conv_id")));
+                System.out.println("conv id HERE : " + UUID.fromString(rs.getString("conv_id")));
             }
             rs.close();
             stmt.close();

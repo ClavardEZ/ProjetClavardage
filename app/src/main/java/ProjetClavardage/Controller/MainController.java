@@ -44,6 +44,10 @@ public class MainController {
 
         DatabaseManager.connect();
         DatabaseManager.createTables();
+
+        if (DatabaseManager.getPrivateUser() == null) {
+            DatabaseManager.addPrivateUser(this.privateUser);
+        }
     }
 
     public String getUsernameByIP(InetAddress ip) {
@@ -109,9 +113,10 @@ public class MainController {
             // ajout à la base de données
             // si la conversation est déjà présente dans la base de données on charge les messages
             // ouverture depuis moi
-            if (DatabaseManager.getConvByIp(ip_address, this.msgThdMngr) != null) {
+            Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
+            if (conv2 != null) {
                 System.out.println("ip address opened from HERE : " + ip_address);
-                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr);
+                List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
                 for (Message message :
                         messages) {
@@ -123,7 +128,11 @@ public class MainController {
                 }
             } else {
                 System.out.println("new conv in database");
-                DatabaseManager.addConversation(conv, ip_address);
+                if (conv2 == null) {
+                    DatabaseManager.addConversation(conv, ip_address);
+                } else {
+                    DatabaseManager.addConversation(conv2, ip_address);
+                }
             }
         }
     }
