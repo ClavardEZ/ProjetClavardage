@@ -145,12 +145,19 @@ public class MessageThreadManager extends Thread {
         }
 
     }
+
     public void close_conversation(int conv_id) {
         this.conversations.get(conv_id).close_connection();
         System.out.println("conv closed");
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
         System.out.println("conv removed");
+    }
+
+    public void close_conversation(InetAddress ip) {
+        Conversation conv = this.getConversationByIP(ip);
+        conv.close_connection();
+        this.conversations.remove(conv);
     }
 
     public void close_all_conversation() {
@@ -172,6 +179,16 @@ public class MessageThreadManager extends Thread {
 
     public Conversation getConversationsAt(int index) {
         return this.conversations.get(index);
+    }
+
+    public Conversation getConversationByIP(InetAddress ip) {
+        for (Conversation conv :
+                this.conversations) {
+            if (conv.getUsersIP().size() > 0 && ip.equals(conv.getUsersIP().get(0))) {
+                return conv;
+            }
+        }
+        return null;
     }
 
     public void received(Message msg, Conversation conv) {

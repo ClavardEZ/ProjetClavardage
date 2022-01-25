@@ -98,7 +98,8 @@ public class MainController {
         System.out.println("IP address : " + ip_address);
         //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
-        ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
+        //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
+        ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
         this.tabByConv.put(conv,chatPanel);
 
         // ajout à la base de données
@@ -121,7 +122,9 @@ public class MainController {
     }
 
     public void closeConversation(int index) {
-        this.msgThdMngr.close_conversation(index);
+        //this.msgThdMngr.close_conversation(index);
+        InetAddress ip = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
+        this.msgThdMngr.close_conversation(ip);
     }
 
     public void sendMessage() {
