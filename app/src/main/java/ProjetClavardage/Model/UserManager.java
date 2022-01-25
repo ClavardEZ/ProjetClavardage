@@ -68,8 +68,8 @@ public class UserManager extends Thread {
             while (interfaces.hasMoreElements())
             {
                 NetworkInterface networkInterface = interfaces.nextElement();
-                    if (networkInterface.isLoopback())
-                        continue;    // Do not want to use the loopback interface.
+                    if (networkInterface.isLoopback() || !networkInterface.isUp())
+                        continue;   // Do not want to use the loopback interface.
                 for (InterfaceAddress interfaceAddress : networkInterface.getInterfaceAddresses())
                 {
                     InetAddress broadcast = interfaceAddress.getBroadcast();
@@ -127,32 +127,37 @@ public class UserManager extends Thread {
                     //System.out.println("UDP :"+"waiting..." );
                     dgramSocket.receive(inPacket);
                     InetAddress clientAddress = inPacket.getAddress();
-                    //System.out.println("Received from " + clientAddress);
-                    lastAddress = clientAddress;
-                    int clientPort = inPacket.getPort();
-                    String message = new String(inPacket.getData(), 0, inPacket.getLength());
-                    //System.out.println("UDP :"+message );
-                    if (message.length()>2) {
-                        //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
-                        if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
-                            this.usersByIP.get(clientAddress).setUsername(message);
+
+                    // TODO regler pb detecter soi meme sur udp
+
+                    if (true) {
+                        //System.out.println("Received from " + clientAddress);
+                        lastAddress = clientAddress;
+                        int clientPort = inPacket.getPort();
+                        String message = new String(inPacket.getData(), 0, inPacket.getLength());
+                        //System.out.println("UDP :"+message );
+                        if (message.length()>2) {
+                            //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
+                            if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
+                                this.usersByIP.get(clientAddress).setUsername(message);
+                            }
+                            else {  //cas ou on découvre qu'il est connecte
+                                User user = new User(clientAddress,clientPort,message);
+                                this.usersByIP.put(clientAddress,user);
+                            }
+                            //System.out.println("Info : "+ clientAddress + "is still connected");
+                            this.usersByIP.get(clientAddress).setConnected(true);
+                            String response= privateUser.getUsername();
+                            DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
+                                    clientAddress, clientPort);
+                            dgramSocket.send(outPacket);
                         }
-                        else {  //cas ou on découvre qu'il est connecte
-                            User user = new User(clientAddress,clientPort,message);
-                            this.usersByIP.put(clientAddress,user);
-                        }
-                        //System.out.println("Info : "+ clientAddress + "is still connected");
-                        this.usersByIP.get(clientAddress).setConnected(true);
-                        String response= privateUser.getUsername();
-                        DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
-                                clientAddress, clientPort);
-                        dgramSocket.send(outPacket);
-                    }
-                    else{ //cas d'une deconnexion
-                        //System.out.println("deco");
-                        if (this.usersByIP.containsKey(clientAddress)){
-                            this.mc.removeUser(usersByIP.get(clientAddress));
-                            this.usersByIP.remove(clientAddress);
+                        else{ //cas d'une deconnexion
+                            //System.out.println("deco");
+                            if (this.usersByIP.containsKey(clientAddress)){
+                                this.mc.removeUser(usersByIP.get(clientAddress));
+                                this.usersByIP.remove(clientAddress);
+                            }
                         }
                     }
                 } catch (SocketException e) {

@@ -35,7 +35,7 @@ public class UserInConv extends Thread{
             //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
             //this.oStream.write(data);
             //System.out.println("conv sent message");
-            System.out.println("ip send : " + this.sock.getRemoteSocketAddress().toString());
+            System.out.println("message envoye sur ip : " + this.sock.getRemoteSocketAddress().toString());
             ObjectOutputStream ooStream = new ObjectOutputStream(sock.getOutputStream());
             ooStream.writeObject(msg);
         } catch (IOException e) {
