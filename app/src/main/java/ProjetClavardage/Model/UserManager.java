@@ -107,11 +107,13 @@ public class UserManager extends Thread {
 
     public void start_listener() {
         try {
-            this.dgramSocket = new DatagramSocket(this.listeningPort, MessageThreadManager.getLocalAddress(MainController.ni));
+            this.dgramSocket = new DatagramSocket(this.listeningPort);
         } catch (SocketException e) {
             e.printStackTrace();
         }
     }
+
+
 
     public void close_listener() {
         this.sender(false);

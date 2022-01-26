@@ -36,7 +36,7 @@ public class MainController {
 
         System.out.println("string ni : " + ni);
 
-        /*try {
+        try {
             Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
             while (nis.hasMoreElements()) {
                 NetworkInterface ni2 = nis.nextElement();
@@ -46,7 +46,7 @@ public class MainController {
             }
         } catch (SocketException e) {
             e.printStackTrace();
-        }*/
+        }
 
         this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(ni), username); // set correct ip address
         System.out.println("private user ip : " + this.privateUser.getIP().getHostAddress());
