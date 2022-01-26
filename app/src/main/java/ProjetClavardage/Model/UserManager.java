@@ -42,6 +42,7 @@ public class UserManager extends Thread {
                 if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
                     //TODO afficher user dans le panel
                     this.mc.addUser(user);
+                    this.mc.changeUserName(user, user.getUsername());
                     user.setConnected(false);
                     //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
                 } else { // si il s'est deco
@@ -141,7 +142,10 @@ public class UserManager extends Thread {
                             if (message.length()>2) {
                                 //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
                                 if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
-                                    this.usersByIP.get(clientAddress).setUsername(message);
+                                    if (!this.usersByIP.get(clientAddress).getUsername().equals(message)) {
+                                        this.usersByIP.get(clientAddress).setUsername(message);
+                                        DatabaseManager.changeUsername(clientAddress, message);
+                                    }
                                 }
                                 else {  //cas ou on découvre qu'il est connecte
                                     User user = new User(clientAddress,clientPort,message);

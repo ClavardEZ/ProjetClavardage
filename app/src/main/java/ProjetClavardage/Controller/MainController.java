@@ -300,9 +300,6 @@ public class MainController {
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(user.getIP())) {
-                        System.out.println("message loaded from db");
-                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
-                    } else {
                         System.out.println("message loaded from db as sender");
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     }
