@@ -319,6 +319,7 @@ public class MainController {
                 }
             }
         } else {
+            System.out.println("ICICIICICI");
             chatPanel = this.tabByConv.get(user.getIP());
             chatPanel.clearText();
             ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr),
