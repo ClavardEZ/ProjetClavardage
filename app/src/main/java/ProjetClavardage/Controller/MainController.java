@@ -203,6 +203,7 @@ public class MainController {
                         System.out.println("message loaded from db");
                         this.addTextToTab(conv2, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
+                        System.out.println("message loaded from db as sender");
                         this.pan.addTextToTabAsSender(message.getContent());
                     }
                 }
