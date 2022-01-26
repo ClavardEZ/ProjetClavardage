@@ -283,4 +283,10 @@ public class Pan extends JPanel {
     public boolean isPlaceholderText() {
         return this.txtLstner.isPlaceholder();
     }
+
+    public void setUsername(String oldUsername, String newUsername) {
+        int index = this.contacts.indexOf(oldUsername);
+        this.contacts.remove(index);
+        this.contacts.add(index, newUsername);
+    }
 }

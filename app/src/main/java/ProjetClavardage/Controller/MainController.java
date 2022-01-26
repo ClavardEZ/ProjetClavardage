@@ -239,9 +239,17 @@ public class MainController {
     }
 
     public boolean changeUserName(User user, String newUsername) {
-        this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
-        DatabaseManager.changeUsername(user.getIP(), newUsername);
-        this.updateChatPanel(user);
+        String oldUsername = user.getUsername();
+        if (!oldUsername.equals(newUsername)) {
+            this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
+            this.usersByUsername.put(newUsername, user);
+            this.usersByUsername.remove(oldUsername);
+            DatabaseManager.changeUsername(user.getIP(), newUsername);
+            this.updateChatPanel(user);
+
+            this.pan.setUsername(oldUsername, newUsername);
+        }
+
         return true;
     }
 
