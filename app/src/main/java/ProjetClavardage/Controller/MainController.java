@@ -117,8 +117,6 @@ public class MainController {
         // TODO utiliser hashmap au lieu de index ? peut faire bugger
 
         if (!this.tabByConv.containsKey(this.pan.getUsername(index))){  //evite la création de 2 tab avec meme destinataire
-
-
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
             this.msgThdMngr.openConnection(ip_address,conv);
@@ -201,10 +199,11 @@ public class MainController {
                         messages) {
                     if (message.getIP().equals(ip_address)) {
                         System.out.println("message loaded from db");
-                        this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                        //this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
                         System.out.println("message loaded from db as sender");
-                        this.pan.addTextToTabAsSender(message.getContent());
+                        this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     }
                 }
             } else {
@@ -235,14 +234,18 @@ public class MainController {
     }*/
 
     public void addTextToTab(Conversation conv, String text) {
-        tabByConv.entrySet().forEach(entry -> {
-            System.out.println(entry.getKey() + " " + entry.getValue());
-        });
         //this.pan.addTextToTab(tabByConv.get(conv), text);
         if (conv.getUsersIP().size() > 0) {
             this.pan.addTextToTab(this.tabByConv.get(conv.getUsersIP().get(0)), text);
+            System.out.println("HEERRRRE " + this.tabByConv.get(conv.getUsersIP().get(0)));
         }
     }
+
+    public void addTextToTab(ChatPanel chatPanel, String text) {
+        //this.pan.addTextToTab(tabByConv.get(conv), text);
+        this.pan.addTextToTab(chatPanel, text);
+    }
+
     public HashMap getTabByConv() {return this.tabByConv;}
 
     public Pan getPan() {

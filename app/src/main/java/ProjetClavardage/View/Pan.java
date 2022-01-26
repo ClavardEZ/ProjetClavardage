@@ -236,20 +236,28 @@ public class Pan extends JPanel {
 
     public void addTextToTab(ChatPanel chatPanel, String text) {
         // TODO refactor to not use index  ::::Cbon
+        this.revalidate();
         //ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText(text, false);
     }
 
     public void addTextToTabAsSender() {
+        this.revalidate();
         int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText( this.mc.getPrivateUsername() + ">" + this.textField.getText(), true);
     }
 
     public void addTextToTabAsSender(String text) {
+        this.revalidate();
         int tabIndex = this.tabs.getSelectedIndex();
         ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText( this.mc.getPrivateUsername() + ">" + text, true);
+    }
+
+    public void addTextToTabAsSender(ChatPanel chatPanel, String text) {
+        this.revalidate();
+        chatPanel.addText(this.mc.getPrivateUsername() + ">" + text, true);
     }
 
     public int getSelectedIndex() {
