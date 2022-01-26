@@ -91,6 +91,7 @@ public class MainController {
                 DatabaseManager.addUser(user);
             }
         }
+        this.pan.revalidate();
     }
 
     public void removeUser(User user) {
@@ -98,6 +99,7 @@ public class MainController {
         this.usersByUsername.remove(user.getUsername());
         this.usernameByusers.remove(user);
         this.pan.removeContact(user.getUsername());
+        this.pan.revalidate();
     }
 
     //Ajoute l'utilisateur sélectonné dans la conv active
@@ -107,6 +109,7 @@ public class MainController {
         //this.msgThdMngr.openConnection(this.usersByUsername.get(this.pan.getUsername(index)).getIP(), this.pan.getUsername(index),conv);
         //System.out.println("New user in conv, IP :  " + this.usersByUsername.get(this.pan.getUsername(index)).getIP());
         //DatabaseManager.addUserInConv();
+        this.pan.revalidate();
     }
 
     public void openConversation(int index) {
@@ -152,6 +155,8 @@ public class MainController {
                     DatabaseManager.addConversation(conv2, ip_address);
                 }
             }
+
+            this.pan.revalidate();
         }
     }
 
@@ -159,6 +164,8 @@ public class MainController {
         //this.msgThdMngr.close_conversation(index);
         InetAddress ip = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
         this.msgThdMngr.close_conversation(ip);
+
+        this.pan.revalidate();
     }
 
     public void sendMessage() {
@@ -174,6 +181,7 @@ public class MainController {
             DatabaseManager.addMessage(msg);
         }
     }
+
     public void closingApp(){
         this.msgThdMngr.close_all_conversation();
         this.userManager.sender(false);
@@ -211,6 +219,8 @@ public class MainController {
                 DatabaseManager.addConversation(conv, ip_address);
             }
         }
+
+        this.pan.revalidate();
     }
 
     public boolean changeUserName(String username) { //renvoie 0 si erreur
@@ -218,6 +228,7 @@ public class MainController {
         if (bool){
             this.userManager.sender(true);
         }
+        this.pan.revalidate();
         return bool;
     }
 

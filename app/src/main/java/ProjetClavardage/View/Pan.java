@@ -282,4 +282,8 @@ public class Pan extends JPanel {
     public boolean isPlaceholderText() {
         return this.txtLstner.isPlaceholder();
     }
+
+    public void revalidate() {
+        this.revalidate();
+    }
 }
