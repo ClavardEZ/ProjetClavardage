@@ -106,7 +106,7 @@ public class UserManager extends Thread {
 
     public void start_listener() {
         try {
-            this.dgramSocket = new DatagramSocket(this.listeningPort);
+            this.dgramSocket = new DatagramSocket(this.listeningPort, MessageThreadManager.getLocalAddress());
         } catch (SocketException e) {
             e.printStackTrace();
         }
