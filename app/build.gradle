@@ -30,13 +30,32 @@ dependencies {
     implementation group: 'net.harawata', name: 'appdirs', version: '1.2.1'
 }
 
+// Main class name
+mainClassName = 'ProjetClavardage.App'
+
 application {
     // Define the main class for the application.
-    mainClass = 'ProjetClavardage.App'
+    mainClass = "$mainClassName"
 }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
+// executable jar
+// TODO may be depreciated, see latest
+jar {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes(
+                'Main-Class': "$mainClassName"
+        )
+    }
+
+    from {
+        configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)}
     }
 }

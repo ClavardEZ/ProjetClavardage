@@ -241,6 +241,8 @@ public final class DatabaseManager {
                     e.printStackTrace();
                 }
             }
+            rs.close();
+            stmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
