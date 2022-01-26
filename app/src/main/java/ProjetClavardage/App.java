@@ -11,7 +11,7 @@ public class App {
 
     public static void main(String[] args) {
         AppFrame appFrame;
-        // program arguments : username, TCP client port, TCP server port, UDP client port, UDP server port, isFullscreen
-        appFrame = new AppFrame(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Boolean.parseBoolean(args[5]));
+        // program arguments : username, TCP client port, TCP server port, UDP client port, UDP server port, isFullscreen, networkInterface
+        appFrame = new AppFrame(args[0], Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), Boolean.parseBoolean(args[5]), args[6]);
     }
 }

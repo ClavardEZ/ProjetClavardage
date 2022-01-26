@@ -42,7 +42,7 @@ public class MessageThreadManager extends Thread {
     }
 
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
-    public Socket openConnection(InetAddress ipaddress, String username, Conversation conv) {
+    public Socket openConnection(InetAddress ipaddress, Conversation conv) {
         // TODO raise exception instead
         Socket sock = null;
         if (this.conversations.size()>=this.NB_CONV_MAX) {
@@ -82,17 +82,22 @@ public class MessageThreadManager extends Thread {
     public void run(){
         Socket sock;
 
-        ServerSocket servsock = null;
-
+        //ServerSocket servsock = null;
 
         //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
-        SocketAddress sa = new InetSocketAddress(this.servPort);
+        ServerSocket servsock = null;
         try {
+            servsock = new ServerSocket(this.servPort, 2, getLocalAddress(MainController.ni));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        /*SocketAddress sa = new InetSocketAddress(this.servPort);*/
+        /*try {
             servsock = new ServerSocket();
             servsock.bind(sa);
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
             System.out.println("server listening on " + servsock.getInetAddress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 try{
@@ -130,7 +135,7 @@ public class MessageThreadManager extends Thread {
                     }
                     for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
                          ) {
-                        openConnection(ip,"osef",conv);
+                        openConnection(ip,conv);
                     }
 
                     //TODO, ajouter les socket dans la conv
@@ -211,6 +216,22 @@ public class MessageThreadManager extends Thread {
                     ia instanceof Inet4Address) {
                         return ia;
                     }
+                }
+            }
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static InetAddress getLocalAddress(String netInterface) {
+        try {
+            NetworkInterface ni = NetworkInterface.getByName(netInterface);
+            Enumeration<InetAddress> ias = ni.getInetAddresses();
+            while (ias.hasMoreElements()) {
+                InetAddress ia = (InetAddress) ias.nextElement();
+                if (!ia.isLoopbackAddress() && ia instanceof Inet4Address) {
+                    return ia;
                 }
             }
         } catch (SocketException e) {

@@ -1,5 +1,6 @@
 package ProjetClavardage.Model;
 import ProjetClavardage.Controller.MainController;
+import com.sun.tools.javac.Main;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -106,7 +107,7 @@ public class UserManager extends Thread {
 
     public void start_listener() {
         try {
-            this.dgramSocket = new DatagramSocket(this.listeningPort);
+            this.dgramSocket = new DatagramSocket(this.listeningPort, MessageThreadManager.getLocalAddress(MainController.ni));
         } catch (SocketException e) {
             e.printStackTrace();
         }

@@ -7,12 +7,11 @@ import ProjetClavardage.View.Pan;
 
 import javax.xml.crypto.Data;
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class MainController {
     // TODO link users lists with pan through this class
@@ -26,16 +25,31 @@ public class MainController {
     private HashMap<String, User> usersByUsername;
     private HashMap<User, String> usernameByusers;
 
-    public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
+    public static String ni;
+
+    public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username, String ni) {
         this.pan = new Pan(this);
         this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
         this.msgThdMngr.start();
-        try {
-            this.privateUser = new PrivateUser(InetAddress.getLocalHost(), username); // set correct ip address
-            System.out.println("localhost : " + InetAddress.getLocalHost());
-        } catch (UnknownHostException e) {
+
+        this.ni = ni;
+
+        System.out.println("string ni : " + ni);
+
+        /*try {
+            Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
+            while (nis.hasMoreElements()) {
+                NetworkInterface ni2 = nis.nextElement();
+                if (ni2.isUp()) {
+                    System.out.println("interface : " + ni2.toString());
+                }
+            }
+        } catch (SocketException e) {
             e.printStackTrace();
-        }
+        }*/
+
+        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(ni), username); // set correct ip address
+        System.out.println("private user ip : " + this.privateUser.getIP().getHostAddress());
 
         // udp
         this.usernameByusers = new HashMap<>();
@@ -107,7 +121,7 @@ public class MainController {
 
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
-            this.msgThdMngr.openConnection(ip_address, this.pan.getUsername(index),conv);
+            this.msgThdMngr.openConnection(ip_address,conv);
             System.out.println("IP address : " + ip_address);
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
