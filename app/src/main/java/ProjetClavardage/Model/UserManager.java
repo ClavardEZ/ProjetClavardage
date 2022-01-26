@@ -143,7 +143,7 @@ public class UserManager extends Thread {
                                 //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
                                 if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
                                     this.usersByIP.get(clientAddress).setUsername(message);
-                                    DatabaseManager.changeUsername(clientAddress, message);
+                                    System.out.println("username set HERE TEST");
                                 }
                                 else {  //cas ou on découvre qu'il est connecte
                                     User user = new User(clientAddress,clientPort,message);

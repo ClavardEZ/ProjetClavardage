@@ -230,6 +230,7 @@ public class MainController {
     public boolean changeUserName(String username) { //renvoie 0 si erreur
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
+            System.out.println("username HERERERERERERE updated");
             this.userManager.sender(true);
             this.updateChatPanel(this.privateUser);
         }
