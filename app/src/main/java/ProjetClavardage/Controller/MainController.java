@@ -298,6 +298,7 @@ public class MainController {
 
     public void updateChatPanel(User user) {
         ChatPanel chatPanel = null;
+        System.out.println("chat panel updated");
         if (user.getIP().equals(this.privateUser.getIP())) {
             for (InetAddress ipAddress :
                  this.tabByConv.keySet()) {
