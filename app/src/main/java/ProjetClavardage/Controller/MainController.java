@@ -231,6 +231,7 @@ public class MainController {
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
             this.userManager.sender(true);
+            this.updateChatPanel(this.usersByUsername.get(username));
         }
         this.pan.revalidate();
         return bool;
