@@ -231,7 +231,7 @@ public class MainController {
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
             this.userManager.sender(true);
-            this.updateChatPanel(this.usersByUsername.get(username));
+            this.updateChatPanel(this.privateUser);
         }
         this.pan.revalidate();
         return bool;
@@ -240,6 +240,7 @@ public class MainController {
     public boolean changeUserName(User user, String newUsername) {
         this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
         DatabaseManager.changeUsername(user.getIP(), newUsername);
+        this.updateChatPanel(user);
         return true;
     }
 
