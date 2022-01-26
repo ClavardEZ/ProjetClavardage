@@ -82,7 +82,7 @@ public class UserManager extends Thread {
                     DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
                             message.length(),broadcast, this.sendingPort);
                     dgramSocket.send(outPacket);
-                    //System.out.println("UDP sent message");
+                    System.out.println("UDP sent message " + message);
                 }
             }
 
@@ -143,7 +143,7 @@ public class UserManager extends Thread {
                                 //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
                                 if (this.usersByIP.containsKey(clientAddress)){ //cas ou l'utilisateur est déja connu
                                     this.usersByIP.get(clientAddress).setUsername(message);
-                                    System.out.println("username set HERE TEST");
+                                    System.out.println("username set HERE TEST " + message);
                                 }
                                 else {  //cas ou on découvre qu'il est connecte
                                     User user = new User(clientAddress,clientPort,message);
