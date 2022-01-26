@@ -289,17 +289,35 @@ public class MainController {
 
     public void updateChatPanel(User user) {
         Conversation conv = DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr);
-        ChatPanel chatPanel = this.tabByConv.get(user.getIP());
-        chatPanel.clearText();
-        ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
-        for (Message message :
-                messages) {
-            if (message.getIP().equals(user.getIP())) {
-                System.out.println("message loaded from db");
-                this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
-            } else {
-                System.out.println("message loaded from db as sender");
-                this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+        if (user.getIP().equals(this.privateUser.getIP())) {
+            for (ChatPanel chatPanel :
+                 this.tabByConv.values()) {
+                chatPanel.clearText();
+                ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
+                for (Message message :
+                        messages) {
+                    if (message.getIP().equals(user.getIP())) {
+                        System.out.println("message loaded from db");
+                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
+                    } else {
+                        System.out.println("message loaded from db as sender");
+                        this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+                    }
+                }
+            }
+        } else {
+            ChatPanel chatPanel = this.tabByConv.get(user.getIP());
+            chatPanel.clearText();
+            ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
+            for (Message message :
+                    messages) {
+                if (message.getIP().equals(user.getIP())) {
+                    System.out.println("message loaded from db");
+                    this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
+                } else {
+                    System.out.println("message loaded from db as sender");
+                    this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+                }
             }
         }
     }
