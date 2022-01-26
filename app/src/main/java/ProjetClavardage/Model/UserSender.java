@@ -16,7 +16,7 @@ public class UserSender extends Thread {
             try {
                 sleep(SLEEP_TIME);
                 this.userManager.sender(true);
-                sleep(SLEEP_TIME);
+                //sleep(SLEEP_TIME);
                 this.userManager.users_update();
             } catch (InterruptedException e) {
                 e.printStackTrace();
