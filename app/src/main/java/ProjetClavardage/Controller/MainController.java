@@ -289,7 +289,7 @@ public class MainController {
 
     public void updateChatPanel(User user) {
         Conversation conv = DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr);
-        ChatPanel chatPanel = this.tabByConv.get(conv);
+        ChatPanel chatPanel = this.tabByConv.get(user.getIP());
         chatPanel.clearText();
         ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
         for (Message message :
