@@ -288,12 +288,15 @@ public class MainController {
     }
 
     public void updateChatPanel(User user) {
-        Conversation conv = DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr);
+        ChatPanel chatPanel = null;
         if (user.getIP().equals(this.privateUser.getIP())) {
-            for (ChatPanel chatPanel :
-                 this.tabByConv.values()) {
+            for (InetAddress ipAddress :
+                 this.tabByConv.keySet()) {
+                chatPanel = this.tabByConv.get(ipAddress);
                 chatPanel.clearText();
-                ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
+                ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(ipAddress, this.msgThdMngr),
+                        true,
+                        this.msgThdMngr));
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(user.getIP())) {
@@ -306,9 +309,11 @@ public class MainController {
                 }
             }
         } else {
-            ChatPanel chatPanel = this.tabByConv.get(user.getIP());
+            chatPanel = this.tabByConv.get(user.getIP());
             chatPanel.clearText();
-            ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
+            ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr),
+                    true,
+                    this.msgThdMngr));
             for (Message message :
                     messages) {
                 if (message.getIP().equals(user.getIP())) {
