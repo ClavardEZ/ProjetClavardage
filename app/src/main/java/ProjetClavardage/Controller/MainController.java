@@ -127,6 +127,7 @@ public class MainController {
                     }
                 }
             } else {
+                // condition peut etre retiree ?
                 System.out.println("new conv in database");
                 if (conv2 == null) {
                     DatabaseManager.addConversation(conv, ip_address);

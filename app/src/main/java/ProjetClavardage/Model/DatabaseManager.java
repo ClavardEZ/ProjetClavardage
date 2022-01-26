@@ -100,6 +100,8 @@ public final class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
+        System.out.println("new user added : " + user.getUsername());
     }
 
     public static void addPrivateUser(PrivateUser pUser) {

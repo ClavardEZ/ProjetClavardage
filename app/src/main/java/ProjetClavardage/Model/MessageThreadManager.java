@@ -52,7 +52,7 @@ public class MessageThreadManager extends Thread {
         try {
             System.out.println("Connect ip adress:" + ipaddress.toString());
 
-            sock = new Socket(ipaddress, this.clientPort);
+            sock = new Socket(ipaddress, this.clientPort, getLocalAddress(), 0);
             conv.addUser(sock);
             System.out.println("HERE conversation added");
 
