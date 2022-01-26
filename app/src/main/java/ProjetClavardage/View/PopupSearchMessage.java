@@ -1,6 +1,7 @@
 package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.MainController;
+import ProjetClavardage.Model.Conversation;
 import ProjetClavardage.Model.DatabaseManager;
 import ProjetClavardage.Model.Message;
 import com.sun.tools.javac.Main;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
+import java.util.UUID;
 
 public class PopupSearchMessage extends JFrame {
 
@@ -89,7 +91,12 @@ public class PopupSearchMessage extends JFrame {
     }
 
     public void search(String text) {
-        List<Message> messages = DatabaseManager.searchMessageBytext(this.mc.getMsgThdMngr().getConversationsAt(this.parent.getSelectedIndex()),
+        Conversation conv = this.mc.getMsgThdMngr().getConversationsAt(this.parent.getSelectedIndex());
+        Conversation realConv = null;
+        if (conv.getUsersIP().size() > 0) {
+            realConv = DatabaseManager.getConvByIp(conv.getUsersIP().get(0), this.mc.getMsgThdMngr());
+        }
+        List<Message> messages = DatabaseManager.searchMessageBytext(realConv,
                 text,
                 this.mc.getMsgThdMngr());
 

@@ -60,4 +60,8 @@ public class ChatPanel extends JScrollPane {
         this.isSenderMessages.add(isSender);
     }
 
+    public void clearText() {
+        this.messages.clear();
+    }
+
 }

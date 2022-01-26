@@ -4,6 +4,7 @@ import ProjetClavardage.Model.*;
 import ProjetClavardage.View.ButtonTabComponent;
 import ProjetClavardage.View.ChatPanel;
 import ProjetClavardage.View.Pan;
+import org.checkerframework.checker.units.qual.A;
 
 import javax.xml.crypto.Data;
 import java.net.InetAddress;
@@ -64,8 +65,11 @@ public class MainController {
         DatabaseManager.connect();
         DatabaseManager.createTables();
 
-        if (DatabaseManager.getPrivateUser() == null) {
+        PrivateUser dbUser = DatabaseManager.getPrivateUser();
+        if (dbUser == null) {
             DatabaseManager.addPrivateUser(this.privateUser);
+        } else {
+            this.privateUser.setUsername(dbUser.getUsername());
         }
     }
 
@@ -232,6 +236,12 @@ public class MainController {
         return bool;
     }
 
+    public boolean changeUserName(User user, String newUsername) {
+        this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
+        DatabaseManager.changeUsername(user.getIP(), newUsername);
+        return true;
+    }
+
     public void addContact(String username) {
         this.pan.addContact(username);
     }
@@ -273,5 +283,22 @@ public class MainController {
 
     public boolean isPlaceholderText() {
         return this.pan.isPlaceholderText();
+    }
+
+    public void updateChatPanel(User user) {
+        Conversation conv = DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr);
+        ChatPanel chatPanel = this.tabByConv.get(conv);
+        chatPanel.clearText();
+        ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(conv, true, this.msgThdMngr));
+        for (Message message :
+                messages) {
+            if (message.getIP().equals(user.getIP())) {
+                System.out.println("message loaded from db");
+                this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
+            } else {
+                System.out.println("message loaded from db as sender");
+                this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+            }
+        }
     }
 }

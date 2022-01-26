@@ -3,6 +3,7 @@ package ProjetClavardage.Model;
 import net.harawata.appdirs.AppDirs;
 import net.harawata.appdirs.AppDirsFactory;
 
+import javax.sound.midi.Soundbank;
 import javax.swing.plaf.nimbus.State;
 import javax.xml.crypto.Data;
 import java.io.File;
@@ -252,7 +253,7 @@ public final class DatabaseManager {
         return pUser;
     }
 
-    public static Conversation getConversation(UUID convId, InetAddress ip_address, MessageThreadManager msgThdMngr) {
+    public static Conversation getConversation(UUID convId, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM conversation " +
                 "WHERE conv_id = ?;";
@@ -285,7 +286,7 @@ public final class DatabaseManager {
                 if (isText) {
                     message = new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                             DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
-                            DatabaseManager.getConversation(convId, InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
+                            DatabaseManager.getConversation(convId, msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content"));
                 }
@@ -323,7 +324,7 @@ public final class DatabaseManager {
                 if (isText) {
                     messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                             DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
-                            DatabaseManager.getConversation(conv.getID(), InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
+                            DatabaseManager.getConversation(conv.getID(), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content")));
                     if (messages.get(0).getUser() == null) {
@@ -385,6 +386,7 @@ public final class DatabaseManager {
         }
     }
 
+    // only works with one to one conversations
     public static Conversation getConvByIp(InetAddress ipAddress, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM conversation " +
@@ -412,25 +414,24 @@ public final class DatabaseManager {
         String req = """
                 SELECT *
                 FROM message
-                WHERE ip_address = ?
+                WHERE conv_id = ?
                 AND content like ?;
                 """;
         try {
             PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
-            InetAddress ipAddress = null;
-            if (conv.getUsersIP().size() > 0) {
-                ipAddress = conv.getUsersIP().get(0);
-            }
-            stmt.setString(1, ipAddress.getHostAddress());
+            stmt.setString(1, conv.getID().toString());
             stmt.setString(2, "%" + text + "%");
             ResultSet rs = stmt.executeQuery();
+            int cnt = 0;
             while (rs.next()) {
                 messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
                         DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address"))),
-                        DatabaseManager.getConversation(conv.getID(), InetAddress.getByName(rs.getString("ip_address")), msgThdMngr),
+                        DatabaseManager.getConversation(conv.getID(), msgThdMngr),
                         UUID.fromString(rs.getString("id_message")),
                         rs.getString("content")));
+                cnt++;
             }
+            System.out.println("SEARCH TEXT " + cnt + " RESULTS: convid: " + conv.getID() + ", text: " + text);
             rs.close();
             stmt.close();
         } catch (SQLException e) {
@@ -440,6 +441,46 @@ public final class DatabaseManager {
         }
 
         return messages;
+    }
+
+    public static ArrayList<String> getAllUserNames() {
+        ArrayList<String> result = new ArrayList<>();
+
+        String req = """
+                SELECT username
+                FROM user;
+                """;
+
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                result.add(rs.getString("username"));
+            }
+            rs.close();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    public static void changeUsername(InetAddress ipAddress, String newUsername) {
+        String req = """
+                UPDATE user
+                SET username = ?
+                WHERE ip_address = ?;
+                """;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, newUsername);
+            stmt.setString(2, ipAddress.getHostAddress());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }

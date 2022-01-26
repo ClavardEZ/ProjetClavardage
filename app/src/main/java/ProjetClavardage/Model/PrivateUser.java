@@ -1,6 +1,7 @@
 package ProjetClavardage.Model;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
  * Classe representant l'utilisateur courant du systeme
@@ -9,8 +10,12 @@ public class PrivateUser extends User {
     private String password;
 
     public boolean updateUsername(String username) {
-        // TODO checker si le nouveau pseudo est déjà dans la base de donnée sinon, on l'ajoute
+        if (DatabaseManager.getAllUserNames().contains(username)) {
+            return false;
+        }
+
         this.setUsername(username);
+        DatabaseManager.changeUsername(this.getIP(), username);
 
         return true;
     }

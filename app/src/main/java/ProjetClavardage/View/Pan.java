@@ -1,6 +1,7 @@
 package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.*;
+import ProjetClavardage.Model.Conversation;
 import ProjetClavardage.Model.Message;
 /*import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
