@@ -67,23 +67,6 @@ public class MainController {
             e.printStackTrace();
         }
 
-        this.ni = "";
-
-        try {
-            Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
-            while (nis.hasMoreElements()) {
-                NetworkInterface ni2 = nis.nextElement();
-                /*if (ni2.isUp()) {
-                    System.out.println("interface : " + ni2.toString());
-                }*/
-                if (ni2.isLoopback()) {
-                    this.ni = ni2.getName();
-                    System.out.println("ni name : " + this.ni);
-                }
-            }
-        } catch (SocketException e) {
-            e.printStackTrace();
-        }
         this.pan = new Pan(this);
         this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
         this.msgThdMngr.start();
