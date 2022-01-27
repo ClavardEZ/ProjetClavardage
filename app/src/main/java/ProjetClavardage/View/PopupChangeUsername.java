@@ -60,7 +60,7 @@ public class PopupChangeUsername extends JFrame {
                     PopupChangeUsername.this.dispose();
                     }
                     else {
-                        label.setText("Pseudonyme déjà utlisé !");
+                        label.setText("Pseudonyme deja utlise !");
                     }
                 } else {
                     label.setText("Pseudonyme trop court");
