@@ -156,6 +156,7 @@ public class MessageThreadManager extends Thread {
         conv.close_connection();
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
+        System.out.println("closed here 1");
     }
 
     public void close_conversation(InetAddress ip) {
@@ -163,6 +164,7 @@ public class MessageThreadManager extends Thread {
         conv.close_connection();
         this.conversations.remove(conv);
         this.conversationHashMap.remove(conv.getID());
+        System.out.println("closed here 2");
     }
 
     public void close_all_conversation() {
