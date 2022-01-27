@@ -58,14 +58,15 @@ public class MessageThreadManager extends Thread {
                 this.conversationHashMap.put(conv.getID(), conv);
                 this.conversations.add(conv);
                 System.out.println("here");
-            }
-            SpecialMessage spemsg = new SpecialMessage(conv);
-            conv.send_message(spemsg);
-
-            if (conv.getUsersIP().size() > 0) {
-                System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
             } else {
-                System.out.println("demande conv impossible a envoyer pas d'user dans conv");
+                SpecialMessage spemsg = new SpecialMessage(conv);
+                conv.send_message(spemsg);
+
+                if (conv.getUsersIP().size() > 0) {
+                    System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
+                } else {
+                    System.out.println("demande conv impossible a envoyer pas d'user dans conv");
+                }
             }
 
         } catch (IOException e) {
