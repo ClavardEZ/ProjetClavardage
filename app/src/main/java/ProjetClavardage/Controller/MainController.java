@@ -201,8 +201,10 @@ public class MainController {
                 System.out.println("conv deja dans bd");
                 Conversation.copyUsers(conv, conv2);
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
+                System.out.println("nb messages trouvés : " + messages.size());
                 for (Message message :
                         messages) {
+                    System.out.println("message conv id : " + message.getConvID());
                     if (message.getIP().equals(ip_address)) {
                         //this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
                         this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
