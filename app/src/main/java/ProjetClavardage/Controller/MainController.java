@@ -262,8 +262,7 @@ public class MainController {
         return bool;
     }
 
-    public boolean changeUserName(User user, String newUsername) {
-        String oldUsername = user.getUsername();
+    public boolean changeUserName(User user, String oldUsername, String newUsername) {
         if (!oldUsername.equals(newUsername)) {
             System.out.println("mc [RECEVEUR CHANGE USERNAME] changeUserName");
             this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
