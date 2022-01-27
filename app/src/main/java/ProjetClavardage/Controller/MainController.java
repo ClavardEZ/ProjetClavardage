@@ -190,6 +190,7 @@ public class MainController {
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         //DatabaseManager.addConversation();
         InetAddress ip_address = null;
+        System.out.println("test nb users=" + conv.getUsersIP().size());
         if (conv.getUsersIP().size() > 0) {
             ip_address = conv.getUsersIP().get(0);
             this.tabByConv.put(ip_address,chatPanel);
