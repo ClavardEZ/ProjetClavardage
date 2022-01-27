@@ -25,6 +25,7 @@ public class MainController {
     private HashMap<InetAddress, ChatPanel> tabByConv;
     private HashMap<String, User> usersByUsername;
     private HashMap<User, String> usernameByusers;
+    private ArrayList<InetAddress> tabIndexByAddress;
 
     public static String ni;
 
@@ -53,6 +54,7 @@ public class MainController {
         this.usernameByusers = new HashMap<>();
         this.usersByUsername = new HashMap<>();
         this.tabByConv = new HashMap<>();
+        this.tabIndexByAddress = new ArrayList<>();
 
         this.userManager = new UserManager(this, this.privateUser, listeningPort, sendingPort);
         this.userManager.start_listener();
@@ -121,6 +123,9 @@ public class MainController {
         if (!this.tabByConv.containsKey(this.usersByUsername.get(this.pan.getUsername(index)).getIP())){  //evite la création de 2 tab avec meme destinataire
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
+
+            this.tabIndexByAddress.add(ip_address);
+
             this.msgThdMngr.openConnection(ip_address,conv);
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
@@ -161,6 +166,8 @@ public class MainController {
         //this.msgThdMngr.close_conversation(index);
         InetAddress ip = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
         this.msgThdMngr.close_conversation(ip);
+        this.tabByConv.remove(ip);
+        this.tabIndexByAddress.remove(ip);
 
         this.pan.revalidate();
     }
@@ -197,6 +204,7 @@ public class MainController {
             ip_address = conv.getUsersIP().get(0);
             this.tabByConv.put(ip_address,chatPanel);
             System.out.println("ip=" + ip_address);
+            this.tabIndexByAddress.add(ip_address);
             // si la conversation est déjà dans la base de données
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
@@ -255,6 +263,10 @@ public class MainController {
 
     public void removeConversationTab(int index) {
         this.pan.removeConversationTab(index);
+    }
+
+    public void removeConversationTab(Conversation conv) {
+        this.pan.removeConversationTab(this.tabIndexByAddress.indexOf(conv.getFirstIP()));
     }
 
     /*public void addTextToTab(int index, String text) {

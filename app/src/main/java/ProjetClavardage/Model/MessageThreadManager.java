@@ -172,7 +172,7 @@ public class MessageThreadManager extends Thread {
     public void close_conversation_conv(Conversation conv) {
         conv.close_connection();
         if (this.conversations.indexOf(conv) != -1) {
-            this.mc.removeConversationTab(this.conversations.indexOf(conv));
+            this.mc.removeConversationTab(conv);
         }
         this.conversations.remove(conv);
     }
