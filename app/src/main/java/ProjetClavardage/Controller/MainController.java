@@ -35,8 +35,6 @@ public class MainController {
 
         this.ni = ni;
 
-        System.out.println("string ni : " + ni);
-
         try {
             Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
             while (nis.hasMoreElements()) {
@@ -50,7 +48,6 @@ public class MainController {
         }
 
         this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(ni), username); // set correct ip address
-        System.out.println("private user ip : " + this.privateUser.getIP().getHostAddress());
 
         // udp
         this.usernameByusers = new HashMap<>();
@@ -91,7 +88,6 @@ public class MainController {
             this.addContact(user.getUsername());
             // ajout dans la bd
             if (DatabaseManager.getUser(user.getIP()) == null) {
-                System.out.println("user added to database");
                 DatabaseManager.addUser(user);
             }
         }
@@ -99,7 +95,6 @@ public class MainController {
     }
 
     public void removeUser(User user) {
-        System.out.println("user removed from mc");
         this.usersByUsername.remove(user.getUsername());
         this.usernameByusers.remove(user);
         this.pan.removeContact(user.getUsername());
@@ -127,7 +122,6 @@ public class MainController {
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
             this.msgThdMngr.openConnection(ip_address,conv);
-            System.out.println("IP address : " + ip_address);
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
             //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
@@ -139,9 +133,7 @@ public class MainController {
             // ouverture depuis moi
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
-                System.out.println("ip address opened from HERE : " + ip_address);
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
-                System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(ip_address)) {
@@ -152,7 +144,6 @@ public class MainController {
                 }
             } else {
                 // condition peut etre retiree ?
-                System.out.println("new conv in database");
                 if (conv2 == null) {
                     DatabaseManager.addConversation(conv, ip_address);
                 } else {
@@ -177,7 +168,6 @@ public class MainController {
             this.pan.addTextToTabAsSender();
             //Message msg = new TextMessage(LocalDateTime.now(), this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
             Message msg = new TextMessage(LocalDateTime.now(), this.privateUser, this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
-            System.out.println("TAB SELECTIONNE : "+ this.pan.getSelectedIndex());
             this.msgThdMngr.send(msg, this.pan.getSelectedIndex());
             this.pan.emptyTextField();
 
@@ -206,20 +196,16 @@ public class MainController {
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
-                System.out.println("conv already exists in database, " + messages.size() + " messages loaded");
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(ip_address)) {
-                        System.out.println("message loaded from db");
                         //this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
                         this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
-                        System.out.println("message loaded from db as sender");
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     }
                 }
             } else {
-                System.out.println("new conv in database");
                 DatabaseManager.addConversation(conv, ip_address);
             }
         }
@@ -230,7 +216,6 @@ public class MainController {
     public boolean changeUserName(String username) { //renvoie 0 si erreur
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
-            System.out.println("username HERERERERERERE updated");
             this.userManager.sender(true);
             this.updateChatPanel(this.privateUser);
         }
@@ -269,7 +254,6 @@ public class MainController {
         //this.pan.addTextToTab(tabByConv.get(conv), text);
         if (conv.getUsersIP().size() > 0) {
             this.pan.addTextToTab(this.tabByConv.get(conv.getUsersIP().get(0)), text);
-            System.out.println("HEERRRRE " + this.tabByConv.get(conv.getUsersIP().get(0)));
         }
     }
 
@@ -298,7 +282,6 @@ public class MainController {
 
     public void updateChatPanel(User user) {
         ChatPanel chatPanel = null;
-        System.out.println("chat panel updated");
         if (user.getIP().equals(this.privateUser.getIP())) {
             for (InetAddress ipAddress :
                  this.tabByConv.keySet()) {
@@ -310,16 +293,13 @@ public class MainController {
                 for (Message message :
                         messages) {
                     if (message.getIP().equals(user.getIP())) {
-                        System.out.println("message loaded from db as sender");
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     } else {
-                        System.out.println("message loaded from db");
                         this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     }
                 }
             }
         } else {
-            System.out.println("ICICIICICI");
             chatPanel = this.tabByConv.get(user.getIP());
             chatPanel.clearText();
             ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr),
@@ -328,13 +308,15 @@ public class MainController {
             for (Message message :
                     messages) {
                 if (message.getIP().equals(user.getIP())) {
-                    System.out.println("message loaded from db");
                     this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                 } else {
-                    System.out.println("message loaded from db as sender");
                     this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                 }
             }
         }
+    }
+
+    public void refreshUI() {
+        this.pan.revalidate();
     }
 }

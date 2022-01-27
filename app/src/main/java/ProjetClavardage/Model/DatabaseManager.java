@@ -101,8 +101,6 @@ public final class DatabaseManager {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
-        System.out.println("new user added : " + user.getUsername());
     }
 
     public static void addPrivateUser(PrivateUser pUser) {
@@ -134,7 +132,6 @@ public final class DatabaseManager {
             pstmt.setString(4, message.getIP().getHostAddress());
             pstmt.setString(5, message.getConvID().toString());
             pstmt.executeUpdate();
-            System.out.println("message added to database");
             pstmt.close();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -218,10 +215,6 @@ public final class DatabaseManager {
             e.printStackTrace();
         } catch (UnknownHostException e) {
             e.printStackTrace();
-        }
-
-        if (user == null) {
-            System.out.println("user null get usre db");
         }
 
         return user;
@@ -317,9 +310,7 @@ public final class DatabaseManager {
             }
             //stmt.setString(1, ip_address.getHostAddress());
             stmt.setString(1, conv.getID().toString());
-            System.out.println("db conv id in : " + conv.getID().toString());
             ResultSet rs = stmt.executeQuery();
-            System.out.println("all messages query");
             while (rs.next()) {
                 if (isText) {
                     messages.add(new TextMessage(rs.getTimestamp("sent_date").toLocalDateTime(),
@@ -327,9 +318,6 @@ public final class DatabaseManager {
                             DatabaseManager.getConversation(conv.getID(), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content")));
-                    if (messages.get(0).getUser() == null) {
-                        System.out.println("user null db HERE");
-                    }
                 }
                 User user = DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address")));
 
@@ -341,8 +329,6 @@ public final class DatabaseManager {
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
-
-        System.out.println("all messages query done");
 
         return messages;
     }
@@ -398,7 +384,6 @@ public final class DatabaseManager {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 conv = new Conversation(rs.getString("conv_name"), msgThdMngr, UUID.fromString(rs.getString("conv_id")));
-                System.out.println("conv id HERE : " + UUID.fromString(rs.getString("conv_id")));
             }
             rs.close();
             stmt.close();
@@ -431,7 +416,6 @@ public final class DatabaseManager {
                         rs.getString("content")));
                 cnt++;
             }
-            System.out.println("SEARCH TEXT " + cnt + " RESULTS: convid: " + conv.getID() + ", text: " + text);
             rs.close();
             stmt.close();
         } catch (SQLException e) {

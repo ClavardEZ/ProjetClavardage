@@ -41,7 +41,6 @@ public class AppFrame extends JFrame {
             public void windowClosing(WindowEvent e)
             {
                 mc.closingApp();
-                System.out.println("LALALALALA Closed");
                 e.getWindow().dispose();
             }
         });

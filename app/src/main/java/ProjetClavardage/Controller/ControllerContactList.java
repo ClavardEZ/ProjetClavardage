@@ -23,7 +23,6 @@ public class ControllerContactList implements MouseListener {
         if (e.getClickCount() == 2) {
             index = list.getSelectedIndex();
             //index = list.locationToIndex(e.getPoint());
-            System.out.println("index = " + index);
             this.mc.openConversation(index);
         }
 

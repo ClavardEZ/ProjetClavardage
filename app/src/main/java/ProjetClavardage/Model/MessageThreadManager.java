@@ -50,22 +50,15 @@ public class MessageThreadManager extends Thread {
             return sock;
         }
         try {
-            System.out.println("Connect ip adress:" + ipaddress.toString());
-
             sock = new Socket(ipaddress, this.clientPort);
             conv.addUser(sock);
-            System.out.println("HERE conversation added");
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
             if (!conversationHashMap.containsKey(conv.getID())) {
                 this.conversationHashMap.put(conv.getID(), conv);
-                System.out.println("added to convs");
                 this.conversations.add(conv);
-            } else {
-                System.out.println("no added to convs");
             }
             SpecialMessage spemsg = new SpecialMessage(conv);
-            System.out.println("Conv Creation, Socket :" + sock.toString() +"   UUID sent : "+ spemsg.getConvID());
             conv.send_message(spemsg);
 
         } catch (IOException e) {
@@ -75,7 +68,6 @@ public class MessageThreadManager extends Thread {
     }
 
     public void send(Message msg, int index) {
-        System.out.println("msg manager sent message");
         this.conversations.get(index).send_message(msg);
     }
 
@@ -98,10 +90,8 @@ public class MessageThreadManager extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-            System.out.println("server listening on " + servsock.getInetAddress() + " and port " + this.servPort);
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 try{
-                    System.out.println("EN ATTENTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     sock = servsock.accept();
                     //int i = 0;
                     /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
@@ -115,9 +105,6 @@ public class MessageThreadManager extends Thread {
 
                     ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
                     SpecialMessage msg = (SpecialMessage) oiStream.readObject();
-
-
-                    System.out.println("Conv Reception, Socket :" + sock.toString() +"   UUID sent : "+ msg.getConvID());
                     Conversation conv;
                     if(conversationHashMap.containsKey(msg.getConvID())) {
                         conv = conversationHashMap.get(msg.getConvID());
@@ -130,7 +117,6 @@ public class MessageThreadManager extends Thread {
                         this.conversations.add(conv);
                         this.conversationHashMap.put(msg.getConvID(),conv);
                         conv.addUser(sock);
-                        System.out.println("conversation added");
                         this.mc.addConversationTab(conv);
                     }
                     for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
@@ -154,10 +140,8 @@ public class MessageThreadManager extends Thread {
 
     public void close_conversation(int conv_id) {
         this.conversations.get(conv_id).close_connection();
-        System.out.println("conv closed");
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
-        System.out.println("conv removed");
     }
 
     public void close_conversation(InetAddress ip) {
@@ -174,10 +158,8 @@ public class MessageThreadManager extends Thread {
     }
 
     public void close_conversation_conv(Conversation conv) {
-        System.out.println("conv closed from distant");
         conv.close_connection();
         if (this.conversations.indexOf(conv) != -1) {
-            System.out.println("removed from pan");
             this.mc.removeConversationTab(this.conversations.indexOf(conv));
         }
         this.conversations.remove(conv);

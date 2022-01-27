@@ -219,7 +219,6 @@ public class Pan extends JPanel {
     }
 
     public void removeContact(String username) {
-        System.out.println("removed user : " + username);
         this.contacts.removeElement(username);
     }
 
