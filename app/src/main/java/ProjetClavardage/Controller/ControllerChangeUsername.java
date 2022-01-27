@@ -21,8 +21,6 @@ public class ControllerChangeUsername implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (this.pan.getSelectedIndex() >= 0) {
-            new PopupChangeUsername(this.mc, pan, this.pan.getParent().getSize());
-        }
+        new PopupChangeUsername(this.mc, pan, this.pan.getParent().getSize());
     }
 }
