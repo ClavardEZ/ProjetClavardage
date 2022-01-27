@@ -276,13 +276,16 @@ public class MainController {
     }
 
     public void removeConversationTab(int index) {
-        System.out.println("removeConvTab 2");
+        System.out.println("removeConvTab 1");
         this.pan.removeConversationTab(index);
     }
 
     public void removeConversationTab(Conversation conv) {
         System.out.println("removeConvTab 2");
         this.pan.removeConversationTab(this.tabIndexByAddress.indexOf(conv.getFirstIP()));
+
+        this.tabByConv.remove(conv.getFirstIP());
+        this.tabIndexByAddress.remove(conv.getFirstIP());
     }
 
     /*public void addTextToTab(int index, String text) {

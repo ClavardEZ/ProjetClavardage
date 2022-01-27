@@ -321,9 +321,9 @@ public final class DatabaseManager {
                 }
                 User user = DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address")));
                 if (user == null) {
-                    System.out.println("[DATABASEMANAGER] getAllMessages user null");
+                    System.out.println("[DATABASEMANAGER] getAllMessages user null with ip = " + ip_address);
                 } else {
-                    System.out.println("[DATABASEMANAGER] getAllMessages user not null");
+                    System.out.println("[DATABASEMANAGER] getAllMessages user not null with ip = " + ip_address);
                 }
             }
             rs.close();
