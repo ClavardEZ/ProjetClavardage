@@ -41,6 +41,9 @@ public class MainController {
     }
 
     public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
+        DatabaseManager.connect();
+        DatabaseManager.createTables();
+
         AppDirs appDirs = AppDirsFactory.getInstance();
         String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
         (new File(dataFolder)).mkdirs();
@@ -87,9 +90,6 @@ public class MainController {
         this.userManager.start_listener();
         this.userManager.start();
         this.userManager.sender(true);
-
-        DatabaseManager.connect();
-        DatabaseManager.createTables();
 
         PrivateUser dbUser = DatabaseManager.getPrivateUser();
         if (dbUser == null) {
@@ -404,6 +404,8 @@ public class MainController {
     }
 
     public static void writeConfig(String ni) {
+        DatabaseManager.changePrivateIp(MessageThreadManager.getLocalAddress(ni));
+
         AppDirs appDirs = AppDirsFactory.getInstance();
         String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
         (new File(dataFolder)).mkdirs();

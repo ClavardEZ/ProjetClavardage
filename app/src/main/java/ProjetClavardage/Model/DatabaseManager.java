@@ -473,4 +473,20 @@ public final class DatabaseManager {
         }
     }
 
+    public static void changePrivateIp(InetAddress ipAddress) {
+        String req = """
+                UPDATE user
+                SET ip_address = ?
+                WHERE isPrivate = 1;
+                """;
+        try {
+            PreparedStatement stmt = DatabaseManager.conn.prepareStatement(req);
+            stmt.setString(1, ipAddress.getHostAddress());
+            stmt.executeUpdate();
+            stmt.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
