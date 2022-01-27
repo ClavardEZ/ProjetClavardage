@@ -44,7 +44,7 @@ public class UserManager extends Thread {
                 if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
                     //TODO afficher user dans le panel
                     this.mc.addUser(user);
-                    this.mc.changeUserName(user, this.oldUsernamesByIp.get(user)  , user.getUsername());
+                    this.mc.changeUserName(user, this.oldUsernamesByIp.get(user), user.getUsername());
                     user.setConnected(false);
                     //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
                 } else { // si il s'est deco

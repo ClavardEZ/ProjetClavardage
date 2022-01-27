@@ -284,6 +284,9 @@ public class Pan extends JPanel {
     }
 
     public void setUsername(String oldUsername, String newUsername) {
+        System.out.println("pan [RECEVEUR] setUsername : old: " +
+                oldUsername + "; new: " +
+                newUsername);
         int index = this.contacts.indexOf(oldUsername);
         this.contacts.remove(index);
         this.contacts.add(index, newUsername);
