@@ -26,7 +26,6 @@ public class MessageThreadManager extends Thread {
 
     private ArrayList<UserInConv> userInConvs;
     private ArrayList<Conversation> conversations;
-    private HashMap<UUID,Conversation> conversationHashMap;
     private int servPort;
     private int clientPort;
 
@@ -35,7 +34,6 @@ public class MessageThreadManager extends Thread {
     public MessageThreadManager(MainController mc, int servPort, int clientPort) {
         this.mc = mc;
         this.conversations = new ArrayList<>();
-        this.conversationHashMap = new HashMap<>();
         this.userInConvs = new ArrayList<>();
         this.servPort = servPort;
         this.clientPort = clientPort;
@@ -54,8 +52,7 @@ public class MessageThreadManager extends Thread {
             conv.addUser(sock);
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
-            if (!conversationHashMap.containsKey(conv.getID()) && !this.conversations.contains(conv)) {
-                this.conversationHashMap.put(conv.getID(), conv);
+            if (!this.conversations.contains(conv)) {
                 this.conversations.add(conv);
                 System.out.println("here");
                 SpecialMessage spemsg = new SpecialMessage(conv);
@@ -113,8 +110,9 @@ public class MessageThreadManager extends Thread {
 
                     System.out.println("special msg conv id=" + msg.getConvID());
 
-                    if(conversationHashMap.containsKey(msg.getConvID())) {
-                        conv = conversationHashMap.get(msg.getConvID());
+                    conv = DatabaseManager.getConversation(msg.getConvID(), this);
+
+                    if(this.conversations.contains(conv)) {
                         conv.addUser(sock);
                         System.out.println("devrait pas etre la");
                     }
@@ -125,7 +123,6 @@ public class MessageThreadManager extends Thread {
                         conv.addUser(sock);
                         conv = this.mc.addConversationTab(conv);
                         this.conversations.add(conv);
-                        this.conversationHashMap.put(msg.getConvID(),conv);
                     }
                     int i = 0;
                     for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
@@ -155,7 +152,6 @@ public class MessageThreadManager extends Thread {
 
     public void close_conversation(int conv_id) {
         Conversation conv = this.conversations.get(conv_id);
-        this.conversationHashMap.remove(conv.getID());
         conv.close_connection();
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
@@ -166,7 +162,6 @@ public class MessageThreadManager extends Thread {
         Conversation conv = this.getConversationByIP(ip);
         conv.close_connection();
         this.conversations.remove(conv);
-        this.conversationHashMap.remove(conv);
         System.out.println("closed here 2");
     }
 
@@ -242,6 +237,14 @@ public class MessageThreadManager extends Thread {
         return null;
     }
 
-    public HashMap<UUID,Conversation> getConvByID() {return this.conversationHashMap;}
+    public Conversation getConvByID(UUID convId) {
+        for (Conversation conv :
+                this.conversations) {
+            if (conv.getID().equals(convId)) {
+                return conv;
+            }
+        }
+        return null;
+    }
 
 }
