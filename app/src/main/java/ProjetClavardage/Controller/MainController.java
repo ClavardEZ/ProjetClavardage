@@ -150,8 +150,12 @@ public class MainController {
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
                         messages) {
+                    System.out.println("mc [ENVOYEUR] openConversation : message: " +
+                            message.getContent() +
+                            "; from " + message.getIP());
                     if (message.getIP().equals(ip_address)) {
-                        this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                        System.out.println("mc [ENVOYEUR] openConversation : add message from other");
+                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
                         this.pan.addTextToTabAsSender(message.getContent());
                     }
@@ -225,18 +229,20 @@ public class MainController {
                 System.out.println("mc [RECEVEUR] addConversationTab : conv cree car pas doublon");
                 Conversation.copyUsers(conv, conv2);
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
-                System.out.println("nb messages trouvés : " + messages.size());
                 for (Message message :
                         messages) {
-                    System.out.println("message conv id : " + message.getConvID());
+                    System.out.println("mc [RECEVEUR] openConversation : message: " +
+                            message.getContent() +
+                            "; from " + message.getIP());
                     if (message.getIP().equals(ip_address)) {
                         //this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
+                        System.out.println("mc [RECEVEUR] openConversation : add message from other");
                         this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     }
-                    return conv2;
                 }
+                return conv2;
             } else {
                 DatabaseManager.addConversation(conv, ip_address);
             }
