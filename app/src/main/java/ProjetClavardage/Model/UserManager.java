@@ -48,7 +48,7 @@ public class UserManager extends Thread {
     }
 
     public void users_update () {
-        synchronized (this) {
+        synchronized (this.usersByIP) {
             try {
                 this.semaphore.acquire();
             } catch (InterruptedException e) {
@@ -149,8 +149,7 @@ public class UserManager extends Thread {
                     //System.out.println("UDP :"+"waiting..." );
                     dgramSocket.receive(inPacket);
                     InetAddress clientAddress = inPacket.getAddress();
-                    synchronized (this) {
-
+                    synchronized (this.usersByIP) {
                         try {
                             this.semaphore.acquire();
                         } catch (InterruptedException e) {
