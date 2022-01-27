@@ -139,6 +139,7 @@ public class Pan extends JPanel {
         conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);
         ControllerAddConversation ctrlAddConv = new ControllerAddConversation(this.mc,this, this.contacts);
         addConvButton.addActionListener(ctrlAddConv);
+        this.addConvButton.setEnabled(false); // desactive car pas de conv multi user
         settings.addActionListener(ctrlAddConv);
 
         conversationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
