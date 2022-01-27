@@ -118,7 +118,7 @@ public class MainController {
 
         // TODO utiliser hashmap au lieu de index ? peut faire bugger
 
-        if (!this.tabByConv.containsKey(this.pan.getUsername(index))){  //evite la création de 2 tab avec meme destinataire
+        if (!this.tabByConv.containsKey(this.usersByUsername.get(this.pan.getUsername(index)).getIP())){  //evite la création de 2 tab avec meme destinataire
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
             this.msgThdMngr.openConnection(ip_address,conv);
@@ -152,6 +152,8 @@ public class MainController {
             }
 
             this.pan.revalidate();
+        } else {
+            System.out.println("normalement on rentre ici");
         }
     }
 
