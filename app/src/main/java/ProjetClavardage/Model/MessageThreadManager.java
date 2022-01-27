@@ -151,7 +151,9 @@ public class MessageThreadManager extends Thread {
     }
 
     public void close_conversation(int conv_id) {
-        this.conversations.get(conv_id).close_connection();
+        Conversation conv = this.conversations.get(conv_id);
+        this.conversationHashMap.remove(conv.getID());
+        conv.close_connection();
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
     }
@@ -160,6 +162,7 @@ public class MessageThreadManager extends Thread {
         Conversation conv = this.getConversationByIP(ip);
         conv.close_connection();
         this.conversations.remove(conv);
+        this.conversationHashMap.remove(conv.getID());
     }
 
     public void close_all_conversation() {
