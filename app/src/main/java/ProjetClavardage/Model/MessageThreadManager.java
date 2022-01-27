@@ -116,10 +116,10 @@ public class MessageThreadManager extends Thread {
                         //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
                         String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
                         conv = new Conversation(username, this,msg.getConvID());
+                        conv.addUser(sock);
                         conv = this.mc.addConversationTab(conv);
                         this.conversations.add(conv);
                         this.conversationHashMap.put(msg.getConvID(),conv);
-                        conv.addUser(sock);
                     }
                     int i = 0;
                     for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
