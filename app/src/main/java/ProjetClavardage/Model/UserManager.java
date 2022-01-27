@@ -37,7 +37,14 @@ public class UserManager extends Thread {
     }
 
     public User getUserByIP(InetAddress ip) {
-        return this.usersByIP.get(ip);
+        try {
+            this.semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        User user =  this.usersByIP.get(ip);
+        semaphore.release();
+        return user;
     }
 
     public void users_update () {
@@ -197,7 +204,14 @@ public class UserManager extends Thread {
 
     // ?
     public boolean isConnected(InetAddress userIP) {
-        return this.usersByIP.get(userIP).isConnected();
+        try {
+            this.semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        boolean ret = this.usersByIP.get(userIP).isConnected();
+        this.semaphore.release();
+        return ret;
     }
 
 }
