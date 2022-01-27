@@ -198,6 +198,7 @@ public class MainController {
     // reception de demande de conversation
     public Conversation addConversationTab(Conversation conv) {
         // TODO faire ajouter les messages reçus depuis la bd
+        System.out.println("enter here");
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         //DatabaseManager.addConversation();
         InetAddress ip_address = null;
