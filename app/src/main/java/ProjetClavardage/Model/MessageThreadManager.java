@@ -49,7 +49,9 @@ public class MessageThreadManager extends Thread {
             return sock;
         }
         try {
+            System.out.println("thdMngr [ENVOYEUR] openConnection start socket creation");
             sock = new Socket(ipaddress, this.clientPort);
+            System.out.println("thdMngr [ENVOYEUR] openConnection socket creation succes");
             conv.addUser(sock);
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
