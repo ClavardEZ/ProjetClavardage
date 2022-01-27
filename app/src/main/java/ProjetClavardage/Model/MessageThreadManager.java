@@ -121,8 +121,11 @@ public class MessageThreadManager extends Thread {
                         conv.addUser(sock);
                         this.mc.addConversationTab(conv);
                     }
+                    int i = 0;
                     for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
                          ) {
+                        System.out.println("i=" + i + ", ip=" + ip);
+                        i++;
                         openConnection(ip,conv);
                     }
 
