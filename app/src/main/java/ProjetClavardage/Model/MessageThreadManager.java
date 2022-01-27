@@ -111,9 +111,12 @@ public class MessageThreadManager extends Thread {
                     SpecialMessage msg = (SpecialMessage) oiStream.readObject();
                     Conversation conv;
 
+                    System.out.println("special msg conv id=" + msg.getConvID());
+
                     if(conversationHashMap.containsKey(msg.getConvID())) {
                         conv = conversationHashMap.get(msg.getConvID());
                         conv.addUser(sock);
+                        System.out.println("devrait pas etre la");
                     }
                     else {
                         //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
@@ -163,7 +166,7 @@ public class MessageThreadManager extends Thread {
         Conversation conv = this.getConversationByIP(ip);
         conv.close_connection();
         this.conversations.remove(conv);
-        this.conversationHashMap.remove(conv.getID());
+        this.conversationHashMap.remove(conv);
         System.out.println("closed here 2");
     }
 
