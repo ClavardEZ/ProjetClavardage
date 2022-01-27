@@ -26,7 +26,6 @@ public class MessageThreadManager extends Thread {
 
     private ArrayList<UserInConv> userInConvs;
     private ArrayList<Conversation> conversations;
-    private HashMap<UUID,Conversation> conversationHashMap;
     private int servPort;
     private int clientPort;
 
@@ -35,7 +34,6 @@ public class MessageThreadManager extends Thread {
     public MessageThreadManager(MainController mc, int servPort, int clientPort) {
         this.mc = mc;
         this.conversations = new ArrayList<>();
-        this.conversationHashMap = new HashMap<>();
         this.userInConvs = new ArrayList<>();
         this.servPort = servPort;
         this.clientPort = clientPort;
@@ -44,29 +42,33 @@ public class MessageThreadManager extends Thread {
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
     public Socket openConnection(InetAddress ipaddress, Conversation conv) {
         // TODO raise exception instead
+        System.out.println("thdMngr [ENVOYEUR] openConnection sur ip=" + ipaddress);
         Socket sock = null;
         if (this.conversations.size()>=this.NB_CONV_MAX) {
             //Message erreur
             return sock;
         }
         try {
-            System.out.println("Connect ip adress:" + ipaddress.toString());
-
+            System.out.println("thdMngr [ENVOYEUR] openConnection start socket creation");
             sock = new Socket(ipaddress, this.clientPort);
+            System.out.println("thdMngr [ENVOYEUR] openConnection socket creation succes");
             conv.addUser(sock);
-            System.out.println("HERE conversation added");
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
-            if (!conversationHashMap.containsKey(conv.getID())) {
-                this.conversationHashMap.put(conv.getID(), conv);
-                System.out.println("added to convs");
+            if (!this.conversations.contains(conv)) {
                 this.conversations.add(conv);
+                System.out.println("here");
+                SpecialMessage spemsg = new SpecialMessage(conv);
+                conv.send_message(spemsg);
+
+                if (conv.getUsersIP().size() > 0) {
+                    System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
+                } else {
+                    System.out.println("demande conv impossible a envoyer pas d'user dans conv");
+                }
             } else {
-                System.out.println("no added to convs");
+                System.out.println("demande conv non envoyee car conv deja existante");
             }
-            SpecialMessage spemsg = new SpecialMessage(conv);
-            System.out.println("Conv Creation, Socket :" + sock.toString() +"   UUID sent : "+ spemsg.getConvID());
-            conv.send_message(spemsg);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -75,7 +77,6 @@ public class MessageThreadManager extends Thread {
     }
 
     public void send(Message msg, int index) {
-        System.out.println("msg manager sent message");
         this.conversations.get(index).send_message(msg);
     }
 
@@ -87,7 +88,7 @@ public class MessageThreadManager extends Thread {
         //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
         ServerSocket servsock = null;
         try {
-            servsock = new ServerSocket(this.servPort, 2, getLocalAddress(MainController.ni));
+            servsock = new ServerSocket(this.servPort, 0, getLocalAddress(this.mc.getNi()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -98,51 +99,55 @@ public class MessageThreadManager extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-            System.out.println("server listening on " + servsock.getInetAddress() + " and port " + this.servPort);
-            while (this.conversations.size()<=this.NB_CONV_MAX) {
-                try{
-                    System.out.println("EN ATTENTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    sock = servsock.accept();
-                    //int i = 0;
-                    /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
-                        i++;
-                    }*/
-                    //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
-                    String str = "";
-                    ArrayList<InetAddress> usersIP = new ArrayList<>();
-                    usersIP.add(sock.getInetAddress());
+        while (this.conversations.size()<=this.NB_CONV_MAX) {
+            try{
+                System.out.println("thdMng [RECEVEUR] run : start servsock accept");
+                sock = servsock.accept();
+                System.out.println("thdMng [RECEVEUR] run : servsock accept succes");
 
+                String str = "";
+                ArrayList<InetAddress> usersIP = new ArrayList<>();
+                usersIP.add(sock.getInetAddress());
 
-                    ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
-                    SpecialMessage msg = (SpecialMessage) oiStream.readObject();
+                ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
+                SpecialMessage msg = (SpecialMessage) oiStream.readObject();
+                Conversation conv;
 
+                System.out.println("special msg conv id=" + msg.getConvID());
 
-                    System.out.println("Conv Reception, Socket :" + sock.toString() +"   UUID sent : "+ msg.getConvID());
-                    Conversation conv;
-                    if(conversationHashMap.containsKey(msg.getConvID())) {
-                        conv = conversationHashMap.get(msg.getConvID());
-                        conv.addUser(sock);
-                    }
-                    else {
-                        //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
-                        String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
-                        conv = new Conversation(username, this,msg.getConvID());
-                        this.conversations.add(conv);
-                        this.conversationHashMap.put(msg.getConvID(),conv);
-                        conv.addUser(sock);
-                        System.out.println("conversation added");
-                        this.mc.addConversationTab(conv);
-                    }
-                    for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
-                         ) {
+                conv = DatabaseManager.getConversation(msg.getConvID(), this);
+
+                if(this.conversations.contains(conv)) {
+                    conv.addUser(sock);
+                    System.out.println("devrait pas etre la");
+                }
+                else {
+                    //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
+                    String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
+                    conv = new Conversation(username, this,msg.getConvID());
+                    conv.addUser(sock);
+                    conv = this.mc.addConversationTab(conv);
+                    this.conversations.add(conv);
+                }
+                int i = 0;
+                for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
+                     ) {
+                    System.out.println("i=" + i + ", ip=" + ip);
+                    i++;
+                    if (!ip.equals(this.mc.getPrivateUserIp())) {
                         openConnection(ip,conv);
                     }
+                }
 
-                    //TODO, ajouter les socket dans la conv
-                    //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+                System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());
 
-                    // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
-                    //this.mc.addContact(sock.getInetAddress().toString());
+                this.mc.refreshUI();
+
+                //TODO, ajouter les socket dans la conv
+                //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+
+                // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
+                //this.mc.addContact(sock.getInetAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
@@ -153,17 +158,23 @@ public class MessageThreadManager extends Thread {
     }
 
     public void close_conversation(int conv_id) {
-        this.conversations.get(conv_id).close_connection();
-        System.out.println("conv closed");
+        Conversation conv = this.conversations.get(conv_id);
+        conv.close_connection();
         //this.conversations.get(conv_id).join();
         this.conversations.remove(conv_id);
-        System.out.println("conv removed");
+        System.out.println("closed here 1");
     }
 
     public void close_conversation(InetAddress ip) {
         Conversation conv = this.getConversationByIP(ip);
+        if (conv == null) {
+            System.out.println("thdmngr [FERMEUR] conv null");
+        } else {
+            System.out.println("thdmngr [FERMEUR] conv not null");
+        }
         conv.close_connection();
         this.conversations.remove(conv);
+        System.out.println("closed here 2");
     }
 
     public void close_all_conversation() {
@@ -174,11 +185,9 @@ public class MessageThreadManager extends Thread {
     }
 
     public void close_conversation_conv(Conversation conv) {
-        System.out.println("conv closed from distant");
         conv.close_connection();
         if (this.conversations.indexOf(conv) != -1) {
-            System.out.println("removed from pan");
-            this.mc.removeConversationTab(this.conversations.indexOf(conv));
+            this.mc.removeConversationTab(conv);
         }
         this.conversations.remove(conv);
     }
@@ -230,7 +239,7 @@ public class MessageThreadManager extends Thread {
             Enumeration<InetAddress> ias = ni.getInetAddresses();
             while (ias.hasMoreElements()) {
                 InetAddress ia = (InetAddress) ias.nextElement();
-                if (!ia.isLoopbackAddress() && ia instanceof Inet4Address) {
+                if (ia instanceof Inet4Address) {
                     return ia;
                 }
             }
@@ -240,6 +249,14 @@ public class MessageThreadManager extends Thread {
         return null;
     }
 
-    public HashMap<UUID,Conversation> getConvByID() {return this.conversationHashMap;}
+    public Conversation getConvByID(UUID convId) {
+        for (Conversation conv :
+                this.conversations) {
+            if (conv.getID().equals(convId)) {
+                return conv;
+            }
+        }
+        return null;
+    }
 
 }

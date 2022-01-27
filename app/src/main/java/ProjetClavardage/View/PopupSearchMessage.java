@@ -41,7 +41,7 @@ public class PopupSearchMessage extends JFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 5, 10);
-        JLabel label =new JLabel("Message à chercher : ");
+        JLabel label =new JLabel("Recherche de message : ");
         pan.add(label, gbc);
         JTextField input = new JTextField();
         String placeholdermsg = "Entrez le message";

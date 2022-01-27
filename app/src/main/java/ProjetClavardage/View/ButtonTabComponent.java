@@ -53,7 +53,6 @@ public class ButtonTabComponent extends JPanel {
         public void actionPerformed(ActionEvent e) {
             int i = pane.indexOfTabComponent(ButtonTabComponent.this);
             if (i != -1) {
-                System.out.println("valeur de i=" + i);
                 pane.remove(i);
                 mc.closeConversation(i);
             }

@@ -47,7 +47,13 @@ public abstract class Message implements Serializable {
         return "Il faut implémenter la méthode getContent dans la bonne classe";
     }
     public LocalDateTime getDate(){return this.sentDate;}
-    public InetAddress getIP(){return this.user.getIP();}
+    public InetAddress getIP(){
+        if (this.user != null) {
+            return this.user.getIP();
+        } else {
+            return null;
+        }
+    }
 
     public UUID getConvID() {return this.convID;}
   

@@ -35,7 +35,6 @@ public class UserInConv extends Thread{
             //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
             //this.oStream.write(data);
             //System.out.println("conv sent message");
-            System.out.println("message envoye sur ip : " + this.sock.getRemoteSocketAddress().toString());
             ObjectOutputStream ooStream = new ObjectOutputStream(sock.getOutputStream());
             ooStream.writeObject(msg);
         } catch (IOException e) {
@@ -56,12 +55,11 @@ public class UserInConv extends Thread{
             }
 
             else if (msg != null) {
-                System.out.println("received msg=" + msg.toString());
-                this.msgThMng.received(msg, msgThMng.getConvByID().get(msg.getConvID()));
+                this.msgThMng.received(msg, msgThMng.getConvByID(msg.getConvID()));
+                System.out.println("conv id=" + msg.getConvID().toString());
                 DatabaseManager.addMessage(msg);
             }
         } while (msg != null);
-        System.out.println("closed");
         this.msgThMng.close_conversation_conv(this.conv);
         } catch (SocketException e) {
             System.out.println("Client disconnected");

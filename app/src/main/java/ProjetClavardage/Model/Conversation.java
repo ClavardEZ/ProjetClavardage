@@ -27,7 +27,6 @@ public class Conversation{
         this.socks = new ArrayList<>();
         this.msgThMng = msgThMng;
         this.id = UUID.randomUUID();
-        System.out.println("IDCONV : "+this.id);
         this.usersIP = new ArrayList<>();
         this.usersHashMap = new HashMap<>();
     }
@@ -140,5 +139,17 @@ public class Conversation{
     }
 
     public String getName() {return this.name;}
+
+    public InetAddress getFirstIP() {
+        if (this.usersIP.size() > 0) {
+            return this.usersIP.get(0);
+        }
+        return null;
+    }
+
+    public static void copyUsers(Conversation src, Conversation dest) {
+        dest.usersIP = src.usersIP;
+        dest.usersHashMap = src.usersHashMap;
+    }
 
 }

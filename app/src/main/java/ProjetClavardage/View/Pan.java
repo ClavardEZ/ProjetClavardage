@@ -1,8 +1,6 @@
 package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.*;
-import ProjetClavardage.Model.Conversation;
-import ProjetClavardage.Model.Message;
 /*import ProjetClavardage.Model.Message;
 import ProjetClavardage.Model.MessageThreadManager;
 import ProjetClavardage.Model.TextMessage;*/
@@ -10,18 +8,9 @@ import ProjetClavardage.Model.TextMessage;*/
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.nio.Buffer;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 
 /**
  * Classe principale de la vue
@@ -43,17 +32,19 @@ public class Pan extends JPanel {
     public Pan(MainController mc) {
         super();
 
+        this.setLocale(null);
+
         this.mc = mc;
         this.chatPanels = new ArrayList<>();
 
         // loading resources
-        BufferedImage logoutImage = null;
+        BufferedImage searchImage = null;
         BufferedImage settingsImage = null;
         BufferedImage userImage = null;
         BufferedImage sendImage = null;
         this.closeImage = null;
         try {
-            logoutImage = ImageIO.read(this.getClass().getResource("/logout.png"));
+            searchImage = ImageIO.read(this.getClass().getResource("/search.png"));
             settingsImage = ImageIO.read(this.getClass().getResource("/settings.png"));
             userImage = ImageIO.read(this.getClass().getResource("/user.png"));
             sendImage = ImageIO.read(this.getClass().getResource("/send.png"));
@@ -92,16 +83,14 @@ public class Pan extends JPanel {
 
         optionsPanel.setLayout(new BoxLayout(optionsPanel, BoxLayout.PAGE_AXIS));
         optionsPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 100));
-        JButton logout = new JButton(new ImageIcon(logoutImage));
-        JButton settings = new JButton(new ImageIcon(settingsImage));
-        JButton userPic = new JButton(new ImageIcon(userImage));
-        JButton search = new JButton("Search message");
+        JButton changeNetInterface = new JButton(new ImageIcon(settingsImage));
+        JButton changeUsername = new JButton(new ImageIcon(userImage));
+        JButton search = new JButton(new ImageIcon(searchImage));
         search.addActionListener(new ControllerSearchMessage(this, this.mc));
-        userPic.setEnabled(false);
+        changeNetInterface.addActionListener(new ControllerChangeNetInterface(this, this.mc));
 
-        optionsPanel.add(logout);
-        optionsPanel.add(settings);
-        optionsPanel.add(userPic);
+        optionsPanel.add(changeNetInterface);
+        optionsPanel.add(changeUsername);
         optionsPanel.add(search);
 
         /* conversations panel */
@@ -137,9 +126,10 @@ public class Pan extends JPanel {
 
         this.addConvButton = new JButton("+");
         conversationButtonsPanel.add(this.addConvButton, BorderLayout.EAST);
-        ControllerAddConversation ctrlAddConv = new ControllerAddConversation(this.mc,this, this.contacts);
+        ControllerChangeUsername ctrlAddConv = new ControllerChangeUsername(this.mc,this, this.contacts);
         addConvButton.addActionListener(ctrlAddConv);
-        settings.addActionListener(ctrlAddConv);
+        this.addConvButton.setEnabled(false); // desactive car pas de conv multi user
+        changeUsername.addActionListener(ctrlAddConv);
 
         conversationButtonsPanel.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
 
@@ -219,7 +209,6 @@ public class Pan extends JPanel {
     }
 
     public void removeContact(String username) {
-        System.out.println("removed user : " + username);
         this.contacts.removeElement(username);
     }
 
@@ -277,10 +266,22 @@ public class Pan extends JPanel {
     }
 
     public String getUsername(int index) {
-        return this.contacts.get(index);
+        if (index <= this.contacts.size()) {
+            return this.contacts.get(index);
+        }
+        return null;
     }
 
     public boolean isPlaceholderText() {
         return this.txtLstner.isPlaceholder();
+    }
+
+    public void setUsername(String oldUsername, String newUsername) {
+        System.out.println("pan [RECEVEUR] setUsername : old: " +
+                oldUsername + "; new: " +
+                newUsername);
+        int index = this.contacts.indexOf(oldUsername);
+        this.contacts.remove(index);
+        this.contacts.add(index, newUsername);
     }
 }

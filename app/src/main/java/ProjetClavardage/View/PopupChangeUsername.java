@@ -7,12 +7,12 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class PopupNewConv extends JFrame {
+public class PopupChangeUsername extends JFrame {
 
     private Pan parent;
     private MainController mc;
 
-    public PopupNewConv(MainController mainController, Pan parent, Dimension dimensionParent) {
+    public PopupChangeUsername(MainController mainController, Pan parent, Dimension dimensionParent) {
         super("Ajouter une conversation");
         this.parent = parent;
         this.mc = mainController;
@@ -46,7 +46,7 @@ public class PopupNewConv extends JFrame {
         gbc.insets = new Insets(5, 10, 5, 10);
         pan.add(input, gbc);
 
-        JButton validate = new JButton("OK");
+        JButton validate = new JButton("Valider");
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.BOTH;
@@ -55,13 +55,15 @@ public class PopupNewConv extends JFrame {
         validate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!input.getText().equals(placeholdermsg)) {
-                    if (PopupNewConv.this.mc.changeUserName(input.getText())) {
-                    PopupNewConv.this.dispose();
+                if (!input.getText().equals(placeholdermsg) && input.getText().length() > 3) {
+                    if (PopupChangeUsername.this.mc.changeUserName(input.getText())) {
+                    PopupChangeUsername.this.dispose();
                     }
                     else {
-                        label.setText("Non déjà utlisé !");
+                        label.setText("Pseudonyme déjà utlisé !");
                     }
+                } else {
+                    label.setText("Pseudonyme trop court");
                 }
             }
         });
@@ -69,13 +71,15 @@ public class PopupNewConv extends JFrame {
         input.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (!input.getText().equals(placeholdermsg)) {
-                    if (PopupNewConv.this.mc.changeUserName(input.getText())) {
-                        PopupNewConv.this.dispose();
+                if (!input.getText().equals(placeholdermsg) && input.getText().length() > 3) {
+                    if (PopupChangeUsername.this.mc.changeUserName(input.getText())) {
+                        PopupChangeUsername.this.dispose();
                     }
                     else {
-                        label.setText("Non déjà utlisé !");
+                        label.setText("Pseudonyme déjà utlisé !");
                     }
+                } else {
+                    label.setText("Pseudonyme trop court");
                 }
             }
         });
