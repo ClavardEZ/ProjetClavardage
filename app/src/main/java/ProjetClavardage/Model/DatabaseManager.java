@@ -23,9 +23,7 @@ public final class DatabaseManager {
 
     private DatabaseManager() {}
 
-    // not working
     public static boolean connect() {
-        // merci à roro le sang aka Xx_MechaFeeder13_xX
         AppDirs appDirs = AppDirsFactory.getInstance();
         String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
         (new File(dataFolder)).mkdirs();

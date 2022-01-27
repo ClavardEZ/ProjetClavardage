@@ -4,9 +4,12 @@ import ProjetClavardage.Model.*;
 import ProjetClavardage.View.ButtonTabComponent;
 import ProjetClavardage.View.ChatPanel;
 import ProjetClavardage.View.Pan;
+import net.harawata.appdirs.AppDirs;
+import net.harawata.appdirs.AppDirsFactory;
 import org.checkerframework.checker.units.qual.A;
 
 import javax.xml.crypto.Data;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -27,28 +30,69 @@ public class MainController {
     private HashMap<User, String> usernameByusers;
     private ArrayList<InetAddress> tabIndexByAddress;
 
-    public static String ni;
+    private String ni;
 
-    public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username, String ni) {
-        this.pan = new Pan(this);
-        this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
-        this.msgThdMngr.start();
+    public String getNi() {
+        return ni;
+    }
 
+    public void setNi(String ni) {
         this.ni = ni;
+    }
+
+    public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
+        (new File(dataFolder)).mkdirs();
+
+        String url = dataFolder + File.separator + "config.properties";
+
+        File configFile = new File(url);
+
+        FileReader reader = null;
+        try {
+            if (!configFile.exists()) {
+                MainController.writeConfig("lo");
+            }
+            reader = new FileReader(configFile);
+            Properties props = new Properties();
+            props.load(reader);
+            this.ni = props.getProperty("ni");
+
+            System.out.println("from config ni : " + this.ni);
+            reader.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.ni = "";
 
         try {
             Enumeration<NetworkInterface> nis = NetworkInterface.getNetworkInterfaces();
             while (nis.hasMoreElements()) {
                 NetworkInterface ni2 = nis.nextElement();
-                if (ni2.isUp()) {
+                /*if (ni2.isUp()) {
                     System.out.println("interface : " + ni2.toString());
+                }*/
+                if (ni2.isLoopback()) {
+                    this.ni = ni2.getName();
+                    System.out.println("ni name : " + this.ni);
                 }
             }
         } catch (SocketException e) {
             e.printStackTrace();
         }
+        this.pan = new Pan(this);
+        this.msgThdMngr = new MessageThreadManager(this, serverPort, clientPort);
+        this.msgThdMngr.start();
 
-        this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(ni), username); // set correct ip address
+        if (this.ni == null || this.ni == "") {
+            this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress("lo"), username); // set correct ip address
+        } else {
+            this.privateUser = new PrivateUser(MessageThreadManager.getLocalAddress(this.ni), username); // set correct ip address
+        }
 
         // udp
         this.usernameByusers = new HashMap<>();
@@ -374,5 +418,25 @@ public class MainController {
 
     public InetAddress getPrivateUserIp() {
         return this.privateUser.getIP();
+    }
+
+    public static void writeConfig(String ni) {
+        AppDirs appDirs = AppDirsFactory.getInstance();
+        String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
+        (new File(dataFolder)).mkdirs();
+
+        String url = dataFolder + File.separator + "config.properties";
+
+        File configFile = new File(url);
+
+        Properties props = new Properties();
+        props.setProperty("ni", ni);
+        try {
+            FileWriter writer = new FileWriter(configFile);
+            props.store(writer, "lo");
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

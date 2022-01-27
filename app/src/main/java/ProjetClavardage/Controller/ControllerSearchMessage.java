@@ -19,6 +19,8 @@ public class ControllerSearchMessage implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        new PopupSearchMessage(this.parent, this.mc, this.parent.getSize());
+        if (this.parent.getSelectedIndex() >= 0) {
+            new PopupSearchMessage(this.parent, this.mc, this.parent.getSize());
+        }
     }
 }

@@ -88,7 +88,7 @@ public class MessageThreadManager extends Thread {
         //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
         ServerSocket servsock = null;
         try {
-            servsock = new ServerSocket(this.servPort, 0, getLocalAddress(MainController.ni));
+            servsock = new ServerSocket(this.servPort, 0, getLocalAddress(this.mc.getNi()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -239,7 +239,7 @@ public class MessageThreadManager extends Thread {
             Enumeration<InetAddress> ias = ni.getInetAddresses();
             while (ias.hasMoreElements()) {
                 InetAddress ia = (InetAddress) ias.nextElement();
-                if (!ia.isLoopbackAddress() && ia instanceof Inet4Address) {
+                if (ia instanceof Inet4Address) {
                     return ia;
                 }
             }
