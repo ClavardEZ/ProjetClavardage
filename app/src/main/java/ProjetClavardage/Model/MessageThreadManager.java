@@ -42,7 +42,7 @@ public class MessageThreadManager extends Thread {
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
     public Socket openConnection(InetAddress ipaddress, Conversation conv) {
         // TODO raise exception instead
-        System.out.println("thdMngr [ENVOYEUR] openConnection");
+        System.out.println("thdMngr [ENVOYEUR] openConnection sur ip=" + ipaddress);
         Socket sock = null;
         if (this.conversations.size()>=this.NB_CONV_MAX) {
             //Message erreur
