@@ -120,7 +120,12 @@ public class MainController {
 
         // TODO utiliser hashmap au lieu de index ? peut faire bugger
 
+        System.out.println("mc [ENVOYEUR] open conversation");
+
         if (!this.tabByConv.containsKey(this.usersByUsername.get(this.pan.getUsername(index)).getIP())){  //evite la création de 2 tab avec meme destinataire
+
+            System.out.println("mc [ENVOYEUR] open conversation : creation ok (pas de doublon de conv)");
+
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
 
@@ -136,6 +141,7 @@ public class MainController {
             // ouverture depuis moi
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
+                System.out.println("mc [ENVOYEUR] openconversation : conv déjà dans la bdd");
                 this.msgThdMngr.openConnection(ip_address,conv2);
                 ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
                 this.tabByConv.put(ip_address,chatPanel);
@@ -151,6 +157,7 @@ public class MainController {
                 }
             } else {
                 // condition peut etre retiree ?
+                System.out.println("mc [ENVOYEUR] open conversation : conv pas encore dans la bdd");
                 DatabaseManager.addConversation(conv, ip_address);
                 this.msgThdMngr.openConnection(ip_address,conv);
                 ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
@@ -160,11 +167,12 @@ public class MainController {
 
             this.pan.revalidate();
         } else {
-            System.out.println("normalement on rentre ici");
+            System.out.println("mc [ENVOYEUR] open conversation : doublon de conv donc pas recree");
         }
     }
 
     public void closeConversation(int index) {
+        System.out.println("mc [USER QUI FERME] close conversation");
         //this.msgThdMngr.close_conversation(index);
         InetAddress ip = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
         this.msgThdMngr.close_conversation(ip);
@@ -175,6 +183,7 @@ public class MainController {
     }
 
     public void sendMessage() {
+        System.out.println("mc [ENVOYEUR MSG] send message");
         if (!this.pan.getTextfieldText().isBlank()) {
             this.pan.addTextToTabAsSender();
             //Message msg = new TextMessage(LocalDateTime.now(), this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
@@ -197,6 +206,7 @@ public class MainController {
     }*/
     // reception de demande de conversation
     public Conversation addConversationTab(Conversation conv) {
+        System.out.println("mc [RECEVEUR] addConversationTab");
         // TODO faire ajouter les messages reçus depuis la bd
         System.out.println("enter here");
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
@@ -211,7 +221,7 @@ public class MainController {
             // si la conversation est déjà dans la base de données
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
-                System.out.println("conv deja dans bd");
+                System.out.println("mc [RECEVEUR] addConversationTab : conv cree car pas doublon");
                 Conversation.copyUsers(conv, conv2);
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 System.out.println("nb messages trouvés : " + messages.size());
@@ -231,11 +241,11 @@ public class MainController {
             }
         }
         this.pan.revalidate();
-        System.out.println("id conv recue=" + conv.getID().toString());
         return conv;
     }
 
     public boolean changeUserName(String username) { //renvoie 0 si erreur
+        System.out.println("mc [USER QUI CHANGE] change username");
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
             this.userManager.sender(true);
@@ -248,6 +258,7 @@ public class MainController {
     public boolean changeUserName(User user, String newUsername) {
         String oldUsername = user.getUsername();
         if (!oldUsername.equals(newUsername)) {
+            System.out.println("mc [RECEVEUR CHANGE USERNAME] changeUserName");
             this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
             this.usersByUsername.put(newUsername, user);
             this.usersByUsername.remove(oldUsername);
@@ -265,10 +276,12 @@ public class MainController {
     }
 
     public void removeConversationTab(int index) {
+        System.out.println("removeConvTab 2");
         this.pan.removeConversationTab(index);
     }
 
     public void removeConversationTab(Conversation conv) {
+        System.out.println("removeConvTab 2");
         this.pan.removeConversationTab(this.tabIndexByAddress.indexOf(conv.getFirstIP()));
     }
 
