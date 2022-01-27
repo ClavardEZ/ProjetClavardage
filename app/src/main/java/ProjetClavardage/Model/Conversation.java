@@ -147,4 +147,9 @@ public class Conversation{
         return null;
     }
 
+    public static void copyUsers(Conversation src, Conversation dest) {
+        dest.usersIP = src.usersIP;
+        dest.usersHashMap = src.usersHashMap;
+    }
+
 }
