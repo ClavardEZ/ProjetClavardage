@@ -184,7 +184,8 @@ public class MainController {
     /*public void addConversationTab(String title) {
         this.pan.addConversationTab(title);
     }*/
-    public void addConversationTab(Conversation conv) {
+    // reception de demande de conversation
+    public Conversation addConversationTab(Conversation conv) {
         // TODO faire ajouter les messages reçus depuis la bd
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
         //DatabaseManager.addConversation();
@@ -204,13 +205,15 @@ public class MainController {
                     } else {
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
                     }
+                    return conv2;
                 }
             } else {
                 DatabaseManager.addConversation(conv, ip_address);
             }
         }
-
         this.pan.revalidate();
+        System.out.println("id conv recue=" + conv.getID().toString());
+        return conv;
     }
 
     public boolean changeUserName(String username) { //renvoie 0 si erreur
