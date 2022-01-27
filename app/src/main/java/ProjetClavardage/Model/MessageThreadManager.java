@@ -99,51 +99,53 @@ public class MessageThreadManager extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }*/
-            while (this.conversations.size()<=this.NB_CONV_MAX) {
-                try{
-                    sock = servsock.accept();
+        while (this.conversations.size()<=this.NB_CONV_MAX) {
+            try{
+                System.out.println("thdMng [RECEVEUR] run : start servsock accept");
+                sock = servsock.accept();
+                System.out.println("thdMng [RECEVEUR] run : servsock accept succes");
 
-                    String str = "";
-                    ArrayList<InetAddress> usersIP = new ArrayList<>();
-                    usersIP.add(sock.getInetAddress());
+                String str = "";
+                ArrayList<InetAddress> usersIP = new ArrayList<>();
+                usersIP.add(sock.getInetAddress());
 
-                    ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
-                    SpecialMessage msg = (SpecialMessage) oiStream.readObject();
-                    Conversation conv;
+                ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
+                SpecialMessage msg = (SpecialMessage) oiStream.readObject();
+                Conversation conv;
 
-                    System.out.println("special msg conv id=" + msg.getConvID());
+                System.out.println("special msg conv id=" + msg.getConvID());
 
-                    conv = DatabaseManager.getConversation(msg.getConvID(), this);
+                conv = DatabaseManager.getConversation(msg.getConvID(), this);
 
-                    if(this.conversations.contains(conv)) {
-                        conv.addUser(sock);
-                        System.out.println("devrait pas etre la");
+                if(this.conversations.contains(conv)) {
+                    conv.addUser(sock);
+                    System.out.println("devrait pas etre la");
+                }
+                else {
+                    //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
+                    String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
+                    conv = new Conversation(username, this,msg.getConvID());
+                    conv.addUser(sock);
+                    conv = this.mc.addConversationTab(conv);
+                    this.conversations.add(conv);
+                }
+                int i = 0;
+                for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
+                     ) {
+                    System.out.println("i=" + i + ", ip=" + ip);
+                    i++;
+                    if (!ip.equals(this.mc.getPrivateUserIp())) {
+                        openConnection(ip,conv);
                     }
-                    else {
-                        //System.out.println("remote address : " + sock.getRemoteSocketAddress().toString());
-                        String username = DatabaseManager.getUser(((InetSocketAddress) sock.getRemoteSocketAddress()).getAddress()).getUsername();
-                        conv = new Conversation(username, this,msg.getConvID());
-                        conv.addUser(sock);
-                        conv = this.mc.addConversationTab(conv);
-                        this.conversations.add(conv);
-                    }
-                    int i = 0;
-                    for (InetAddress ip:msg.getUsersIP()  // Creation de connexion avec les autres users de la conv
-                         ) {
-                        System.out.println("i=" + i + ", ip=" + ip);
-                        i++;
-                        if (!ip.equals(this.mc.getPrivateUserIp())) {
-                            openConnection(ip,conv);
-                        }
-                    }
+                }
 
-                    System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());
+                System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());
 
-                    //TODO, ajouter les socket dans la conv
-                    //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
+                //TODO, ajouter les socket dans la conv
+                //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
 
-                    // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
-                    //this.mc.addContact(sock.getInetAddress().toString());
+                // TODO : add username display to tab and contacts list (maybe use database relation with IP address?)
+                //this.mc.addContact(sock.getInetAddress().toString());
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (ClassNotFoundException e) {
