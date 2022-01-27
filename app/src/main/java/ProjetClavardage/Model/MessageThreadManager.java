@@ -54,7 +54,7 @@ public class MessageThreadManager extends Thread {
             conv.addUser(sock);
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
-            if (!conversationHashMap.containsKey(conv.getID())) {
+            if (!conversationHashMap.containsKey(conv.getID()) && !this.conversations.contains(conv)) {
                 this.conversationHashMap.put(conv.getID(), conv);
                 this.conversations.add(conv);
                 System.out.println("here");
@@ -66,9 +66,9 @@ public class MessageThreadManager extends Thread {
                 } else {
                     System.out.println("demande conv impossible a envoyer pas d'user dans conv");
                 }
+            } else {
+                System.out.println("demande conv non envoyee car conv deja existante");
             }
-
-            System.out.println("demande conv non envoyee car conv deja existante");
 
         } catch (IOException e) {
             e.printStackTrace();
