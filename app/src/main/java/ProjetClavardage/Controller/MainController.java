@@ -153,11 +153,13 @@ public class MainController {
                     System.out.println("mc [ENVOYEUR] openConversation : message: " +
                             message.getContent() +
                             "; from " + message.getIP());
-                    if (message.getIP().equals(ip_address)) {
-                        System.out.println("mc [ENVOYEUR] openConversation : add message from other");
-                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
-                    } else {
-                        this.pan.addTextToTabAsSender(message.getContent());
+                    if (message.getIP() != null) {
+                        if (message.getIP().equals(ip_address)) {
+                            System.out.println("mc [ENVOYEUR] openConversation : add message from other");
+                            this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
+                        } else {
+                            this.pan.addTextToTabAsSender(message.getContent());
+                        }
                     }
                 }
             } else {
