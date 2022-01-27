@@ -88,7 +88,7 @@ public class MessageThreadManager extends Thread {
         //servsock = new ServerSocket(this.servPort,2, getLocalAdress());
         ServerSocket servsock = null;
         try {
-            servsock = new ServerSocket(this.servPort, 2, getLocalAddress(MainController.ni));
+            servsock = new ServerSocket(this.servPort, 0, getLocalAddress(MainController.ni));
         } catch (IOException e) {
             e.printStackTrace();
         }
