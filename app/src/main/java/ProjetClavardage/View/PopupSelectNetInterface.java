@@ -40,7 +40,7 @@ public class PopupSelectNetInterface extends JFrame {
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.BOTH;
         gbc.insets = new Insets(10, 10, 5, 10);
-        JLabel label =new JLabel("Interface reseau /!\\ veuillez relancer l'application");
+        JLabel label =new JLabel("Interface reseau /!\\ l'application va se fermer après validation");
         pan.add(label, gbc);
         /*JTextField input = new JTextField();
         String placeholdermsg = "Entrez l'adresse IP";*/
@@ -82,6 +82,7 @@ public class PopupSelectNetInterface extends JFrame {
                 MainController.writeConfig(niId.get(index));
                 PopupSelectNetInterface.this.dispose();
                 System.out.println("selected ni : " + PopupSelectNetInterface.this.mc.getNi());
+                System.exit(0);
             }
         });
 
