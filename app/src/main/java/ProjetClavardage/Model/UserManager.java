@@ -16,6 +16,7 @@ public class UserManager extends Thread {
     private int listeningPort;
     private int sendingPort;
     private HashMap<InetAddress, User> usersByIP;
+    private HashMap<User, String> usernamesByUser;
     DatagramSocket dgramSocket;
 
     private MainController mc;
@@ -26,6 +27,7 @@ public class UserManager extends Thread {
         this.listeningPort = listeningPort;
         this.sendingPort = sendingPort;
         this.usersByIP = new HashMap<>();
+        this.usernamesByUser = new HashMap<>();
 
         UserSender sender = new UserSender(this);
         sender.start();
@@ -42,12 +44,13 @@ public class UserManager extends Thread {
                 if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
                     //TODO afficher user dans le panel
                     this.mc.addUser(user);
-                    this.mc.changeUserName(user, user.getUsername());
+                    this.mc.changeUserName(user, this.usernamesByUser.get(user));
                     user.setConnected(false);
                     //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
                 } else { // si il s'est deco
                     //System.out.println("user disconnected : " + user.getUsername());
                     usersByIP.remove(user.getIP());
+                    this.usernamesByUser.remove(user);
                     this.mc.removeUser(user);
                 }
 
@@ -146,6 +149,7 @@ public class UserManager extends Thread {
                                 else {  //cas ou on découvre qu'il est connecte
                                     User user = new User(clientAddress,clientPort,message);
                                     this.usersByIP.put(clientAddress,user);
+                                    this.usernamesByUser.put(user, user.getUsername());
                                     String response= privateUser.getUsername();
                                     DatagramPacket outPacket = new DatagramPacket(response.getBytes(), response.length(),
                                             clientAddress, clientPort);
@@ -158,6 +162,7 @@ public class UserManager extends Thread {
                                 //System.out.println("deco");
                                 if (this.usersByIP.containsKey(clientAddress)){
                                     this.mc.removeUser(usersByIP.get(clientAddress));
+                                    this.usernamesByUser.remove(this.usersByIP.get(clientAddress));
                                     this.usersByIP.remove(clientAddress);
                                 }
                             }

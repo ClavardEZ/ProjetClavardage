@@ -141,6 +141,8 @@ public class MessageThreadManager extends Thread {
 
                 System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());
 
+                this.mc.refreshUI();
+
                 //TODO, ajouter les socket dans la conv
                 //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
 
