@@ -140,4 +140,11 @@ public class Conversation{
 
     public String getName() {return this.name;}
 
+    public InetAddress getFirstIP() {
+        if (this.usersIP.size() > 0) {
+            return this.usersIP.get(0);
+        }
+        return null;
+    }
+
 }

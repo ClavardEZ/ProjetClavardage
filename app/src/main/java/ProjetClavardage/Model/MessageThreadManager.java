@@ -61,6 +61,12 @@ public class MessageThreadManager extends Thread {
             SpecialMessage spemsg = new SpecialMessage(conv);
             conv.send_message(spemsg);
 
+            if (conv.getUsersIP().size() > 0) {
+                System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
+            } else {
+                System.out.println("demande conv impossible a envoyer pas d'user dans conv");
+            }
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,19 +99,15 @@ public class MessageThreadManager extends Thread {
             while (this.conversations.size()<=this.NB_CONV_MAX) {
                 try{
                     sock = servsock.accept();
-                    //int i = 0;
-                    /*while (this.conversations[i] != null) {  //On cherche le premier élément libre de conversations
-                        i++;
-                    }*/
-                    //this.conversations[i] = new Conversation("Conversation #" + i, servsock, sock);
+
                     String str = "";
                     ArrayList<InetAddress> usersIP = new ArrayList<>();
                     usersIP.add(sock.getInetAddress());
 
-
                     ObjectInputStream oiStream = new ObjectInputStream(sock.getInputStream());
                     SpecialMessage msg = (SpecialMessage) oiStream.readObject();
                     Conversation conv;
+
                     if(conversationHashMap.containsKey(msg.getConvID())) {
                         conv = conversationHashMap.get(msg.getConvID());
                         conv.addUser(sock);
@@ -123,6 +125,8 @@ public class MessageThreadManager extends Thread {
                          ) {
                         openConnection(ip,conv);
                     }
+
+                    System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());
 
                     //TODO, ajouter les socket dans la conv
                     //this.mc.addConversationTab(this.conversations.get(this.conversations.size() - 1).getName());
