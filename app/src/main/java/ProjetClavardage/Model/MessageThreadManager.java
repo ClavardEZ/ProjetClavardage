@@ -54,20 +54,18 @@ public class MessageThreadManager extends Thread {
             conv.addUser(sock);
 
             //TODO vérifier si la conversation existe deja dans la bdd, si tel est le cas, on met l'uuid dans le constructeur
-            /*if (!conversationHashMap.containsKey(conv.getID())) {
-                *//*this.conversationHashMap.put(conv.getID(), conv);
-                this.conversations.add(conv);*//*
+            if (!conversationHashMap.containsKey(conv.getID())) {
+                this.conversationHashMap.put(conv.getID(), conv);
+                this.conversations.add(conv);
                 System.out.println("here");
-            }*/
-            if (!this.conversations.contains(conv)) {
-                SpecialMessage spemsg = new SpecialMessage(conv);
-                conv.send_message(spemsg);
+            }
+            SpecialMessage spemsg = new SpecialMessage(conv);
+            conv.send_message(spemsg);
 
-                if (conv.getUsersIP().size() > 0) {
-                    System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
-                } else {
-                    System.out.println("demande conv impossible a envoyer pas d'user dans conv");
-                }
+            if (conv.getUsersIP().size() > 0) {
+                System.out.println("demande conv envoyee a " + conv.getUsersIP().get(0));
+            } else {
+                System.out.println("demande conv impossible a envoyer pas d'user dans conv");
             }
 
         } catch (IOException e) {
