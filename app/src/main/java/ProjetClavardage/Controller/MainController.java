@@ -271,7 +271,7 @@ public class MainController {
             DatabaseManager.changeUsername(user.getIP(), newUsername);
             this.updateChatPanel(user);
 
-            this.pan.setUsername(oldUsername, newUsername);
+            //this.pan.setUsername(oldUsername, newUsername);
         }
 
         return true;
