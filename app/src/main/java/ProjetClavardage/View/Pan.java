@@ -277,7 +277,10 @@ public class Pan extends JPanel {
     }
 
     public String getUsername(int index) {
-        return this.contacts.get(index);
+        if (index <= this.contacts.size()) {
+            return this.contacts.get(index);
+        }
+        return null;
     }
 
     public boolean isPlaceholderText() {
