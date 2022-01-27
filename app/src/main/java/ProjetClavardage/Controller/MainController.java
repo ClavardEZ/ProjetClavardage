@@ -130,8 +130,6 @@ public class MainController {
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
             //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
-            ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
-            this.tabByConv.put(ip_address,chatPanel);
 
             // ajout à la base de données
             // si la conversation est déjà présente dans la base de données on charge les messages
@@ -155,6 +153,9 @@ public class MainController {
                 this.msgThdMngr.openConnection(ip_address,conv);
                 //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             }
+
+            ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
+            this.tabByConv.put(ip_address,chatPanel);
 
             this.pan.revalidate();
         } else {
