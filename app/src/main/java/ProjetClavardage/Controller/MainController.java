@@ -137,6 +137,8 @@ public class MainController {
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
                 this.msgThdMngr.openConnection(ip_address,conv2);
+                ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
+                this.tabByConv.put(ip_address,chatPanel);
                 //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
@@ -151,11 +153,10 @@ public class MainController {
                 // condition peut etre retiree ?
                 DatabaseManager.addConversation(conv, ip_address);
                 this.msgThdMngr.openConnection(ip_address,conv);
+                ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
+                this.tabByConv.put(ip_address,chatPanel);
                 //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             }
-
-            ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
-            this.tabByConv.put(ip_address,chatPanel);
 
             this.pan.revalidate();
         } else {
