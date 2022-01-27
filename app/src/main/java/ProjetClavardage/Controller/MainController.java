@@ -126,7 +126,7 @@ public class MainController {
 
             this.tabIndexByAddress.add(ip_address);
 
-            this.msgThdMngr.openConnection(ip_address,conv);
+            //this.msgThdMngr.openConnection(ip_address,conv);
             //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
 
             //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
@@ -147,13 +147,13 @@ public class MainController {
                         this.pan.addTextToTabAsSender(message.getContent());
                     }
                 }
+                this.msgThdMngr.openConnection(ip_address,conv2);
+                //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             } else {
                 // condition peut etre retiree ?
-                if (conv2 == null) {
-                    DatabaseManager.addConversation(conv, ip_address);
-                } else {
-                    DatabaseManager.addConversation(conv2, ip_address);
-                }
+                DatabaseManager.addConversation(conv, ip_address);
+                this.msgThdMngr.openConnection(ip_address,conv);
+                //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             }
 
             this.pan.revalidate();
