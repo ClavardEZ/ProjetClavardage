@@ -42,6 +42,7 @@ public class MessageThreadManager extends Thread {
     // initie une connexion (d'envoi de message) du cote de l'utilisateur
     public Socket openConnection(InetAddress ipaddress, Conversation conv) {
         // TODO raise exception instead
+        System.out.println("thdMngr [ENVOYEUR] openConnection");
         Socket sock = null;
         if (this.conversations.size()>=this.NB_CONV_MAX) {
             //Message erreur
@@ -160,6 +161,11 @@ public class MessageThreadManager extends Thread {
 
     public void close_conversation(InetAddress ip) {
         Conversation conv = this.getConversationByIP(ip);
+        if (conv == null) {
+            System.out.println("thdmngr [FERMEUR] conv null");
+        } else {
+            System.out.println("thdmngr [FERMEUR] conv not null");
+        }
         conv.close_connection();
         this.conversations.remove(conv);
         System.out.println("closed here 2");

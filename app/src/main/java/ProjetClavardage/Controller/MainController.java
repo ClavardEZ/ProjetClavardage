@@ -143,6 +143,7 @@ public class MainController {
             if (conv2 != null) {
                 System.out.println("mc [ENVOYEUR] openconversation : conv déjà dans la bdd");
                 this.msgThdMngr.openConnection(ip_address,conv2);
+                System.out.println("mc [ENVOYEUR] openconversation : openConnection succes");
                 ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
                 this.tabByConv.put(ip_address,chatPanel);
                 //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
