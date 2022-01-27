@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.Semaphore;
 
 /**
  * Classe qui gère les utilisateurs et leur connexions
@@ -18,6 +19,7 @@ public class UserManager extends Thread {
     private HashMap<InetAddress, User> usersByIP;
     private HashMap<User, String> oldUsernamesByIp;
     DatagramSocket dgramSocket;
+    private Semaphore semaphore;
 
     private MainController mc;
 
@@ -28,6 +30,7 @@ public class UserManager extends Thread {
         this.sendingPort = sendingPort;
         this.usersByIP = new HashMap<>();
         this.oldUsernamesByIp = new HashMap<>();
+        this.semaphore = new Semaphore(1);
 
         UserSender sender = new UserSender(this);
         sender.start();
@@ -39,6 +42,11 @@ public class UserManager extends Thread {
 
     public void users_update () {
         synchronized (this) {
+            try {
+                this.semaphore.acquire();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             for (User user : usersByIP.values()
             ) {
                 if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
@@ -55,6 +63,7 @@ public class UserManager extends Thread {
                 }
 
             }
+            semaphore.release();
         }
     }
 
@@ -134,6 +143,12 @@ public class UserManager extends Thread {
                     dgramSocket.receive(inPacket);
                     InetAddress clientAddress = inPacket.getAddress();
                     synchronized (this) {
+
+                        try {
+                            this.semaphore.acquire();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                         if (true) {
                             //System.out.println("Received from " + clientAddress);
                             lastAddress = clientAddress;
@@ -167,6 +182,7 @@ public class UserManager extends Thread {
                             }
                         }
                     }
+                    semaphore.release();
                 } catch (SocketException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
