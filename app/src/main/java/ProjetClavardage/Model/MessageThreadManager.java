@@ -58,7 +58,6 @@ public class MessageThreadManager extends Thread {
                 this.conversationHashMap.put(conv.getID(), conv);
                 this.conversations.add(conv);
                 System.out.println("here");
-            } else {
                 SpecialMessage spemsg = new SpecialMessage(conv);
                 conv.send_message(spemsg);
 
@@ -68,6 +67,8 @@ public class MessageThreadManager extends Thread {
                     System.out.println("demande conv impossible a envoyer pas d'user dans conv");
                 }
             }
+
+            System.out.println("demande conv non envoyee car conv deja existante");
 
         } catch (IOException e) {
             e.printStackTrace();
