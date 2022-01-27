@@ -320,7 +320,11 @@ public final class DatabaseManager {
                             rs.getString("content")));
                 }
                 User user = DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address")));
-
+                if (user == null) {
+                    System.out.println("[DATABASEMANAGER] getAllMessages user null");
+                } else {
+                    System.out.println("[DATABASEMANAGER] getAllMessages user not null");
+                }
             }
             rs.close();
             stmt.close();
