@@ -196,6 +196,7 @@ public class MainController {
             // si la conversation est déjà dans la base de données
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
+                System.out.println("conv deja dans bd");
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
                         messages) {
