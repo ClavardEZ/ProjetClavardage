@@ -193,6 +193,7 @@ public class MainController {
         if (conv.getUsersIP().size() > 0) {
             ip_address = conv.getUsersIP().get(0);
             this.tabByConv.put(ip_address,chatPanel);
+            System.out.println("ip=" + ip_address);
             // si la conversation est déjà dans la base de données
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
