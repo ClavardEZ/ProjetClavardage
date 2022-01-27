@@ -351,16 +351,18 @@ public class MainController {
             }
         } else {
             chatPanel = this.tabByConv.get(user.getIP());
-            chatPanel.clearText();
-            ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr),
-                    true,
-                    this.msgThdMngr));
-            for (Message message :
-                    messages) {
-                if (message.getIP().equals(user.getIP())) {
-                    this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
-                } else {
-                    this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+            if (chatPanel != null) {
+                chatPanel.clearText();
+                ArrayList<Message> messages = new ArrayList<>(DatabaseManager.getAllMessagesFromConv(DatabaseManager.getConvByIp(user.getIP(), this.msgThdMngr),
+                        true,
+                        this.msgThdMngr));
+                for (Message message :
+                        messages) {
+                    if (message.getIP().equals(user.getIP())) {
+                        this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
+                    } else {
+                        this.pan.addTextToTabAsSender(chatPanel, message.getContent());
+                    }
                 }
             }
         }
