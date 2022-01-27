@@ -136,6 +136,8 @@ public class MainController {
             // ouverture depuis moi
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
+                this.msgThdMngr.openConnection(ip_address,conv2);
+                //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
                         messages) {
@@ -145,8 +147,6 @@ public class MainController {
                         this.pan.addTextToTabAsSender(message.getContent());
                     }
                 }
-                this.msgThdMngr.openConnection(ip_address,conv2);
-                //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             } else {
                 // condition peut etre retiree ?
                 DatabaseManager.addConversation(conv, ip_address);
