@@ -126,7 +126,9 @@ public class MessageThreadManager extends Thread {
                          ) {
                         System.out.println("i=" + i + ", ip=" + ip);
                         i++;
-                        openConnection(ip,conv);
+                        if (!ip.equals(this.mc.getPrivateUserIp())) {
+                            openConnection(ip,conv);
+                        }
                     }
 
                     System.out.println("demande conv recue : conv ip " + conv.getFirstIP().getHostAddress());

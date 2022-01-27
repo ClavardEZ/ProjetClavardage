@@ -319,4 +319,8 @@ public class MainController {
     public void refreshUI() {
         this.pan.revalidate();
     }
+
+    public InetAddress getPrivateUserIp() {
+        return this.privateUser.getIP();
+    }
 }
