@@ -38,7 +38,8 @@ jobs:
         arguments: build
     - name: Generate installers
       run: ./gradlew jpackage
-    - name: Automatic Releases # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+    - name: Automatic Releases for Linux # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+      if: matrix.ox == 'ubuntu-latest'
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         # GitHub secret token
@@ -52,5 +53,35 @@ jobs:
         # Assets to upload to the release
         files: |
             ./app/build/libs/*.jar
-            ./app/build/dist/*
+            ./app/build/dist/*.deb
+    - name: Automatic Releases for Windows # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+      if: matrix.ox == 'windows-latest'
+      uses: marvinpinto/action-automatic-releases@v1.2.1
+      with:
+        # GitHub secret token
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        # Git tag (for automatic releases)
+        automatic_release_tag: latest
+        # Should this release be marked as a pre-release?
+        prerelease: false
+        # Release title (for automatic releases)
+        title: ClavardEZ
+        # Assets to upload to the release
+        files: |
+            ./app/build/dist/*.exe
+    - name: Automatic Releases for MacOS # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+      if: matrix.ox == 'macos-latest'
+      uses: marvinpinto/action-automatic-releases@v1.2.1
+      with:
+        # GitHub secret token
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        # Git tag (for automatic releases)
+        automatic_release_tag: latest
+        # Should this release be marked as a pre-release?
+        prerelease: false
+        # Release title (for automatic releases)
+        title: ClavardEZ
+        # Assets to upload to the release
+        files: |
+            ./app/build/dist/*.dmg
             
