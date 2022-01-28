@@ -1,7 +1,6 @@
 package ProjetClavardage.View;
 
 import ProjetClavardage.Controller.MainController;
-import org.checkerframework.checker.guieffect.qual.UI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -12,7 +11,9 @@ public class AppFrame extends JFrame {
     ;
     public AppFrame(String title, int servPort, int clientPort, int listeningPort, int sendingPort, boolean maximised) throws HeadlessException {
         super();
-        this.setTitle(title);
+        ImageIcon img = new ImageIcon(this.getClass().getResource("/logo_white.png"));
+        this.setIconImage(img.getImage());
+        this.setTitle("ClavardEZ");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setVisible(true);
         MainController mc = new MainController(servPort, clientPort, listeningPort, sendingPort, title);
