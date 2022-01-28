@@ -13,6 +13,9 @@ import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Gère l'affichage de la popup de recherche de messages
+ */
 public class PopupSearchMessage extends JFrame {
 
     private Pan parent;
@@ -61,15 +64,6 @@ public class PopupSearchMessage extends JFrame {
         validate.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO change
-                /*if (!input.getText().equals(placeholdermsg)) {
-                    if (PopupSearchMessage.this.mc.changeUserName(input.getText())) {
-                        PopupSearchMessage.this.dispose();
-                    }
-                    else {
-                        label.setText("Nom déjà utlisé !");
-                    }
-                }*/
                 PopupSearchMessage.this.search(input.getText());
                 PopupSearchMessage.this.dispose();
             }
@@ -87,7 +81,6 @@ public class PopupSearchMessage extends JFrame {
 
         this.add(pan);
         this.pack();
-        //this.setSize(new Dimension((int) (dimensionParent.getWidth()/4), (int) (dimensionParent.getHeight()/4)));
     }
 
     public void search(String text) {

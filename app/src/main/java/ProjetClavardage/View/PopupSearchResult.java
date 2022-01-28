@@ -7,9 +7,11 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * Gère l'affichage des résultats de la popup de recherche de messages
+ */
 public class PopupSearchResult extends JFrame {
     public PopupSearchResult(List<Message> messages) {
-        // TODO display messages in jlist with scrollbar
         super("Résultat de la recherche");
 
         this.setVisible(true);

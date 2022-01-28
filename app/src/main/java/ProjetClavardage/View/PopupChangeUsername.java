@@ -84,10 +84,7 @@ public class PopupChangeUsername extends JFrame {
             }
         });
 
-        //
-
         this.add(pan);
         this.pack();
-        //this.setSize(new Dimension((int) (dimensionParent.getWidth()/4), (int) (dimensionParent.getHeight()/4)));
     }
 }

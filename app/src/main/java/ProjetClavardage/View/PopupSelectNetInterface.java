@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 
+/**
+ * Gère l'affichage de la popup de selection d'interface réseau
+ */
 public class PopupSelectNetInterface extends JFrame {
     private Pan parent;
     private MainController mc;
@@ -42,8 +45,6 @@ public class PopupSelectNetInterface extends JFrame {
         gbc.insets = new Insets(10, 10, 5, 10);
         JLabel label =new JLabel("Interface reseau /!\\ l'application va se fermer après validation");
         pan.add(label, gbc);
-        /*JTextField input = new JTextField();
-        String placeholdermsg = "Entrez l'adresse IP";*/
 
         ArrayList<String> niNames = new ArrayList<>();
         ArrayList<String> niId = new ArrayList<>();
@@ -81,7 +82,6 @@ public class PopupSelectNetInterface extends JFrame {
                 PopupSelectNetInterface.this.mc.setNi(niId.get(index));
                 MainController.writeConfig(niId.get(index));
                 PopupSelectNetInterface.this.dispose();
-                System.out.println("selected ni : " + PopupSelectNetInterface.this.mc.getNi());
                 System.exit(0);
             }
         });
