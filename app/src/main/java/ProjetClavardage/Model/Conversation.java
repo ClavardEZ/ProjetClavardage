@@ -5,8 +5,10 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 
-public class Conversation{
-    //private byte[] err =                                                                                                                                                                                                                                                                                        ;
+/**
+ * Classe gérant les messages ainsi que l'ajout et la suppression de membres dans une conversation
+ */
+public class Conversation{                                                                                                                                                                                                                                                                   ;
     private ArrayList<Socket> socks;
     public static final int MSG_LENGTH = 280;
     private InputStream iStream;
@@ -16,12 +18,14 @@ public class Conversation{
     private UUID id;
     private ArrayList<InetAddress> usersIP;
     private HashMap<InetAddress,UserInConv> usersHashMap;
+    private List<User> users = new ArrayList<User> ();
 
 
-
-    /*private ObjectInputStream oiStream;
-    private ObjectOutputStream ooStream;*/
-
+    /**
+     * Création d'une nouvelle conversation
+     * @param str
+     * @param msgThMng
+     */
     public Conversation (String str, MessageThreadManager msgThMng) {
         this.name = str;
         this.socks = new ArrayList<>();
@@ -31,6 +35,12 @@ public class Conversation{
         this.usersHashMap = new HashMap<>();
     }
 
+    /**
+     * Ouverture d'une conversaton déjà existante
+     * @param str
+     * @param msgThMng
+     * @param id
+     */
     public Conversation (String str, MessageThreadManager msgThMng, UUID id) {
         this.name = str;
         this.socks = new ArrayList<>();
@@ -40,7 +50,15 @@ public class Conversation{
         this.usersHashMap = new HashMap<>();
     }
 
+    @Deprecated
+    public Conversation(String name) {
+        this.name = name;
+        this.id = UUID.randomUUID();
+    }
 
+    /**
+     * Ferme la conversation
+     */
     public void close_connection () {
         try {
             this.send_message(null);
@@ -53,6 +71,10 @@ public class Conversation{
         }
     }
 
+    /**
+     * Envoie un message
+     * @param msg
+     */
     public void send_message(Message msg) {
         for (InetAddress ip : this.usersIP
              ) {
@@ -60,33 +82,10 @@ public class Conversation{
         }
     }
 
-    public void init(){
-
-        //Je crois que ca sert a rien
-        /*
-        for (Socket sock: this.socks)
-            {
-                UserInConv userinconv= new UserInConv("sock",sock,this.msgThMng, this);
-                this.usersHashMap.put(sock.getInetAddress(),userinconv);
-            }*/
-    }
-    public void start() {
-        //Je crois que ca sert a rien
-        /*
-        for (InetAddress ip: usersIP
-             ) {
-            this.usersHashMap.get(ip).start();
-        }*/
-    }
-
-    private List<User> users = new ArrayList<User> ();
-
-
-    public Conversation(String name) {
-        this.name = name;
-        this.id = UUID.randomUUID();
-    }
-
+    /**
+     * Ajoute un utilisateur à la conversation
+     * @param sock socket de l'utilsateur à ajouter
+     */
     public void addUser(Socket sock) {
         InetAddress ip = sock.getInetAddress();
         if (!usersIP.contains(ip)){
@@ -96,25 +95,16 @@ public class Conversation{
             this.usersHashMap.get(ip).start();
         }
     }
+    @Deprecated
     public void maj_conv(SpecialMessage msg) {
-        //TODO faire cette classe de mort
-        /*
-        for (InetAddress ip: ((SpecialMessage) msg).getUsersIP()
-        ) {
-            if (!this.usersIP.contains(ip)) {
-                this.addUser(ip);
-            }
-        }
-        for (InetAddress ip: this.getUsersIP()
-        ) {
-            if (!((SpecialMessage) msg).getUsersIP().contains(ip)) {
-                this.removeUser(ip);
-            }
-        }*/
     }
 
     public ArrayList<InetAddress> getUsersIP() {return this.usersIP;}
 
+    /**
+     * Retire l'utilisateur de la conversation
+     * @param userIP ip de l'utilisateur à déconecter
+     */
     public void removeUser(InetAddress userIP) {
         this.usersIP.remove(userIP);
         this.usersHashMap.get(userIP).close();
@@ -140,6 +130,10 @@ public class Conversation{
 
     public String getName() {return this.name;}
 
+    /**
+     * Récupère l'IP de la première personne de la conversation
+     * @return
+     */
     public InetAddress getFirstIP() {
         if (this.usersIP.size() > 0) {
             return this.usersIP.get(0);
@@ -147,6 +141,11 @@ public class Conversation{
         return null;
     }
 
+    /**
+     * Copie les utilisateurs de src à dest
+     * @param src
+     * @param dest
+     */
     public static void copyUsers(Conversation src, Conversation dest) {
         dest.usersIP = src.usersIP;
         dest.usersHashMap = src.usersHashMap;

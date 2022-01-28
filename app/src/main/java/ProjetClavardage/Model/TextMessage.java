@@ -4,6 +4,9 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * Classe servant aux messages textuels
+ */
 public class TextMessage extends Message {
     public String content;
 
@@ -27,9 +30,9 @@ public class TextMessage extends Message {
     /**
      * Message chargé depus la base de donnée
      * @param sentDate date d'envoi
-     * @param user
-     * @param conversation
-     * @param id
+     * @param user expéditeur
+     * @param conversation conversation associée au message
+     * @param id ID du message chargé
      * @param content
      */
     public TextMessage(LocalDateTime sentDate, User user, Conversation conversation, UUID id, String content) {
@@ -51,6 +54,9 @@ public class TextMessage extends Message {
     }
 
     @Override
+    /**
+     * Compare le contenu des messages
+     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+/**
+ * Classe représentant les messages
+ */
 public abstract class Message implements Serializable {
     private LocalDateTime sentDate;
     private UUID convID;
@@ -15,6 +18,7 @@ public abstract class Message implements Serializable {
     private transient Conversation conversation;
     private UUID id;
 
+    @Deprecated
     public Message(LocalDateTime date, Conversation conv) {
         this.sentDate = date;
         this.conversation = conv;
@@ -23,6 +27,13 @@ public abstract class Message implements Serializable {
         this.id = UUID.randomUUID();
     }
 
+
+    /**
+     * Nouveau message
+     * @param sentDate date d'envoi
+     * @param user expéditeur
+     * @param conversation conversation associée au message
+     */
     public Message(LocalDateTime sentDate, User user, Conversation conversation) {
         this.sentDate = sentDate;
         this.user = user;
@@ -31,6 +42,13 @@ public abstract class Message implements Serializable {
         this.id = UUID.randomUUID();
     }
 
+    /**
+     * Message chargé depus la base de donnée
+     * @param sentDate date d'envoi
+     * @param user expéditeur
+     * @param conversation conversation associée au message
+     * @param id id du message chargé
+     */
     public Message(LocalDateTime sentDate, User user, Conversation conversation, UUID id) {
         this.sentDate = sentDate;
         this.user = user;
@@ -43,9 +61,7 @@ public abstract class Message implements Serializable {
         return this.id;
     }
 
-    public String getContent() {
-        return "Il faut implémenter la méthode getContent dans la bonne classe";
-    }
+    public abstract String getContent();
     public LocalDateTime getDate(){return this.sentDate;}
     public InetAddress getIP(){
         if (this.user != null) {
