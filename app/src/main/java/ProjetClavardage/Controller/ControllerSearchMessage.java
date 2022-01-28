@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Classe gérant la popup de recherche de message
+ */
 public class ControllerSearchMessage implements ActionListener {
 
     private Pan parent;

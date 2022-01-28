@@ -6,6 +6,9 @@ import ProjetClavardage.View.PopupSelectNetInterface;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Classe gérant la popup de changement d'interface réseau
+ */
 public class ControllerChangeNetInterface implements ActionListener {
 
     private Pan parent;

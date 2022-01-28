@@ -7,6 +7,9 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Classe gérant la popup de changement de pseudonyme
+ */
 public class ControllerChangeUsername implements ActionListener {
 
     private Pan pan;

@@ -5,6 +5,9 @@ import ProjetClavardage.View.Pan;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Classe gérant l'appui sur le bonton "envoyer"
+ */
 public class ControllerSendMessage implements ActionListener {
 
     private Pan parent;

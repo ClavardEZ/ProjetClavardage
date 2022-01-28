@@ -34,12 +34,12 @@ public class MainController {
     private String ni;
 
     /**
-     *
-     * @param serverPort
-     * @param clientPort
-     * @param listeningPort
-     * @param sendingPort
-     * @param username
+     *Crée la base de donnée, lances les serveurs TCP et UDP et crée les éventuels fichiers locaux,
+     * @param serverPort port du serveur TCP
+     * @param clientPort port TCP des autres utilisateurs (éventuellement différent du port serveur pour tests en local)
+     * @param listeningPort port du serveur UDP
+     * @param sendingPort port UDP des autres utilisateurs (éventuellement différent du port serveur pour tests en local)
+     * @param username nom de l'utilisateur courant
      */
     public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
         DatabaseManager.connect();
@@ -62,8 +62,6 @@ public class MainController {
             Properties props = new Properties();
             props.load(reader);
             this.ni = props.getProperty("ni");
-
-            System.out.println("from config ni : " + this.ni);
             reader.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -112,6 +110,10 @@ public class MainController {
         return this.userManager.getUserByIP(ip).getUsername();
     }
 
+    /**
+     * Crée une instance de user, met éventuellement a jour son pseudo
+     * @param user
+     */
     public void addUser(User user) {
         if (!this.usersByUsername.containsKey(user.getUsername())) {
             if (this.usernameByusers.containsKey(user)) {
@@ -132,6 +134,10 @@ public class MainController {
         this.pan.revalidate();
     }
 
+    /**
+     * Supprime l'user de l'affichage
+     * @param user
+     */
     public void removeUser(User user) {
         this.usersByUsername.remove(user.getUsername());
         this.usernameByusers.remove(user);
@@ -139,59 +145,37 @@ public class MainController {
         this.pan.revalidate();
     }
 
-    //Ajoute l'utilisateur sélectonné dans la conv active
-    //TODO Appeler cette fonction via un click particulier dans l'activity pannel
+    @Deprecated
     public void addUserInConv(int index) {
         Conversation conv = this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex());
-        //this.msgThdMngr.openConnection(this.usersByUsername.get(this.pan.getUsername(index)).getIP(), this.pan.getUsername(index),conv);
-        //System.out.println("New user in conv, IP :  " + this.usersByUsername.get(this.pan.getUsername(index)).getIP());
-        //DatabaseManager.addUserInConv();
         this.pan.revalidate();
     }
 
+    /**
+     * Initie une conversation en vérifiant si une conversaton avec cet utilisateur a déjà eu lieu dans le passé. Si tel est le cas, on se sert de la base de donnée pour afficher l'historique
+     * @param index index de l'utilisateur avec lequel on crée la conversation
+     */
     public void openConversation(int index) {
-
-        /*System.out.println("IP adress:" + InetAddress.getByName(this.pan.getUsername(index)));
-        this.msgThdMngr.openConnection(InetAddress.getByName(this.pan.getUsername(index)));*/
-
-        // TODO utiliser hashmap au lieu de index ? peut faire bugger
-
-        System.out.println("mc [ENVOYEUR] open conversation");
-
         if (!this.tabByConv.containsKey(this.usersByUsername.get(this.pan.getUsername(index)).getIP())){  //evite la création de 2 tab avec meme destinataire
-
-            System.out.println("mc [ENVOYEUR] open conversation : creation ok (pas de doublon de conv)");
 
             Conversation conv = new Conversation(this.pan.getUsername(index), msgThdMngr);
             InetAddress ip_address = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
 
             this.tabIndexByAddress.add(ip_address);
-
-            //this.msgThdMngr.openConnection(ip_address,conv);
-            //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
-
-            //ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationsAt(index).getName());
-
             // ajout à la base de données
             // si la conversation est déjà présente dans la base de données on charge les messages
             // ouverture depuis moi
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
-                System.out.println("mc [ENVOYEUR] openconversation : conv déjà dans la bdd");
                 this.msgThdMngr.openConnection(ip_address,conv2);
-                System.out.println("mc [ENVOYEUR] openconversation : openConnection succes");
                 ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
                 this.tabByConv.put(ip_address,chatPanel);
                 //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
                         messages) {
-                    System.out.println("mc [ENVOYEUR] openConversation : message: " +
-                            message.getContent() +
-                            "; from " + message.getIP());
                     if (message.getIP() != null) {
                         if (message.getIP().equals(ip_address)) {
-                            System.out.println("mc [ENVOYEUR] openConversation : add message from other");
                             this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                         } else {
                             this.pan.addTextToTabAsSender(message.getContent());
@@ -199,24 +183,21 @@ public class MainController {
                     }
                 }
             } else {
-                // condition peut etre retiree ?
-                System.out.println("mc [ENVOYEUR] open conversation : conv pas encore dans la bdd");
                 DatabaseManager.addConversation(conv, ip_address);
                 this.msgThdMngr.openConnection(ip_address,conv);
                 ChatPanel chatPanel = this.pan.addConversationTab(this.msgThdMngr.getConversationByIP(ip_address).getName());
                 this.tabByConv.put(ip_address,chatPanel);
-                //this.msgThdMngr.openConnection(InetAddress.getLocalHost());
             }
 
             this.pan.revalidate();
-        } else {
-            System.out.println("mc [ENVOYEUR] open conversation : doublon de conv donc pas recree");
         }
     }
 
+    /**
+     * Ferme la conversation
+     * @param index
+     */
     public void closeConversation(int index) {
-        System.out.println("mc [USER QUI FERME] close conversation");
-        //this.msgThdMngr.close_conversation(index);
         InetAddress ip = this.usersByUsername.get(this.pan.getUsername(index)).getIP();
         this.msgThdMngr.close_conversation(ip);
         this.tabByConv.remove(ip);
@@ -225,11 +206,12 @@ public class MainController {
         this.pan.revalidate();
     }
 
+    /**
+     * envoi un message dans la conversation courante
+     */
     public void sendMessage() {
-        System.out.println("mc [ENVOYEUR MSG] send message");
         if (!this.pan.getTextfieldText().isBlank()) {
             this.pan.addTextToTabAsSender();
-            //Message msg = new TextMessage(LocalDateTime.now(), this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
             Message msg = new TextMessage(LocalDateTime.now(), this.privateUser, this.msgThdMngr.getConversationsAt(this.pan.getSelectedIndex()), this.pan.getTextfieldText());
             this.msgThdMngr.send(msg, this.pan.getSelectedIndex());
             this.pan.emptyTextField();
@@ -239,42 +221,34 @@ public class MainController {
         }
     }
 
+    /**
+     * Fermes les conversations en cours et envoie un message de déconnexion
+     */
     public void closingApp(){
         this.msgThdMngr.close_all_conversation();
         this.userManager.sender(false);
     }
 
-    /*public void addConversationTab(String title) {
-        this.pan.addConversationTab(title);
-    }*/
-    // reception de demande de conversation
+    /**
+     * Ajout d'un onglet de conversation en cas d'une réception de demande de connexion
+     * @param conv
+     * @return
+     */
     public Conversation addConversationTab(Conversation conv) {
-        System.out.println("mc [RECEVEUR] addConversationTab");
-        // TODO faire ajouter les messages reçus depuis la bd
-        System.out.println("enter here");
         ChatPanel chatPanel = this.pan.addConversationTab(conv.getConvName());
-        //DatabaseManager.addConversation();
         InetAddress ip_address = null;
-        System.out.println("test nb users=" + conv.getUsersIP().size());
         if (conv.getUsersIP().size() > 0) {
             ip_address = conv.getUsersIP().get(0);
             this.tabByConv.put(ip_address,chatPanel);
-            System.out.println("ip=" + ip_address);
             this.tabIndexByAddress.add(ip_address);
             // si la conversation est déjà dans la base de données
             Conversation conv2 = DatabaseManager.getConvByIp(ip_address, this.msgThdMngr);
             if (conv2 != null) {
-                System.out.println("mc [RECEVEUR] addConversationTab : conv cree car pas doublon");
                 Conversation.copyUsers(conv, conv2);
                 List<Message> messages = DatabaseManager.getAllMessagesFromConv(conv2, true, this.msgThdMngr);
                 for (Message message :
                         messages) {
-                    System.out.println("mc [RECEVEUR] openConversation : message: " +
-                            message.getContent() +
-                            "; from " + message.getIP());
                     if (message.getIP().equals(ip_address)) {
-                        //this.addTextToTab(conv, message.getUser().getUsername() + ">" + message.getContent());
-                        System.out.println("mc [RECEVEUR] openConversation : add message from other");
                         this.addTextToTab(chatPanel, message.getUser().getUsername() + ">" + message.getContent());
                     } else {
                         this.pan.addTextToTabAsSender(chatPanel, message.getContent());
@@ -289,8 +263,12 @@ public class MainController {
         return conv;
     }
 
-    public boolean changeUserName(String username) { //renvoie 0 si erreur
-        System.out.println("mc [USER QUI CHANGE] change username");
+    /**
+     * Change le pseudonyme de l'utilisateur courant
+     * @param username nouveau pseudo
+     * @return renvoie faux si le pseudo est déjà pris, vrai sinon
+     */
+    public boolean changeUserName(String username) {
         boolean bool = this.privateUser.updateUsername(username);
         if (bool){
             this.userManager.sender(true);
@@ -300,51 +278,63 @@ public class MainController {
         return bool;
     }
 
+    /**
+     * Change le pseudonyme d'un utilisateur distant
+     * @param user
+     * @param oldUsername
+     * @param newUsername
+     * @return
+     */
     public boolean changeUserName(User user, String oldUsername, String newUsername) {
         if (!oldUsername.equals(newUsername)) {
-            System.out.println("mc [RECEVEUR CHANGE USERNAME] changeUserName");
             this.usersByUsername.get(user.getUsername()).setUsername(newUsername);
             this.usersByUsername.put(newUsername, user);
             this.usersByUsername.remove(oldUsername);
             DatabaseManager.changeUsername(user.getIP(), newUsername);
             this.updateChatPanel(user);
-
-            //this.pan.setUsername(oldUsername, newUsername);
         }
-
         return true;
     }
 
+    /**
+     * Ajoute un contact dans le panneau de contacts
+     * @param username
+     */
     public void addContact(String username) {
         this.pan.addContact(username);
     }
 
+    /**
+     * Supprime un onglet de conversation
+     * @param index
+     */
     public void removeConversationTab(int index) {
-        System.out.println("removeConvTab 1");
         this.pan.removeConversationTab(index);
     }
 
+    /**
+     * Supprime un onglet de conversation
+     * @param conv
+     */
     public void removeConversationTab(Conversation conv) {
-        System.out.println("removeConvTab 2");
         this.pan.removeConversationTab(this.tabIndexByAddress.indexOf(conv.getFirstIP()));
 
         this.tabByConv.remove(conv.getFirstIP());
         this.tabIndexByAddress.remove(conv.getFirstIP());
     }
 
-    /*public void addTextToTab(int index, String text) {
-        this.pan.addTextToTab(index, text);
-    }*/
-
+    /**
+     * Ajoute du texte dans une conversation
+     * @param conv
+     * @param text
+     */
     public void addTextToTab(Conversation conv, String text) {
-        //this.pan.addTextToTab(tabByConv.get(conv), text);
         if (conv.getUsersIP().size() > 0) {
             this.pan.addTextToTab(this.tabByConv.get(conv.getUsersIP().get(0)), text);
         }
     }
 
     public void addTextToTab(ChatPanel chatPanel, String text) {
-        //this.pan.addTextToTab(tabByConv.get(conv), text);
         this.pan.addTextToTab(chatPanel, text);
     }
 
@@ -366,6 +356,10 @@ public class MainController {
         return this.pan.isPlaceholderText();
     }
 
+    /**
+     * met a jour les pseudonymes dans le fil de discussion avec user
+     * @param user
+     */
     public void updateChatPanel(User user) {
         ChatPanel chatPanel = null;
         if (user.getIP().equals(this.privateUser.getIP())) {
@@ -412,6 +406,10 @@ public class MainController {
         return this.privateUser.getIP();
     }
 
+    /**
+     * Change dans les paramètres l'nterface réseau sélectionnée
+     * @param ni
+     */
     public static void writeConfig(String ni) {
         DatabaseManager.changePrivateIp(MessageThreadManager.getLocalAddress(ni));
 

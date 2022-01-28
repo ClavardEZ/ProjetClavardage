@@ -8,6 +8,9 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+/**
+ *Classe gérant la liste des contacts connectés
+ */
 public class ControllerContactList implements MouseListener {
 
     private MainController mc;
@@ -17,13 +20,15 @@ public class ControllerContactList implements MouseListener {
     }
 
     @Override
+    /**
+     * Lorsque l'on clique sur un contact, on regarde si l'utilisateur a bien configuré son interface réseau avant de démarer la conversation
+     */
     public void mouseClicked(MouseEvent e) {
         JList list =(JList) e.getSource();
         int index = -1;
         if (e.getClickCount() == 2) {
             if (!mc.getNi().equals("lo")) {
                 index = list.getSelectedIndex();
-                //index = list.locationToIndex(e.getPoint());
                 System.out.println("index UI = " + index);
                 this.mc.openConversation(index);
             }
@@ -32,12 +37,6 @@ public class ControllerContactList implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-       /* //TODO faire un truc plus propre
-        JList list =(JList) e.getSource();
-        int index = -1;
-        index = list.locationToIndex(e.getPoint());
-        this.mc.addUserInConv(index);
-*/
     }
 
     @Override
