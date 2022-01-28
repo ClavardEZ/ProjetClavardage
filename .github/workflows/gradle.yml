@@ -43,4 +43,6 @@ jobs:
         # Release title (for automatic releases)
         title: ClavardEZ
         # Assets to upload to the release
-        files: ./app/build/libs/app.jar
+        files:
+          ./app/build/libs/app.jar
+          ./app/build/dist/
