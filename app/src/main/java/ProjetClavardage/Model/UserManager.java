@@ -37,7 +37,7 @@ public class UserManager extends Thread {
         this.sendingPort = sendingPort;
         this.usersByIP = new HashMap<>();
         this.oldUsernamesByIp = new HashMap<>();
-        this.semaphore = new Semaphore(1);
+        this.semaphore = new Semaphore(0);
 
         UserSender sender = new UserSender(this);
         sender.start();
