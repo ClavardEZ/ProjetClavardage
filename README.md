@@ -41,3 +41,7 @@ Au premier lancement le nom d'utilisateur est également généré, il est donc 
 - **Recherche de messages**: Il est possible de rechercher les messages au sein d'une conversation à partir du contenu
 
 ## Rapport du projet :
+
+[Rapport](https://github.com/ClavardEZ/ProjetClavardage/files/7961560/Rapport.pdf)
+
+
