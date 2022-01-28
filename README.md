@@ -21,7 +21,7 @@ Téléchargez la version de l'installateur correspondant à votre système d'exp
 
 Plusieurs interfaces réseaux sont parfois disponibles et cela dépend de l'appareil, il est donc impératif de sélectionner l'interface réseau correspondant au réseau local sur lequel on souhaite communiquer.
 
-:warning: **Lors du premier lancement, l'interface n'est pas encore sélectionner et il est donc impossible de communiquer, pour celà il faut cliquer sur le bouton de changement d'interface** :
+:warning: **Lors du premier lancement, l'interface réseau n'est pas encore sélectionnée et il est donc impossible de communiquer, pour celà il faut cliquer sur le bouton de changement d'interface** :
 
 ![image](https://user-images.githubusercontent.com/43877845/151611872-6e663501-7c16-473b-8281-a2992cbdbe24.png)
 
