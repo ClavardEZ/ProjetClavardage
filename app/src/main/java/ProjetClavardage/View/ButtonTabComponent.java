@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 
+/**
+ * Classe gérant le bouton de fermeture de l'application
+ */
 public class ButtonTabComponent extends JPanel {
     private JTabbedPane pane;
     private Pan parentPane;
@@ -31,7 +34,6 @@ public class ButtonTabComponent extends JPanel {
         Image img = image;
         ImageIcon icon = new ImageIcon(img.getScaledInstance(15, 15, Image.SCALE_SMOOTH));
         TabButton closeButton = new TabButton(icon);
-        //closeButton.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 0));
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.weightx = 1.0;
@@ -40,7 +42,6 @@ public class ButtonTabComponent extends JPanel {
         this.add(closeButton, gbc);
     }
 
-    // TODO maybe external class ???
     private class TabButton extends JButton implements ActionListener {
 
         public TabButton(ImageIcon icon) {

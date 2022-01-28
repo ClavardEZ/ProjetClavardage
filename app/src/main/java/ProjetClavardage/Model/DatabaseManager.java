@@ -17,12 +17,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Classe gérant la base de donnée
+ */
 public final class DatabaseManager {
 
     private static Connection conn;
 
     private DatabaseManager() {}
 
+    /**
+     * Création du fichier de base de donnée et connexion à ce fichier
+     * @return renvoi vrai si la connexion est réussie
+     */
     public static boolean connect() {
         AppDirs appDirs = AppDirsFactory.getInstance();
         String dataFolder = appDirs.getUserDataDir("ClavardEZ", null, "Clavardeurs");
@@ -42,6 +49,10 @@ public final class DatabaseManager {
         return false;
     }
 
+    /**
+     * Créations des tables nécessaires :
+     * User, Conversation et Message
+     */
     public static void createTables() {
         String reqUser = """
         CREATE TABLE IF NOT EXISTS user(
@@ -101,6 +112,10 @@ public final class DatabaseManager {
         }
     }
 
+    /**
+     * Ajout de l'utilisateur courant
+     * @param pUser
+     */
     public static void addPrivateUser(PrivateUser pUser) {
         String req = """
             INSERT INTO user (ip_address, username, isPrivate)
@@ -152,6 +167,10 @@ public final class DatabaseManager {
         }
     }
 
+    /**
+     * Ferme la connexion a la base de donnée
+     * @return renvoie vrai si c'est un succès
+     */
     public static boolean closeConnection() {
         try {
             DatabaseManager.conn.close();
@@ -161,7 +180,6 @@ public final class DatabaseManager {
         }
     }
 
-    // TODO execute multiple queries
     public static void deleteTables() {
         try {
             Statement stmt = DatabaseManager.conn.createStatement();
@@ -191,6 +209,11 @@ public final class DatabaseManager {
         }
     }
 
+    /**
+     * renvoie l'user associé à ip_address
+     * @param ip_address
+     * @return
+     */
     public static User getUser(InetAddress ip_address) {
         String req = "SELECT *" +
                 "FROM user " +
@@ -292,6 +315,13 @@ public final class DatabaseManager {
         return message;
     }
 
+    /**
+     * Retourne l'ensemble des messages associés à la conversation
+     * @param conv
+     * @param isText
+     * @param msgThdMngr
+     * @return une liste de l'ensemble des messages
+     */
     public static List<Message> getAllMessagesFromConv(Conversation conv, boolean isText, MessageThreadManager msgThdMngr) {
         ArrayList<Message> messages = new ArrayList<>();
 
@@ -378,7 +408,12 @@ public final class DatabaseManager {
         }
     }
 
-    // only works with one to one conversations
+    /**
+     * Renvoie la conversation associée à l'ip d'un utilisateur distant. ne marche pas pour les conversations de plus de 2 personnes
+     * @param ipAddress
+     * @param msgThdMngr
+     * @return
+     */
     public static Conversation getConvByIp(InetAddress ipAddress, MessageThreadManager msgThdMngr) {
         String req = "SELECT *" +
                 "FROM conversation " +
@@ -399,6 +434,13 @@ public final class DatabaseManager {
         return conv;
     }
 
+    /**
+     * Recherche les messages contenant la chaîne de caractère text dans l'ensemble des messages associés à la conversation conv
+     * @param conv
+     * @param text
+     * @param msgThdMngr
+     * @return
+     */
     public static List<Message> searchMessageBytext(Conversation conv, String text, MessageThreadManager msgThdMngr) {
         ArrayList<Message> messages = new ArrayList<>();
 
@@ -433,6 +475,10 @@ public final class DatabaseManager {
         return messages;
     }
 
+    /**
+     * Retourne la liste des nom d'utilisateurs connus
+     * @return
+     */
     public static ArrayList<String> getAllUserNames() {
         ArrayList<String> result = new ArrayList<>();
 
@@ -456,6 +502,11 @@ public final class DatabaseManager {
         return result;
     }
 
+    /**
+     * Met a jour le pseudonyme associé à ipAddress
+     * @param ipAddress
+     * @param newUsername
+     */
     public static void changeUsername(InetAddress ipAddress, String newUsername) {
         String req = """
                 UPDATE user
@@ -473,6 +524,10 @@ public final class DatabaseManager {
         }
     }
 
+    /**
+     * Change l'ip de l'utilisateur courant
+     * @param ipAddress
+     */
     public static void changePrivateIp(InetAddress ipAddress) {
         String req = """
                 UPDATE user

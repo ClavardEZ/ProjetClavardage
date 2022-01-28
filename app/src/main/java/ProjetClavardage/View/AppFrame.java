@@ -6,6 +6,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
+/**
+ * Fenêtre vide
+ */
 public class AppFrame extends JFrame {
 
     ;

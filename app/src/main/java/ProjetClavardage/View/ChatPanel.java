@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 
+/**
+ * Classe gérant l'affichage de la fenêtre de chat
+ */
 public class ChatPanel extends JScrollPane {
 
     private Pan parent;
@@ -30,15 +33,6 @@ public class ChatPanel extends JScrollPane {
 
         this.listeMessages.setCellRenderer(new ChatPanelCellRenderer());
 
-        // display
-
-        /*this.text = new JLabel("TEXT");
-        this.setLayout(new GridBagLayout());
-        GridBagConstraints gbc = new GridBagConstraints();
-
-        gbc.fill = GridBagConstraints.BOTH;
-
-        this.add(this.text, gbc);*/
     }
 
     class ChatPanelCellRenderer extends DefaultListCellRenderer {

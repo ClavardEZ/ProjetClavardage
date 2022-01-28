@@ -67,7 +67,6 @@ public class Pan extends JPanel {
         this.add(sidePanel, mainGbc);
 
         sidePanel.setLayout(new GridBagLayout());
-        //sidePanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 0, 15));
         GridBagConstraints sideGbc = new GridBagConstraints();
 
         /* options panel */
@@ -141,7 +140,6 @@ public class Pan extends JPanel {
         mainGbc.weighty = 1.0;
         mainGbc.fill = GridBagConstraints.BOTH;
         this.add(messagePanel, mainGbc);
-        //messagePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         messagePanel.setLayout(new GridBagLayout());
         GridBagConstraints msgGbc = new GridBagConstraints();
 
@@ -171,12 +169,6 @@ public class Pan extends JPanel {
         this.textField.setForeground(Color.GRAY);
         this.txtLstner = new TextPlaceholderListener(this.textField, placeholderMessage);
         this.textField.addFocusListener(txtLstner);
-        /*this.textField.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Pan.this.sendMessage();
-            }
-        });*/
         this.textField.addActionListener(new ControllerSendMessage(this, this.mc));
 
         wrtGbc.gridx = 0;
@@ -191,7 +183,6 @@ public class Pan extends JPanel {
 
         this.sendButton = new JButton(new ImageIcon(sendImage));
         this.sendButton.addActionListener(new ControllerSendMessage(this, this.mc));
-        //sendButton.addActionListener(new CloseButtonListener());
         sendButton.setPreferredSize(new Dimension(30, 30));
         wrtGbc.gridx = 1;
         wrtGbc.gridy = 0;
@@ -204,33 +195,54 @@ public class Pan extends JPanel {
         writingPanel.add(sendButton, wrtGbc);
     }
 
+    /**
+     * Ajoute un utilisateur dans la liste es contacts connectés
+     * @param username
+     */
     public void addContact(String username) {
         this.contacts.addElement(username);
     }
-
+    /**
+     * Retire un utilisateur dans la liste es contacts connectés
+     * @param username
+     */
     public void removeContact(String username) {
         this.contacts.removeElement(username);
     }
 
+    /**
+     * Ajoute un onglet de conversation
+     * @param title titre de l'onglet
+     * @return retourne l'id de l'onglet
+     */
     public ChatPanel addConversationTab(String title) {
         this.chatPanels.add(new ChatPanel(this));
         tabs.addTab(title, this.chatPanels.get(this.chatPanels.size() - 1));
         tabs.setTabComponentAt(this.tabs.getTabCount() - 1, new ButtonTabComponent(this.mc, tabs, this.closeImage, this.tabs.getTabCount() - 1, this));
         return this.chatPanels.get(this.chatPanels.size() - 1);
-        // TODO add reveived conv to contacts tab
     }
 
+    /**
+     * Supprime un onglet de conversation
+     * @param index
+     */
     public void removeConversationTab(int index) {
         this.tabs.remove(index);
     }
 
+    /**
+     * Ajoute du texte dans une conversation active
+     * @param chatPanel
+     * @param text
+     */
     public void addTextToTab(ChatPanel chatPanel, String text) {
-        // TODO refactor to not use index  ::::Cbon
         this.revalidate();
-        //ChatPanel chatPanel = (ChatPanel) this.tabs.getComponentAt(tabIndex);
         chatPanel.addText(text, false);
     }
 
+    /**
+     * Ajoute du texte a un onglet avec l'utilisateur courant noté comme émetteur
+     */
     public void addTextToTabAsSender() {
         this.revalidate();
         int tabIndex = this.tabs.getSelectedIndex();
@@ -238,6 +250,10 @@ public class Pan extends JPanel {
         chatPanel.addText( this.mc.getPrivateUsername() + ">" + this.textField.getText(), true);
     }
 
+    /**
+     * Ajoute du texte a un onglet avec l'utilisateur courant noté comme émetteur
+     * @param text
+     */
     public void addTextToTabAsSender(String text) {
         this.revalidate();
         int tabIndex = this.tabs.getSelectedIndex();
@@ -245,18 +261,28 @@ public class Pan extends JPanel {
         chatPanel.addText( this.mc.getPrivateUsername() + ">" + text, true);
     }
 
+    /**
+     * Ajoute du texte a un onglet avec l'utilisateur courant noté comme émetteur
+     * @param chatPanel
+     * @param text
+     */
     public void addTextToTabAsSender(ChatPanel chatPanel, String text) {
         this.revalidate();
         chatPanel.addText(this.mc.getPrivateUsername() + ">" + text, true);
     }
 
+    /**
+     *
+     * @return retourne l'index associé a la conversation courante
+     */
     public int getSelectedIndex() {
-        /*if (this.tabs.getSelectedIndex()<0) {
-            return 0;
-        }*/
         return this.tabs.getSelectedIndex();
     }
 
+    /**
+     *
+     * @return renvoie le texte dans le cadre de texte sous la fenêtre de chat
+     */
     public String getTextfieldText() {
         return this.textField.getText();
     }
@@ -265,6 +291,11 @@ public class Pan extends JPanel {
         this.textField.setText("");
     }
 
+    /**
+     *
+     * @param index
+     * @return Retourne le nom d'utlisateur associé à index
+     */
     public String getUsername(int index) {
         if (index <= this.contacts.size()) {
             return this.contacts.get(index);
@@ -276,6 +307,11 @@ public class Pan extends JPanel {
         return this.txtLstner.isPlaceholder();
     }
 
+    /**
+     * Affiche le nouveau pseudonymde d'un utilisateur distant dans la liste de contacts
+     * @param oldUsername
+     * @param newUsername
+     */
     public void setUsername(String oldUsername, String newUsername) {
         System.out.println("pan [RECEVEUR] setUsername : old: " +
                 oldUsername + "; new: " +

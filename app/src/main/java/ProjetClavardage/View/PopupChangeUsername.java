@@ -7,6 +7,9 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * Gère l'affichage de la popup de changement de pseudonyme
+ */
 public class PopupChangeUsername extends JFrame {
 
     private Pan parent;
