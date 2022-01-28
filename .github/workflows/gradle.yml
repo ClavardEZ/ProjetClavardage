@@ -47,6 +47,8 @@ jobs:
         files: |
           ./app/build/libs/*.jar
           ./app/build/dist/*.deb
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
     - name: Release on Windows
       uses: softprops/action-gh-release@v1
@@ -54,6 +56,8 @@ jobs:
       with:
         files: |
           ./app/build/dist/*.exe
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           
     - name: Release on MacOS
       uses: softprops/action-gh-release@v1
@@ -61,3 +65,5 @@ jobs:
       with:
         files: |
           ./app/build/dist/*.dmg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
