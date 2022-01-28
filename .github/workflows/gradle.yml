@@ -34,6 +34,7 @@ jobs:
         arguments: build
     # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
     - name: Automatic Releases on Linux
+      id: automatic_release
       # You may pin to the exact commit or the version.
       # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
       uses: marvinpinto/action-automatic-releases@v1.2.1
@@ -75,21 +76,31 @@ jobs:
         run: chmod +x gradlew
       - name: Build installer with jpackage
         run: ./gradlew jpackage
+
+
       - name: Release for Ubuntu
         if: matrix.os == 'ubuntu-latest'
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files:
-            ./app/build/dist/*.deb
+          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          asset_path: ./app/build/dist/*.deb
+
       - name: Release for Windows
         if: matrix.os == 'windows-latest'
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files:
-            ./app/build/dist/*.exe
+          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          asset_path: ./app/build/dist/*.exe
+
       - name: Release for MacOS
         if: matrix.os == 'macos-latest'
-        uses: softprops/action-gh-release@v1
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files:
-            ./app/build/dist/*.dmg
+          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          asset_path: ./app/build/dist/*.dmg
