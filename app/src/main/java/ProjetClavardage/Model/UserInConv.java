@@ -76,6 +76,19 @@ public class UserInConv extends Thread{
     }
 
     /**
+     * Ferme le socket et interrompt le thread
+     */
+
+    public void close() {
+        try {
+            this.sock.close();
+            this.interrupt();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    /**
      * Renvoie l'IP associé à l'utilisateur distant
      * @return
      */
