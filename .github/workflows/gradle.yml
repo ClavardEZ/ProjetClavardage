@@ -86,8 +86,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/ClavardEZ-1.0.0.deb
-          asset_name: app_1.0.0-1_amd64.deb
+          asset_path: ./app/build/dist/app_1.0.0-1_amd64.deb
+          asset_name: ClavardEZ-1.0.0.deb
           asset_content_type: application/deb
 
       - name: Release for Windows
