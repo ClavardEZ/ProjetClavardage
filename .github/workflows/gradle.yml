@@ -16,7 +16,6 @@ on:
 jobs:
   build:
     name: build
-
     runs-on: ubuntu-latest
 
     steps:
@@ -34,13 +33,13 @@ jobs:
         arguments: build
           # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
     - name: Create Release on Linux
-      id: create_realease
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: latest
+        release_name: Release latest
         body: Test
         draft: false
         prerelease: false
