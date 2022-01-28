@@ -33,30 +33,25 @@ jobs:
       with:
         arguments: build
           # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-    - name: Automatic Releases on Linux
-      if: matrix.os == 'ubuntu-latest'
-      id: automatic_release
-      # You may pin to the exact commit or the version.
-      # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-      uses: marvinpinto/action-automatic-releases@v1.2.1
+    - name: Create Release on Linux
+      id: create_realease
+      uses: actions/checkout@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        # GitHub secret token
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        # Git tag (for automatic releases)
-        automatic_release_tag: latest
-        # Should this release be marked as a pre-release?
+        tag_name: ${{ github.ref }}
+        release_name: Release ${{ github.ref }}
+        body: Test
+        draft: false
         prerelease: false
-        # Release title (for automatic releases)
-        title: ClavardEZ
-        # Assets to upload to the release
-        files: |
-          ./app/build/libs/*.jar
+    - name: test
+      run: echo "${{ steps.create_release.outputs.upload_url }}""
     outputs:
-      output_url: ${{ steps.automatic_release.outputs.upload_url }}
+      output_url: ${{ steps.create_release.outputs.upload_url }}
       
   release:
     name: release
-    needs: build
+    needs: [build]
     runs-on: ${{ matrix.os }}
 
     strategy:
@@ -70,6 +65,8 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
+      - name: test
+        run: echo "${{ needs.build.outputs.output_url }}""
       - name: Build with Gradle
         uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
