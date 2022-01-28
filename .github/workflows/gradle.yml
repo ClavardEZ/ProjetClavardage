@@ -47,6 +47,12 @@ jobs:
         # Release title (for automatic releases)
         title: ClavardEZ
         # Assets to upload to the release
-        files:
-          ./app/build/libs/*
-          ./app/build/dist/*
+        files: |
+          if matrix.os == 'ubuntu-latest'; then
+            ./app/build/libs/*.jar
+            ./app/build/libs/*.deb
+          else if matrix.os == 'windows-latest'; then
+            ./app/build/libs/*.exe
+          else
+            ./app/build/libs/*.deb
+      
