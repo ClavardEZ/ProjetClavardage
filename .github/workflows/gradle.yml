@@ -52,7 +52,7 @@ jobs:
         files: |
           ./app/build/libs/*.jar
     outputs:
-      output_url = ${{ steps.automatic_release.outputs.upload_url }}
+      output_url: ${{ steps.automatic_release.outputs.upload_url }}
       
   release:
     name: release
