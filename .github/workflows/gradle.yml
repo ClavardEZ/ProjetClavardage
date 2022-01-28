@@ -26,7 +26,6 @@ jobs:
         java-version: '17'
         distribution: 'adopt'
     - name: Execute permissions for Linux
-      if: matrix.os == 'ubuntu-latest'
       run: chmod +x gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
