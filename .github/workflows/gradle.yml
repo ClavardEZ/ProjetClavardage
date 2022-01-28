@@ -38,8 +38,10 @@ jobs:
         arguments: build
     - name: Generate installers
       run: ./gradlew jpackage
-    - name: Automatic Releases for Linux # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-      if: matrix.ox == 'ubuntu-latest'
+      
+      # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+    - name: Automatic Releases for Linux
+      if: matrix.os == 'ubuntu-latest'
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         # GitHub secret token
@@ -54,8 +56,9 @@ jobs:
         files: |
             ./app/build/libs/*.jar
             ./app/build/dist/*.deb
-    - name: Automatic Releases for Windows # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-      if: matrix.ox == 'windows-latest'
+            
+    - name: Automatic Releases for Windows
+      if: matrix.os == 'windows-latest'
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         # GitHub secret token
@@ -69,8 +72,9 @@ jobs:
         # Assets to upload to the release
         files: |
             ./app/build/dist/*.exe
-    - name: Automatic Releases for MacOS # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-      if: matrix.ox == 'macos-latest'
+            
+    - name: Automatic Releases for MacOS
+      if: matrix.os == 'macos-latest'
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
         # GitHub secret token
