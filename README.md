@@ -42,6 +42,4 @@ Au premier lancement le nom d'utilisateur est également généré, il est donc 
 
 ## Rapport du projet :
 
-[Rapport](https://github.com/ClavardEZ/ProjetClavardage/files/7961560/Rapport.pdf)
-
-
+[Rapport](https://github.com/ClavardEZ/ProjetClavardage/files/7961820/Rapport_PELLOUX-CHAUVEAU.pdf)
