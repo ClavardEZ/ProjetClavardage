@@ -43,14 +43,14 @@ jobs:
           files:
             ./app/build/dist/*.deb
       - name: Release for Windows
-          if: matrix.os == 'windows-latest'
-          uses: softprops/action-gh-release@v1
-          with:
-            files:
-              ./app/build/dist/*.exe
+        if: matrix.os == 'windows-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          files:
+            ./app/build/dist/*.exe
       - name: Release for MacOS
-          if: matrix.os == 'macos-latest'
-          uses: softprops/action-gh-release@v1
-          with:
-            files:
-              ./app/build/dist/*.dmg
+        if: matrix.os == 'macos-latest'
+        uses: softprops/action-gh-release@v1
+        with:
+          files:
+            ./app/build/dist/*.dmg
