@@ -9,7 +9,15 @@
 plugins {
     // Apply the application plugin to add support for building a CLI application in Java.
     id 'application'
+
+    // jpackage to generate executables
+    id "org.panteleyev.jpackageplugin" version "1.3.1"
 }
+
+version = '1.0.0'
+
+compileJava.options.encoding = 'UTF-8'
+javadoc.options.encoding = 'UTF-8'
 
 repositories {
     // Use Maven Central for resolving dependencies.
@@ -59,3 +67,45 @@ jar {
         configurations.runtimeClasspath.collect {it.isDirectory() ? it : zipTree(it)}
     }
 }
+
+tasks.jpackage {
+    input = "${buildDir}/libs"
+    destination = "${buildDir}/dist"
+
+    appName = "ClavardEZ"
+    appVersion = project.version
+    type = org.panteleyev.jpackage.ImageType.DEFAULT
+    vendor = "Clavardeurs"
+
+    mainJar = jar.archiveFileName.get()
+    mainClass = "$mainClassName"
+
+    javaOptions = application.applicationDefaultJvmArgs
+
+    arguments = ["default", "9000", "9000", "9002", "9002", "true"]
+
+    // Linux
+    linuxPackageName = jar.archiveBaseName.get()
+    linuxShortcut = true
+
+    icon = "${buildDir}/resources/main/logo_white.png"
+
+    // Windows
+    winMenu = true
+    winDirChooser = true
+    winShortcut = true
+
+    windows {
+        winConsole = false
+        icon = "${buildDir}/resources/main/logo_white.ico"
+    }
+
+    // MacOS
+    macPackageName = jar.archiveBaseName.get()
+
+    mac {
+        icon = "${buildDir}/resources/main/logo_white.icns"
+    }
+}
+
+jpackage.dependsOn(jar)
