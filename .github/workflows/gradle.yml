@@ -86,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/ClavardEZ-1.0.0.deb
+          asset_path: ./app/build/dist/*.deb
           asset_name: ClavardEZ-1.0.0.deb
           asset_content_type: application/deb
 
@@ -97,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/ClavardEZ-1.0.0.exe
+          asset_path: ./app/build/dist/*.exe
           asset_name: ClavardEZ-1.0.0.exe
           asset_content_type: application/exe
 
@@ -108,6 +108,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/ClavardEZ-1.0.0.dmg
+          asset_path: ./app/build/dist/*.dmg
           asset_name: ClavardEZ-1.0.0.dmg
           asset_content_type: application/dmg
