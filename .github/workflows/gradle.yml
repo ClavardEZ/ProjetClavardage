@@ -73,10 +73,9 @@ jobs:
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: chmod +x gradlew
       - name: Build installer with jpackage
-        run: ./gradlew jpackage --info
-      - name: Test
-        run: echo ${{ needs.build.outputs.output_url }}
+        run: ./gradlew jpackage
       - name: find file
+        if: matrix.os == 'macos-latest'
         run: ls ./app/build/dist
 
       - name: Release for Ubuntu
