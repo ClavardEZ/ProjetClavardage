@@ -80,6 +80,8 @@ jobs:
         run: chmod +x gradlew
       - name: Build installer with jpackage
         run: ./gradlew jpackage
+      - name: Test
+        run: echo ${{ needs.build.outputs.output_url }}
 
       - name: Release for Ubuntu
         if: matrix.os == 'ubuntu-latest'
