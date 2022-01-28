@@ -39,53 +39,25 @@ jobs:
     - name: Generate installers
       run: ./gradlew jpackage
       
-      # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-    - name: Automatic Releases for Linux
+    # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+    - name: Release on Linux
+      uses: softprops/action-gh-release@v1
       if: matrix.os == 'ubuntu-latest'
-      uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
-        # GitHub secret token
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        # Git tag (for automatic releases)
-        automatic_release_tag: latest
-        # Should this release be marked as a pre-release?
-        prerelease: false
-        # Release title (for automatic releases)
-        title: ClavardEZ
-        # Assets to upload to the release
         files: |
-            ./app/build/libs/*.jar
-            ./app/build/dist/*.deb
-            
-    - name: Automatic Releases for Windows
+          ./app/build/libs/*.jar
+          ./app/build/dist/*.deb
+          
+    - name: Release on Windows
+      uses: softprops/action-gh-release@v1
       if: matrix.os == 'windows-latest'
-      uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
-        # GitHub secret token
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        # Git tag (for automatic releases)
-        automatic_release_tag: latest
-        # Should this release be marked as a pre-release?
-        prerelease: false
-        # Release title (for automatic releases)
-        title: ClavardEZ
-        # Assets to upload to the release
         files: |
-            ./app/build/dist/*.exe
-            
-    - name: Automatic Releases for MacOS
+          ./app/build/dist/*.exe
+          
+    - name: Release on MacOS
+      uses: softprops/action-gh-release@v1
       if: matrix.os == 'macos-latest'
-      uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
-        # GitHub secret token
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        # Git tag (for automatic releases)
-        automatic_release_tag: latest
-        # Should this release be marked as a pre-release?
-        prerelease: false
-        # Release title (for automatic releases)
-        title: ClavardEZ
-        # Assets to upload to the release
         files: |
-            ./app/build/dist/*.dmg
-            
+          ./app/build/dist/*.dmg
