@@ -32,24 +32,6 @@ jobs:
       uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
       with:
         arguments: build
-    # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-    - name: Automatic Releases on Linux
-      id: automatic_release
-      # You may pin to the exact commit or the version.
-      # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
-      uses: marvinpinto/action-automatic-releases@v1.2.1
-      with:
-        # GitHub secret token
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        # Git tag (for automatic releases)
-        automatic_release_tag: latest
-        # Should this release be marked as a pre-release?
-        prerelease: false
-        # Release title (for automatic releases)
-        title: ClavardEZ
-        # Assets to upload to the release
-        files: |
-          ./app/build/libs/*.jar
       
   release:
     name: release
@@ -71,12 +53,32 @@ jobs:
         uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
         with:
           arguments: build
+
+      # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
+      - name: Automatic Releases on Linux
+        if: matrix.os == 'ubuntu-latest'
+        id: automatic_release
+        # You may pin to the exact commit or the version.
+        # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
+        uses: marvinpinto/action-automatic-releases@v1.2.1
+        with:
+          # GitHub secret token
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          # Git tag (for automatic releases)
+          automatic_release_tag: latest
+          # Should this release be marked as a pre-release?
+          prerelease: false
+          # Release title (for automatic releases)
+          title: ClavardEZ
+          # Assets to upload to the release
+          files: |
+            ./app/build/libs/*.jar
+
       - name: Grant execution permission for Linux and Macos
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: chmod +x gradlew
       - name: Build installer with jpackage
         run: ./gradlew jpackage
-
 
       - name: Release for Ubuntu
         if: matrix.os == 'ubuntu-latest'
@@ -84,7 +86,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          upload_url: ${{ steps.automatic_release.outputs.upload_url }}
           asset_path: ./app/build/dist/*.deb
 
       - name: Release for Windows
@@ -93,7 +95,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          upload_url: ${{ steps.automatic_release.outputs.upload_url }}
           asset_path: ./app/build/dist/*.exe
 
       - name: Release for MacOS
@@ -102,5 +104,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ jobs.build.steps.automatic_release.outputs.upload_url }}
+          upload_url: ${{ steps.automatic_release.outputs.upload_url }}
           asset_path: ./app/build/dist/*.dmg
