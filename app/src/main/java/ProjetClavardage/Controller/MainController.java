@@ -17,9 +17,10 @@ import java.net.UnknownHostException;
 import java.time.LocalDateTime;
 import java.util.*;
 
+/**
+ * Gère les éntrées utilisateur
+ */
 public class MainController {
-    // TODO link users lists with pan through this class
-    // and not link other controllers to user, only through main class
     private ButtonTabComponent btnTabComponent;
     private Pan pan;
     private MessageThreadManager msgThdMngr;
@@ -32,14 +33,14 @@ public class MainController {
 
     private String ni;
 
-    public String getNi() {
-        return ni;
-    }
-
-    public void setNi(String ni) {
-        this.ni = ni;
-    }
-
+    /**
+     *
+     * @param serverPort
+     * @param clientPort
+     * @param listeningPort
+     * @param sendingPort
+     * @param username
+     */
     public MainController(int serverPort, int clientPort, int listeningPort, int sendingPort, String username) {
         DatabaseManager.connect();
         DatabaseManager.createTables();
@@ -97,6 +98,14 @@ public class MainController {
         } else {
             this.privateUser.setUsername(dbUser.getUsername());
         }
+    }
+
+    public String getNi() {
+        return ni;
+    }
+
+    public void setNi(String ni) {
+        this.ni = ni;
     }
 
     public String getUsernameByIP(InetAddress ip) {
