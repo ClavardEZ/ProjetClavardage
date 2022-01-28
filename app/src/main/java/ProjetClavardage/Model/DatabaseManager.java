@@ -346,17 +346,8 @@ public final class DatabaseManager {
                             DatabaseManager.getConversation(conv.getID(), msgThdMngr),
                             UUID.fromString(rs.getString("id_message")),
                             rs.getString("content")));
-                    System.out.println("[DATABASEMANAGER] getAllMessages : message: " + rs.getString("content") +
-                            "; from: " + rs.getString("ip_address"));
                 }
                 User user = DatabaseManager.getUser(InetAddress.getByName(rs.getString("ip_address")));
-                if (user == null) {
-                    System.out.println("[DATABASEMANAGER] getAllMessages user null with ip = " +
-                            rs.getString("ip_address"));
-                } else {
-                    System.out.println("[DATABASEMANAGER] getAllMessages user not null with ip = " +
-                            rs.getString("ip_address"));
-                }
             }
             rs.close();
             stmt.close();
