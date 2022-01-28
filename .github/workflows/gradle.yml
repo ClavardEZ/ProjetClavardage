@@ -45,7 +45,7 @@ jobs:
         draft: false
         prerelease: false
     - name: test
-      run: echo "${{ steps.create_release.outputs.upload_url }}""
+      run: echo "${{ steps.create_release.outputs.upload_url }}"
     outputs:
       output_url: ${{ steps.create_release.outputs.upload_url }}
       
