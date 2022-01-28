@@ -87,7 +87,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.automatic_release.outputs.upload_url }}
-          asset_path: ./app/build/dist/*.deb
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.deb
+          asset_name: ClavardEZ-1.0.0.deb
+          asset_content_type: application/deb
 
       - name: Release for Windows
         if: matrix.os == 'windows-latest'
@@ -96,7 +98,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.automatic_release.outputs.upload_url }}
-          asset_path: ./app/build/dist/*.exe
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.exe
+          asset_name: ClavardEZ-1.0.0.exe
+          asset_content_type: application/exe
 
       - name: Release for MacOS
         if: matrix.os == 'macos-latest'
@@ -105,4 +109,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.automatic_release.outputs.upload_url }}
-          asset_path: ./app/build/dist/*.dmg
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.dmg
+          asset_name: ClavardEZ-1.0.0.dmg
+          asset_content_type: application/dmg
