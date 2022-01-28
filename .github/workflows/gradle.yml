@@ -35,7 +35,7 @@ jobs:
           # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
     - name: Create Release on Linux
       id: create_realease
-      uses: actions/checkout@v2
+      uses: actions/create_release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
