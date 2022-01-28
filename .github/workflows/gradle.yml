@@ -16,7 +16,11 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os : [ubuntu-latest, windows-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v2
@@ -30,7 +34,11 @@ jobs:
       with:
         arguments: build
     - name: Generate installers
-      run: gradle jpackage
+      run: |
+        if ["$RUNNER_OS" == "Windows"]; then
+          ./gradlew jpackage
+        else
+          gradle jpackage
     - name: Automatic Releases # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
@@ -44,5 +52,5 @@ jobs:
         title: ClavardEZ
         # Assets to upload to the release
         files:
-          ./app/build/libs/app.jar
-          ./app/build/dist/
+          ./app/build/libs/*
+          ./app/build/dist/*
