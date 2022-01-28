@@ -32,21 +32,19 @@ jobs:
       with:
         arguments: build
           # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-    - name: Create Release on Linux
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create release
+      id: release
+      uses: "marvinpinto/action-automatic-releases@latest"
       with:
-        tag_name: latest
-        release_name: Release latest
-        body: Test
-        draft: false
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        automatic_release_tag: "latest"
         prerelease: false
+        title: "Development Build"
+        files: ./app/build/lib/*.jar
     - name: test
-      run: echo "${{ steps.create_release.outputs.upload_url }}"
+      run: echo "${{ steps.release.outputs.upload_url }}"
     outputs:
-      output_url: ${{ steps.create_release.outputs.upload_url }}
+      output_url: ${{ steps.release.outputs.upload_url }}
       
   release:
     name: release
