@@ -34,7 +34,7 @@ public class MainController {
     private String ni;
 
     /**
-     *Crée la base de donnée, lances les serveurs TCP et UDP et crée les éventuels fichiers locaux,
+     * Se connecte à la base de données, lances les serveurs TCP et UDP et crée les éventuels fichiers locaux,
      * @param serverPort port du serveur TCP
      * @param clientPort port TCP des autres utilisateurs (éventuellement différent du port serveur pour tests en local)
      * @param listeningPort port du serveur UDP
