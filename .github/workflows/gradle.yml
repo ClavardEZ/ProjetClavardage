@@ -34,11 +34,7 @@ jobs:
       with:
         arguments: build
     - name: Generate installers
-      run: |
-        if ["$RUNNER_OS" == "Windows"]; then
-          ./gradlew jpackage
-        else
-          gradle jpackage
+      run: ./gradlew jpackage
     - name: Automatic Releases # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
       uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
