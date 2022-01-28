@@ -42,7 +42,7 @@ jobs:
     # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
     - name: Release on Linux
       uses: softprops/action-gh-release@v1
-      if: matrix.os == 'ubuntu-latest'
+      if: matrix.os == 'ubuntu-latest' && startsWith(github.ref, 'refs/tags/')
       with:
         files: |
           ./app/build/libs/*.jar
@@ -52,7 +52,7 @@ jobs:
           
     - name: Release on Windows
       uses: softprops/action-gh-release@v1
-      if: matrix.os == 'windows-latest'
+      if: matrix.os == 'windows-latest' && startsWith(github.ref, 'refs/tags/')
       with:
         files: |
           ./app/build/dist/*.exe
@@ -61,7 +61,7 @@ jobs:
           
     - name: Release on MacOS
       uses: softprops/action-gh-release@v1
-      if: matrix.os == 'macos-latest'
+      if: matrix.os == 'macos-latest' && startsWith(github.ref, 'refs/tags/')
       with:
         files: |
           ./app/build/dist/*.dmg
