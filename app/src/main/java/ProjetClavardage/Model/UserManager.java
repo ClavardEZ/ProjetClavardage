@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.net.*;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 /**
@@ -16,7 +17,7 @@ public class UserManager extends Thread {
     private PrivateUser privateUser;
     private int listeningPort;
     private int sendingPort;
-    private HashMap<InetAddress, User> usersByIP;
+    private ConcurrentHashMap<InetAddress, User> usersByIP;
     private HashMap<User, String> oldUsernamesByIp;
     DatagramSocket dgramSocket;
     private Semaphore semaphore;
@@ -35,9 +36,9 @@ public class UserManager extends Thread {
         this.privateUser = privateUser;
         this.listeningPort = listeningPort;
         this.sendingPort = sendingPort;
-        this.usersByIP = new HashMap<>();
+        this.usersByIP = new ConcurrentHashMap<>();
         this.oldUsernamesByIp = new HashMap<>();
-        this.semaphore = new Semaphore(0);
+        this.semaphore = new Semaphore(1);
 
         UserSender sender = new UserSender(this);
         sender.start();
