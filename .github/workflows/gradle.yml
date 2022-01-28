@@ -73,9 +73,11 @@ jobs:
         if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
         run: chmod +x gradlew
       - name: Build installer with jpackage
-        run: ./gradlew jpackage
+        run: ./gradlew jpackage --info
       - name: Test
         run: echo ${{ needs.build.outputs.output_url }}
+      - name: find file
+        run: ls ./app/build/dist
 
       - name: Release for Ubuntu
         if: matrix.os == 'ubuntu-latest'
@@ -84,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/*.deb
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.deb
           asset_name: ClavardEZ-1.0.0.deb
           asset_content_type: application/deb
 
@@ -95,7 +97,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/*.exe
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.exe
           asset_name: ClavardEZ-1.0.0.exe
           asset_content_type: application/exe
 
@@ -106,6 +108,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.build.outputs.output_url }}
-          asset_path: ./app/build/dist/*.dmg
+          asset_path: ./app/build/dist/ClavardEZ-1.0.0.dmg
           asset_name: ClavardEZ-1.0.0.dmg
           asset_content_type: application/dmg
