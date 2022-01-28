@@ -5,20 +5,18 @@
 # This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
 # For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
 
-name: Java CI with Gradle
+name: Build and release jar
 
 on:
-  release:
-    types: [released, prereleased]
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
 
 jobs:
   build:
 
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os : [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
@@ -27,41 +25,28 @@ jobs:
       with:
         java-version: '17'
         distribution: 'adopt'
-    - name: Execute permissions for Linux and MacOS
-      if: matrix.os == 'ubuntu-latest' || matrix.os == 'macos-latest'
+    - name: Execute permissions for Linux
+      if: matrix.os == 'ubuntu-latest'
       run: chmod +x gradlew
     - name: Build with Gradle
       uses: gradle/gradle-build-action@4137be6a8bf7d7133955359dbd952c0ca73b1021
       with:
         arguments: build
-    - name: Generate installers
-      run: ./gradlew jpackage
-      
     # deploiement automatique de l'application pour qu'une release soit generee a chaque push sur la branche main
-    - name: Release on Linux
-      uses: softprops/action-gh-release@v1
-      if: matrix.os == 'ubuntu-latest'
+    - name: Automatic Releases on Linux
+      # You may pin to the exact commit or the version.
+      # uses: marvinpinto/action-automatic-releases@919008cf3f741b179569b7a6fb4d8860689ab7f0
+      uses: marvinpinto/action-automatic-releases@v1.2.1
       with:
+        # GitHub secret token
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        # Git tag (for automatic releases)
+        automatic_release_tag: latest
+        # Should this release be marked as a pre-release?
+        prerelease: false
+        # Release title (for automatic releases)
+        title: ClavardEZ
+        # Assets to upload to the release
         files: |
           ./app/build/libs/*.jar
-          ./app/build/dist/*.deb
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-    - name: Release on Windows
-      uses: softprops/action-gh-release@v1
-      if: matrix.os == 'windows-latest'
-      with:
-        files: |
-          ./app/build/dist/*.exe
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
-    - name: Release on MacOS
-      uses: softprops/action-gh-release@v1
-      if: matrix.os == 'macos-latest'
-      with:
-        files: |
-          ./app/build/dist/*.dmg
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
