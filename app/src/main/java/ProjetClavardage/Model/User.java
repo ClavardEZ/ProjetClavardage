@@ -9,7 +9,7 @@ import java.net.InetAddress;
  * Classe représentant un utilisateur externe du systeme
  */
 public class User implements Serializable {
-    private String username; //taille >2 char
+    private String username; //taille >3 char
     private InetAddress IP;
     private int port;
 
@@ -26,6 +26,12 @@ public class User implements Serializable {
         this.connected = value;
     }
 
+    /**
+     *
+     * @param IP
+     * @param port
+     * @param username
+     */
     public User(InetAddress IP, int port, String username) {
         this.username = username;
         this.IP=IP;
@@ -34,6 +40,9 @@ public class User implements Serializable {
     }
 
     @Override
+    /**
+     * egalite des user ssi égalité des IP
+     */
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -49,6 +58,9 @@ public class User implements Serializable {
     }
 
     @Override
+    /**
+     * Convertit user en String
+     */
     public String toString() {
         return "User{" +
                 "username='" + username + '\'' +

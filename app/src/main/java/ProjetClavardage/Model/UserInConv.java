@@ -5,12 +5,23 @@ import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.*;
 
+/**
+ * Classe qu gère les sockets avec les utilisateurs distants au sein d'une conversation
+ */
 public class UserInConv extends Thread{
     Socket sock;
     MessageThreadManager msgThMng;
     InputStream iStream;
     OutputStream oStream;
     Conversation conv;
+
+    /**
+     *
+     * @param str nom du thread
+     * @param sock socket associé a l'utilisateur distant
+     * @param msgThMng MessageThreadManager de l'application
+     * @param conv conversation à laquelle est associé le UserInConv
+     */
     public UserInConv(String str, Socket sock, MessageThreadManager msgThMng, Conversation conv){
         super(str);
         this.sock = sock;
@@ -24,17 +35,12 @@ public class UserInConv extends Thread{
         }
     }
 
-    public void close() {
-        this.close();
-        this.interrupt();
-    }
-
+    /**
+     * Envoie le message à l'utilisateur distant
+     * @param msg message à envoyer
+     */
     public void send_message(Message msg) {
         try {
-            //byte[] data = new byte[280];
-            //data = msg.getContent().getBytes(StandardCharsets.UTF_8);
-            //this.oStream.write(data);
-            //System.out.println("conv sent message");
             ObjectOutputStream ooStream = new ObjectOutputStream(sock.getOutputStream());
             ooStream.writeObject(msg);
         } catch (IOException e) {
@@ -42,6 +48,9 @@ public class UserInConv extends Thread{
         }
     }
 
+    /**
+     * Thread gérant la réception des messages de l'utilisateur distant
+     */
     public void run() {
         try {
         Message msg = null;
@@ -56,18 +65,20 @@ public class UserInConv extends Thread{
 
             else if (msg != null) {
                 this.msgThMng.received(msg, msgThMng.getConvByID(msg.getConvID()));
-                System.out.println("conv id=" + msg.getConvID().toString());
                 DatabaseManager.addMessage(msg);
             }
         } while (msg != null);
         this.msgThMng.close_conversation_conv(this.conv);
         } catch (SocketException e) {
-            System.out.println("Client disconnected");
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * Renvoie l'IP associé à l'utilisateur distant
+     * @return
+     */
     public InetAddress getSocketAddress() {
         return this.sock.getInetAddress();
     }

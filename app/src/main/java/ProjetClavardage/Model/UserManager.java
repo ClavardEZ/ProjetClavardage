@@ -23,6 +23,13 @@ public class UserManager extends Thread {
 
     private MainController mc;
 
+    /**
+     * Constructeur
+     * @param mc
+     * @param privateUser Utilisateur associé au pc
+     * @param listeningPort Port d'écoute UDP
+     * @param sendingPort Port d'envoi (éventuellement différent du port d'écoute pour les tests en local)
+     */
     public UserManager(MainController mc, PrivateUser privateUser, int listeningPort, int sendingPort) {
         this.mc = mc;
         this.privateUser = privateUser;
@@ -36,6 +43,11 @@ public class UserManager extends Thread {
         sender.start();
     }
 
+    /**
+     * Renvoie l'utilisateur associé à l'ip rentrée
+     * @param ip
+     * @return
+     */
     public User getUserByIP(InetAddress ip) {
         try {
             this.semaphore.acquire();
@@ -47,6 +59,11 @@ public class UserManager extends Thread {
         return user;
     }
 
+    /**
+     * Parcours les users déjà notés comme connectés lors du dernier appel :
+     * Si l'utilisateur a été renoté connecté depuis le dernier appel, on le laisse affiché et on le note déconnecté
+     * Si l'utilisateur est toujours déconnecté, on l'enlève du tableau et on le supprime de l'affichage
+     */
     public void users_update () {
         synchronized (this.usersByIP) {
             try {
@@ -57,13 +74,10 @@ public class UserManager extends Thread {
             for (User user : usersByIP.values()
             ) {
                 if (user.isConnected()) { // si il est connecté, on l'affiche et on réinitialise le tableau
-                    //TODO afficher user dans le panel
                     this.mc.addUser(user);
                     this.mc.changeUserName(user, this.oldUsernamesByIp.get(user), user.getUsername());
                     user.setConnected(false);
-                    //System.out.println(user.getUsername() + "isConnected:" + user.isConnected());
                 } else { // si il s'est deco
-                    //System.out.println("user disconnected : " + user.getUsername());
                     usersByIP.remove(user.getIP());
                     this.oldUsernamesByIp.remove(user);
                     this.mc.removeUser(user);
@@ -74,12 +88,11 @@ public class UserManager extends Thread {
         }
     }
 
-    // notifie aux autres utilisateurs que l'utilisateur courant est connecte
-    // et envoie ses informations pour etre contacte
-    public void selfConnected() {
-    }
-
-    public void sender(boolean b) { // b==true correspond a une connexion/changment de pseudo, b==false correspond a une deconnexion
+    /**
+     * Envoie une notification de connexion ou changement de pseudo à tous les autres utilisateurs (broadcast sur toutes les interfaces)
+     * @param b true correspond a une connexion/changment de pseudo, false correspond a une deconnexion
+     */
+    public void sender(boolean b) {
         String message = "XX";
         if (b) {
             message = this.privateUser.getUsername();
@@ -109,21 +122,11 @@ public class UserManager extends Thread {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        /*try {
-            DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
-                    message.length(),InetAddress.getLocalHost(), NUM_PORT);
-            dgramSocket.send(outPacket);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }*/
-
-        /*DatagramPacket outPacket = new DatagramPacket(message.getBytes(),
-                message.length(),host, port);*/
     }
 
+    /**
+     * Lance le socket d'écoute UDP
+     */
     public void start_listener() {
         try {
             this.dgramSocket = new DatagramSocket(this.listeningPort);
@@ -133,20 +136,23 @@ public class UserManager extends Thread {
     }
 
 
-
+    /**
+     * Ferme le socket d'écoute UDP
+     */
     public void close_listener() {
         this.sender(false);
         this.dgramSocket.close();
     }
 
-    // ecoute les connexion entrantes de nouveaux utilisateurs
+    /**
+     * Ecoute les notification de connexion et changement de pseudo
+     */
     public void run() {
             byte[] buffer = new byte[256];
             InetAddress lastAddress = null;
             while(true) {
                 try {
                     DatagramPacket inPacket = new DatagramPacket(buffer, buffer.length);
-                    //System.out.println("UDP :"+"waiting..." );
                     dgramSocket.receive(inPacket);
                     InetAddress clientAddress = inPacket.getAddress();
                     synchronized (this.usersByIP) {
@@ -156,14 +162,11 @@ public class UserManager extends Thread {
                             e.printStackTrace();
                         }
                         if (true) {
-                            //System.out.println("Received from " + clientAddress);
                             lastAddress = clientAddress;
                             int clientPort = inPacket.getPort();
                             String message = new String(inPacket.getData(), 0, inPacket.getLength());
-                            //System.out.println("UDP :"+message );
                             if (!message.equals(privateUser.getUsername())) {
-                                if (message.length() > 2) {
-                                    //System.out.println("entered in if");//un message de moins de 3 caracteres correspond a une deconnexion
+                                if (message.length() > 2) { //un message de moins de 3 caracteres correspond a une deconnexion
                                     if (this.usersByIP.containsKey(clientAddress)) { //cas ou l'utilisateur est déja connu
                                         this.usersByIP.get(clientAddress).setUsername(message);
                                     } else {  //cas ou on découvre qu'il est connecte
@@ -175,10 +178,8 @@ public class UserManager extends Thread {
                                                 clientAddress, clientPort);
                                         dgramSocket.send(outPacket);
                                     }
-                                    //System.out.println("Info : "+ clientAddress + "is still connected");
                                     this.usersByIP.get(clientAddress).setConnected(true);
                                 } else { //cas d'une deconnexion
-                                    //System.out.println("deco");
                                     if (this.usersByIP.containsKey(clientAddress)) {
                                         this.mc.removeUser(usersByIP.get(clientAddress));
                                         this.oldUsernamesByIp.remove(this.usersByIP.get(clientAddress));
@@ -197,11 +198,8 @@ public class UserManager extends Thread {
             }
     }
 
-    // ?
-    public void notifyConnected() {
-    }
 
-    // ?
+    @Deprecated
     public boolean isConnected(InetAddress userIP) {
         try {
             this.semaphore.acquire();
