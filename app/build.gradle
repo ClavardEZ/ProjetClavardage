@@ -84,8 +84,6 @@ tasks.jpackage {
 
     arguments = ["default", "9000", "9000", "9002", "9002", "true"]
 
-    addModules = ["jdk.management.jfr"]
-
     // Linux
     linuxPackageName = jar.archiveBaseName.get()
     linuxShortcut = true
