@@ -17,6 +17,15 @@ Téléchargez la version de l'installateur correspondant à votre système d'exp
 - [Linux](https://github.com/ClavardEZ/ProjetClavardage/releases/download/latest/ClavardEZ-1.0.0.deb)
 - [Mac](https://github.com/ClavardEZ/ProjetClavardage/releases/download/latest/ClavardEZ-1.0.0.dmg)
 
+Ou Lancez le jar exécutable avec la commande :
+
+```bash
+
+java -jar app-1.0.0.jar default 9000 9000 9002 9002 false
+```
+
+avec au moins la version 17 de Java, ces arguments représentent l'username par défaut, les ports client et serveurs TCP et UDP et si l'application est lancée en plein écran ou non
+
 ## Utilisation
 
 Plusieurs interfaces réseaux sont parfois disponibles et cela dépend de l'appareil, il est donc impératif de sélectionner l'interface réseau correspondant au réseau local sur lequel on souhaite communiquer.
